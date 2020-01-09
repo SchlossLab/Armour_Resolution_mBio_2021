@@ -15,15 +15,9 @@ data/*/*
 *.fasta
 
 
-*head.batch
-tail.batch
 mothur*logfile
 *temp*
 *.docx
-*.pbs*
-*.fastq
-*.sra
 *.RData
 
-pbs_scripts/
-.nfs*
+*slurm*

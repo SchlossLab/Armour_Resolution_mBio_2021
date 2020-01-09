@@ -5,14 +5,14 @@ input <- commandArgs(trailingOnly=TRUE) # recieve input from model
 # Get variables from command line
 level <- input[1]
 
-path <- "data/phylotype/"
+path <- paste0("data/", level, "/")
+
 if(!dir.exists(path)){
 	dir.create(path)
 }
 
-shared_file <- 'data/mothur/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.shared'
-
-otu_tax_file <- 'data/mothur/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.cons_rdp.taxonomy'
+shared_file <- 'data/otu/crc.shared'
+otu_tax_file <- 'data/otu/crc.taxonomy'
 
 shared <- read_tsv(shared_file, col_type=cols(Group=col_character())) %>%
 	select(-label, -numOtus) %>%
@@ -26,20 +26,29 @@ taxonomy <- read_tsv(otu_tax_file) %>%
 	select(OTU, level) %>%
 	rename(taxon = level)
 
+unique_taxonomy <- taxonomy %>%
+	select(taxon) %>%
+	unique() %>%
+	mutate(otu = paste0("Otu", str_pad(1:nrow(.), width=nchar(nrow(.)), pad="0")))
+
+
 pooled <- inner_join(shared, taxonomy, by="OTU") %>%
-	group_by(Group, taxon) %>%
+	group_by(taxon, Group) %>%
 	summarize(count = sum(count)) %>%
 	ungroup() %>%
-	spread(taxon, count) %>%
+	inner_join(., unique_taxonomy) %>%
+	select(-taxon) %>%
+	spread(otu, count) %>%
 	mutate(label=level, numOtus=ncol(.)-1) %>%
 	select(label, Group, numOtus, everything())
 
-write_tsv(pooled, paste0(path, "crc.", level, ".shared"))
+write_tsv(pooled, paste0(path, "crc.shared"))
 
-n_taxa <- ncol(pooled) - 3
 
-tibble(OTU=paste0("Otu", str_pad(1:n_taxa, str_length(n_taxa), pad=0)),
-		Size=select(pooled, -label, -numOtus) %>% gather(tax, count, -Group) %>% group_by(tax) %>% summarize(count=sum(count)) %>% pull(count),
-			Taxonomy=colnames(pooled)[-c(1,2,3)]
-	) %>%
-	write_tsv(paste0(path, "crc.", level, ".taxonomy"))
+select(pooled, -label, -numOtus) %>%
+	gather(otu, count, -Group) %>%
+	group_by(otu) %>%
+	summarize(count=sum(count)) %>%
+	inner_join(., unique_taxonomy) %>%
+	rename("OTU"="otu", "Size"="count", "Taxonomy"="taxon") %>%
+	write_tsv(paste0(path, "crc.taxonomy"))

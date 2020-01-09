@@ -68,29 +68,52 @@ data/mothur/crc.fasta data/mothur/crc.count_table data/mothur/crc.taxonomy : cod
 			$(REFS)/trainset16_022016.pds.tax
 	bash $<
 
-data/mothur/crc.asv.% : $(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table\
-			$(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy\
-			code/asv.sh
-	bash code/asv.sh
 
-data/mothur/crc.otu.taxonomy data/mothur/crc.otu.shared : data/mothur/crc.fasta\
+# Generate ASV shared and taxonomy files
+data/asv/crc.% : code/get_asv_shared.sh\
+			data/mothur/crc.fasta\
 			data/mothur/crc.count_table\
-			data/mothur/crc.remove_accnos\
-			code/get_original_otu_shared.sh
-	bash code/get_original_otu_shared.sh $(dir $<)
+			data/mothur/crc.taxonomy
+	bash code/get_asv_shared.sh
 
+# Generate OTU shared and taxonomy files
+data/otu/crc.% : data/mothur/crc.fasta\
+			data/mothur/crc.count_table\
+			code/get_otu_shared.sh
+	bash code/get_otu_shared.sh data/mothur
 
+# Generate genus shared and taxonomy files
+data/genus/crc.shared data/genus/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R genus
 
-# Pool OTUs into phylotypes
-data/phylotype/crc.%.shared data/phylotype/crc.%.taxonomy :\
-		$(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.cons_rdp.taxonomy\
-		$(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.0.03.subsample.shared
-	Rscript code/phylotype.R $*
+# Generate family shared and taxonomy files
+data/family/crc.shared data/family/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R family
 
+# Generate order shared and taxonomy files
+data/order/crc.shared data/order/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R order
 
-# Output crc.asv.shared and crc.asv.taxonomy, and crc.asv.fasta file based on screened preclustered
-#	sequences in mothur pipeline
-data/asv/crc.asv.% : $(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.pick.count_table\
-			$(MOTHUR)/crc.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.pick.taxonomy\
-			code/asv.sh
-	bash code/asv.sh
+# Generate class shared and taxonomy files
+data/class/crc.shared data/class/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R class
+
+# Generate phylum shared and taxonomy files
+data/phylum/crc.shared data/phylum/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R phylum
+
+# Generate kingdom shared and taxonomy files
+data/kingdom/crc.shared data/kingdom/crc.taxonomy : code/get_phylotype_shared.R\
+			data/otu/crc.taxonomy\
+			data/otu/crc.shared
+	Rscript code/get_phylotype_shared.R kingdom

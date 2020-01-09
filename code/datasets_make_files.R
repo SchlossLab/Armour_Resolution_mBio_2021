@@ -6,7 +6,7 @@ library(tidyverse)
 
 input <- commandArgs(trailingOnly=TRUE)
 
-path <- input[1] # e.g. path <- 'data/marine/
+path <- input[1] # e.g. path <- 'data/raw/'
 
 
 # Generate a tibble based on the R1 files found in path that contains the name of the R1 and R2
@@ -36,4 +36,3 @@ read_tsv(file=paste0(path, "/sra_info.tsv")) %>%
   mutate(sample_id=str_replace_all(sample_id, "-", "_")) %>%
   select(sample_id, read_1, read_2) %>%
   write_tsv(path=paste0(path, "/data.files"), col_names=F, quote=F)
-
