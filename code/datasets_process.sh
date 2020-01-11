@@ -40,4 +40,4 @@ mv $MOTHUR/data.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.
 
 # Remove fastq files and all intermediate mothur files to keep things organized
 rm $MOTHUR/data.*
-rm $RAW/data.* $RAW/*fastq.gz
+rm $RAW/data.* #$RAW/*fastq.gz

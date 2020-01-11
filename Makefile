@@ -69,6 +69,14 @@ data/mothur/crc.fasta data/mothur/crc.count_table data/mothur/crc.taxonomy : cod
 	bash $<
 
 
+################################################################################
+#
+# Part 3: Generate the shared files
+#
+#	Generate shared files for ASVs, OTUs, and various taxonomic levels
+#
+################################################################################
+
 # Generate ASV shared and taxonomy files
 data/asv/crc.% : code/get_asv_shared.sh\
 			data/mothur/crc.fasta\
@@ -117,3 +125,12 @@ data/kingdom/crc.shared data/kingdom/crc.taxonomy : code/get_phylotype_shared.R\
 			data/otu/crc.taxonomy\
 			data/otu/crc.shared
 	Rscript code/get_phylotype_shared.R kingdom
+
+
+################################################################################
+#
+# Part 3: Generate the models
+#
+#	Generate the various ML models for each of the shared files
+#
+################################################################################
