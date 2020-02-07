@@ -49,7 +49,7 @@ run_model <-
         # example: get_results(data, model, seed, 0, "dx)
         # OR pass as NA
 
-        data <- read.csv(data_filename)
+        data <- data.table::fread(data_filename) %>% data.frame
 
         if(permutation){
             if(file.exists("data/process/sig_flat_corr_matrix.csv")){
@@ -64,6 +64,7 @@ run_model <-
         # Save results of the modeling pipeline as a list
         hyperparameters <- NULL # TODO: use hyperparameters csv file
         results <- pipeline(data, model, seed, outcome=outcome, permutation=permutation, taxonomy=taxonomy, hyperparameters=hyperparameters)
+
         # These results have
         # 1. cv_auc,
         # 2. test_auc
@@ -77,6 +78,7 @@ run_model <-
         aucs_dataframe <- data.frame(aucs) %>%
             rename(cv_aucs=X1, test_aucs=X2) %>%
             mutate(model=model) %>%
+
             write_csv(path = paste0("data/temp/", taxonomy,"/best_hp_results_", model,"_", seed, ".csv"))
         # ------------------------------------------------------------------
 
@@ -87,10 +89,10 @@ run_model <-
 #       dataframe <- data.frame(all_results) %>%
 #           mutate(model=model) %>%
 #           write_csv(path=paste0("data/temp/all_hp_results_", model,"_", seed, ".csv"))
+
         # ------------------------------------------------------------------
 
         # Save sensitivity and specificity for 0.5 threshold for each datasplit
-
 #       threshold_results <- matrix(c(results[[7]], results[[8]]), ncol=2, dimnames = list(c("values"), c("sens", "spec")))
 
 #       sensspec <- data.frame(threshold_results) %>%

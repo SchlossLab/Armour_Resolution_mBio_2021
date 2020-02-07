@@ -17,6 +17,7 @@ for (dep in deps){
 # Instead of 2 columns with names cv_aucs and test_aucs
 # We will have 1 column with name Performance that tells us if test or cv
 melt_data <-  function(data) {
+print("melt_data")
   data_melt <- data %>%
     melt(measure.vars=c('cv_aucs', 'test_aucs')) %>%
     rename(AUC=value) %>%
@@ -30,6 +31,7 @@ melt_data <-  function(data) {
 # -------------------- Read files ------------------------------------>
 # Read in files as delim that are saved in a list with a pattern
 read_files <- function(filenames){
+print("read_files")
   for(file in filenames){
     # Read the files generated in main.R
     # These files have cvAUCs and testAUCs for 100 data-splits
@@ -43,6 +45,7 @@ read_files <- function(filenames){
 # -------------------- Extract model name----------------------------->
 # Get model name with sub from file name
 get_model_name <- function(files){
+print("get_model_name")
   pat1 <- "data/process/walltime_"
   name_files <- sub(pat1, "", files)
   pat2 <- ".csv"
@@ -61,6 +64,7 @@ get_model_name <- function(files){
 #         - Top 5 features or feature groups will be listed
 #         - New AUROC which will differ from original AUROC after permutation
 get_interp_info <- function(data, model_name){
+print("get_interp_info")
   if("key" %in% colnames(data)){
     # If the models are linear, we used get_feature_rankings.R and then merge_feature_ranks.sh first
     # The created file after those 2 steps will be used in this function,
@@ -136,6 +140,7 @@ get_interp_info <- function(data, model_name){
 
 # Summarise walltime
 summarise_walltime <- function(files){
+print("summarise_walltime")
   summarized_walltimes <- summarise(files, mean_walltime = mean(files[,1]), sd_AUC = sd(files[,1]))
   return(summarized_walltimes)
 }
@@ -149,6 +154,7 @@ wilcoxon_test <- function(data, model_name_1, model_name_2){
 
 # subsampling test
 perm_p_value <- function(data, model_name_1, model_name_2){
+print("perm_p_value")
   test_subsample <- all %>%
     select(-cv_aucs) %>%
     filter(model == model_name_1 | model == model_name_2)
@@ -168,6 +174,7 @@ perm_p_value <- function(data, model_name_1, model_name_2){
 
 # Find median and IQRs for each AUROC datasplit for each model
 median_iqr <- function(data, model_name){
+print("median_iqr")
   median <- format(round(median((data %>% filter(model==model_name))$test_aucs), 3), nsmall=3)
   min_iqr <- format(round(rf_median - IQR((data %>% filter(model==model_name))$test_aucs), 3), nsmall=3)
   max_iqr <- format(round(rf_median + IQR((data %>% filter(model==model_name))$test_aucs), 3), nsmall=3)

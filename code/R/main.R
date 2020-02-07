@@ -13,7 +13,8 @@ Options
                                 L2_Logistic_Regression
                                 L1_Linear_SVM
                                 L2_Linear_SVM
-                                RBF_SVM Decision_Tree
+                                RBF_SVM
+                                Decision_Tree
                                 Random_Forest
                                 XGBoost
   --data=<csv>               Dataset filename in csv format.
@@ -36,20 +37,12 @@ deps = c(
   "LiblineaR",
   "pROC",
   "tidyverse",
-  "yaml"
+  "yaml",
+	"data.table"
 )
 
 for (dep in deps) {
-  if (!(dep %in% installed.packages())) {
-    install.packages(
-      dep,
-      quiet = TRUE,
-      repos = "http://cran.us.r-project.org",
-      dependencies = TRUE
-    )
-
-  }
-  library(dep, verbose = FALSE, character.only = TRUE)
+  library(dep, character.only = TRUE)
 }
 
 args <- docopt(doc)
