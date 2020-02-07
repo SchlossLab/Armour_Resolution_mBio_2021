@@ -9,7 +9,7 @@
 #        outcome - e.g. "dx"
 
 compute_correlation_matrix <- function(input_file, outcome){
-
+print("compute_correlation_matrix")
     ############### READ IN THE INPUT DATA ###############
     data_corr <- read.csv(input_file) %>%
         select(-outcome) # remove outcome, only keep the OTUs

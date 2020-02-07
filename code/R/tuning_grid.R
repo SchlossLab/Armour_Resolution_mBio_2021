@@ -34,7 +34,7 @@
 #------------------------- DEFINE FUNCTION -------------------#
 ######################################################################
 tuning_grid <- function(train_data, model, outcome, hyperparameters=NULL){
-
+print("tuning_grid")
   # NOTE: Hyperparameters should be a list where the names of the list are the
   # hyperparameters and the values are the values to be tested
 

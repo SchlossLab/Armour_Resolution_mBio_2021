@@ -38,7 +38,7 @@
 source("code/R/tuning_grid.R")
 source("code/R/permutation_importance.R")
 
-pipeline <- function(data, model, split_number, outcome=NA, hyperparameters=NULL, taxonomy=NA, permutation=TRUE){
+pipeline <- function(data, model, split_number, outcome=NA, hyperparameters=NULL, permutation=TRUE){
 
   # -----------------------Get outcome variable----------------------------->
   # If no outcome specified, use first column in data
@@ -49,17 +49,23 @@ pipeline <- function(data, model, split_number, outcome=NA, hyperparameters=NULL
     if(!outcome %in% colnames(data)){
       stop(paste('Outcome',outcome,'not in column names of data.'))
     }
+
+		# Let's make sure that the first column in the data frame is the outcome variable
+		temp_data <- data.frame(outcome = data[,outcome])
+		colnames(temp_data) <- outcome
+		data <- cbind(temp_data, data[, !(colnames(data) %in% outcome)]) # want the outcome column to appear first
   }
 
   # ------------------Pre-process the full data------------------------->
   # We are doing the pre-processing to the full data and then splitting 80-20
   # Scale all features between 0-1
-  preProcValues <- preProcess(data, method = "range")
-  dataTransformed <- predict(preProcValues, data)
-  # ----------------------------------------------------------------------->
 
+  preProcValues <- preProcess(data, method = "range")	# grab these columns
+  dataTransformed <- predict(preProcValues, data)
+
+  # ----------------------------------------------------------------------->
   # Get outcome variables
-  first_outcome = as.character(data[,outcome][1])
+  first_outcome = as.character(data[1,outcome])
   outcome_vals = unique(data[,outcome])
   if(length(outcome_vals) != 2) stop('A binary outcome variable is required.')
   second_outcome = as.character(outcome_vals[!outcome_vals == first_outcome])
@@ -72,6 +78,13 @@ pipeline <- function(data, model, split_number, outcome=NA, hyperparameters=NULL
   inTraining <- createDataPartition(dataTransformed[,outcome], p = .80, list = FALSE)
   trainTransformed <- dataTransformed[ inTraining,]
   testTransformed  <- dataTransformed[-inTraining,]
+
+	# remove columns that only appear within one or fewer samples of the training set. These are
+	# likely to be all zero and will not enter into the model
+	frequent <- names(which(apply(dataTransformed[, -1] > 0, 2, sum) > 1))
+	trainTransformed <- trainTransformed %>% select(outcome, frequent)
+	testTransformed <- testTransformed %>% select(outcome, frequent)
+
   # ----------------------------------------------------------------------->
 
   # -------------Define hyper-parameter and cv settings-------------------->
@@ -198,6 +211,7 @@ pipeline <- function(data, model, split_number, outcome=NA, hyperparameters=NULL
     test_roc <- roc(ifelse(testTransformed[,outcome] == first_outcome, 1, 0), rpartProbs[[1]])
     test_auc <- test_roc$auc
 
+    # Calculate sensitivity and specificity for 0.5 decision threshold.
     p_class <- ifelse(rpartProbs$cancer > 0.5, "cancer", "normal")
     r <- confusionMatrix(as.factor(p_class), testTransformed$dx)
     sensitivity <- r$byClass[[1]]
