@@ -16,7 +16,7 @@ model = args.model
 search_dir = "data/temp/"+tax_level
 output_file = "data/process/combined_"+tax_level+"_best_hp_results_"+model+".csv"
 
-output = open(output_file, "a+" )
+output = open(output_file, "w+" )
 seed = 0
 
 for file in os.listdir(search_dir):                             #loop over files in each taxonomy directory
