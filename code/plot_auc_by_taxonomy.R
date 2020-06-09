@@ -49,7 +49,7 @@ plot_model_auc <- function(model){
     scale_x_discrete(name= "Taxonomy") + 
     scale_y_continuous(name="AUC") + 
     scale_fill_brewer(palette="Accent") +
-    ggtitle("L2 Logistic Regression") + labs(fill=" ")
+    ggtitle(model) + labs(fill=" ")
   ggsave(paste0("figures/auc_",model,".png"), model_plot)
 
 }
