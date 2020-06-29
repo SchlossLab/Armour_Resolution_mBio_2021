@@ -30,23 +30,23 @@ print-%:
 REFS = data/references
 
 $(REFS)/silva.v4.% :
-	wget -N -P $(REFS)/ https://mothur.org/w/images/7/71/Silva.seed_v132.tgz
-	tar xvzf $(REFS)/Silva.seed_v132.tgz -C $(REFS)/
-	mothur "#get.lineage(fasta=$(REFS)/silva.seed_v132.align, taxonomy=$(REFS)/silva.seed_v132.tax, taxon=Bacteria);pcr.seqs(start=13862, end=23445, keepdots=F, processors=8);degap.seqs();unique.seqs()"
-	cut -f 1 $(REFS)/silva.seed_v132.pick.pcr.ng.names > $(REFS)/silva.seed_v132.pick.pcr.ng.accnos
-	mothur "#get.seqs(fasta=$(REFS)/silva.seed_v132.pick.pcr.align, accnos=$(REFS)/silva.seed_v132.pick.pcr.ng.accnos);screen.seqs(minlength=240, maxlength=275, maxambig=0, maxhomop=8, processors=8)"
-	mv $(REFS)/silva.seed_v132.pick.pcr.pick.good.align $(REFS)/silva.v4.align
+	wget -N -P $(REFS)/ https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v138.tgz
+	tar xvzf $(REFS)/silva.seed_v138.tgz -C $(REFS)/
+	mothur "#get.lineage(fasta=$(REFS)/silva.seed_v138.align, taxonomy=$(REFS)/silva.seed_v138.tax, taxon=Bacteria);pcr.seqs(start=13862, end=23445, keepdots=F, processors=8);degap.seqs();unique.seqs()"
+	cut -f 1 $(REFS)/silva.seed_v138.pick.pcr.ng.names > $(REFS)/silva.seed_v138.pick.pcr.ng.accnos
+	mothur "#get.seqs(fasta=$(REFS)/silva.seed_v138.pick.pcr.align, accnos=$(REFS)/silva.seed_v138.pick.pcr.ng.accnos);screen.seqs(minlength=240, maxlength=275, maxambig=0, maxhomop=8, processors=8)"
+	mv $(REFS)/silva.seed_v138.pick.pcr.pick.good.align $(REFS)/silva.v4.align
 	grep "^>" $(REFS)/silva.v4.align | cut -c 2- > $(REFS)/silva.v4.accnos
-	mothur "#get.seqs(taxonomy=$(REFS)/silva.seed_v132.pick.tax, accnos=$(REFS)/silva.v4.accnos)"
-	mv $(REFS)/silva.seed_v132.pick.pick.tax  $(REFS)/silva.v4.tax
-	rm $(REFS)/?ilva.seed_v132* $(REFS)/silva.v4.accnos
+	mothur "#get.seqs(taxonomy=$(REFS)/silva.seed_v138.pick.tax, accnos=$(REFS)/silva.v4.accnos)"
+	mv $(REFS)/silva.seed_v138.pick.pick.tax  $(REFS)/silva.v4.tax
+	rm $(REFS)/?ilva.seed_v138* $(REFS)/silva.v4.accnos
 
 $(REFS)/trainset16_022016.pds.% :
 	mkdir -p $(REFS)/rdp
-	wget -N -P $(REFS)/ https://mothur.org/w/images/c/c3/Trainset16_022016.pds.tgz; \
-	tar xvzf $(REFS)/Trainset16_022016.pds.tgz -C $(REFS)/rdp;\
+	wget -N -P $(REFS)/ https://mothur.s3.us-east-2.amazonaws.com/wiki/trainset16_022016.pds.tgz; \
+	tar xvzf $(REFS)/trainset16_022016.pds.tgz -C $(REFS)/rdp;\
 	mv $(REFS)/rdp/trainset16_022016.pds/trainset16_022016.* $(REFS);\
-	rm -rf $(REFS)/rdp $(REFS)/Trainset*
+	rm -rf $(REFS)/rdp $(REFS)/trainset*.tgz
 
 
 ################################################################################
