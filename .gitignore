@@ -7,7 +7,8 @@
 
 data/*/*
 !data/process/*
-!data/metadata/
+!data/metadata/*
+!data/default_hyperparameters/*
 !data/raw/Raw_hplc_files
 !data/raw/scfa_plate_layouts
 !README.md
