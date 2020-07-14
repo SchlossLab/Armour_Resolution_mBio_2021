@@ -2,9 +2,14 @@ library(tidyverse)
 library(dplyr)
 library(Hmisc)
 library(RcmdrMisc)
-setwd("~/GitHub/schloss_projects/XXXXX_Resolution_XXXX_2020")
-metadata <- read.delim('data/metadata/metadata.csv', header=T, sep=',') %>% select(sample,Dx_Bin,fit_result)
-shared <- read.delim('data/asv/crc.shared', header=T, sep='\t') %>% select(-label,-numOtus)
+library(here)
+#setwd("~/GitHub/schloss_projects/XXXXX_Resolution_XXXX_2020")
+metadata <- read.delim('./data/metadata/metadata.csv', header=T, sep=',') %>% select(sample,Dx_Bin,fit_result)
+
+input <- commandArgs(trailingOnly=TRUE) # recieve input from model
+level <- input[1]
+
+shared <- read.delim(paste0("./data/",level,"/crc.shared"), header=T, sep='\t') %>% select(-label,-numOtus)
 
 data<- inner_join(metadata,shared,by=c("sample"="Group")) %>% 
   mutate(dx=case_when(
@@ -17,4 +22,4 @@ data<- inner_join(metadata,shared,by=c("sample"="Group")) %>%
   select(-sample,-Dx_Bin,-fit_result) %>% 
   drop_na() %>% 
   select(dx,everything()) %>% 
-  write_csv("data/asv/input_data.csv")
+  write_csv(paste0("data/",level,"/input_data.csv"))

@@ -21,3 +21,5 @@ mothur*logfile
 *.RData
 
 *slurm*
+
+xdelete/

@@ -79,7 +79,7 @@ run_model <-
             rename(cv_aucs=X1, test_aucs=X2) %>%
             mutate(model=model) %>%
 
-            write_csv(path = paste0("data/temp/", taxonomy,"/best_hp_results_", model,"_", seed, ".csv"))
+            write_csv(path = paste0("data/", taxonomy,"/best_hp_results_", model,"_", seed, ".csv"))
         # ------------------------------------------------------------------
 
         # ------------------------------------------------------------------

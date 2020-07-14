@@ -78,14 +78,14 @@ data/mothur/crc.fasta data/mothur/crc.count_table data/mothur/crc.taxonomy : cod
 ################################################################################
 
 # Generate ASV shared and taxonomy files
-data/asv/crc.% : code/get_asv_shared.sh\
+data/asv/crc.shared : code/get_asv_shared.sh\
 			data/mothur/crc.fasta\
 			data/mothur/crc.count_table\
 			data/mothur/crc.taxonomy
 	bash code/get_asv_shared.sh
 
 # Generate OTU shared and taxonomy files
-data/otu/crc.% : data/mothur/crc.fasta\
+data/otu/crc.shared : data/mothur/crc.fasta\
 			data/mothur/crc.count_table\
 			code/get_otu_shared.sh
 	bash code/get_otu_shared.sh data/mothur
@@ -129,8 +129,69 @@ data/kingdom/crc.shared data/kingdom/crc.taxonomy : code/get_phylotype_shared.R\
 
 ################################################################################
 #
-# Part 3: Generate the models
+# Part 3: Generate the metadata files
+#
+#	Generate the input file for each taxonomic level
+#
+################################################################################
+
+# Generate asv input file
+data/asv/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/asv/crc.shared
+	Rscript code/merge_metadata_shared.R asv
+
+# Generate genus input file
+data/genus/input_data.csv : code/merge_metadata_shared.R\
+                        data/metadata/metadata.csv\
+                        data/genus/crc.shared
+	Rscript code/merge_metadata_shared.R genus
+
+# Generate family input file     
+data/family/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/family/crc.shared
+	Rscript code/merge_metadata_shared.R family
+
+# Generate order input file
+data/order/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/order/crc.shared
+	Rscript code/merge_metadata_shared.R order
+
+# Generate class input file
+data/class/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/class/crc.shared
+	Rscript code/merge_metadata_shared.R class
+
+# Generate phylum input file
+data/phylum/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/phylum/crc.shared
+	Rscript code/merge_metadata_shared.R phylum
+
+# Generate kingdom input file
+data/kingdom/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/kingdom/crc.shared
+	Rscript code/merge_metadata_shared.R kingdom
+
+
+################################################################################
+#
+# Part 4: Generate the models
 #
 #	Generate the various ML models for each of the shared files
 #
 ################################################################################
+
+## Test L2 logistic regression, genus
+
+LEVEL=phylum
+METHOD=L2_Logistic_Regression
+SEED=1
+
+data/phylum/best_hp_results_L2_Logistic_Regression_1.csv : data/$(LEVEL)/input_data.csv\
+			data/default_hyperparameters/$(METHOD).csv
+	Rscript code/R/main.R --seed=$(SEED) --model=$(METHOD) --taxonomy=$(LEVEL) --data=data/$(LEVEL)/input_data.csv --hyperparams=data/default_hyperparameters/$(METHOD).csv --outcome=dx
