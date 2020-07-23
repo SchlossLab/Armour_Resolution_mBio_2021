@@ -186,12 +186,49 @@ data/kingdom/input_data.csv : code/merge_metadata_shared.R\
 #
 ################################################################################
 
-## Test L2 logistic regression, genus
+LEVEL=kingdom phylum class order family genus asv
+METHOD=L2_Logistic_Regression Random_Forest
+SEED:=$(shell seq 100)
+#BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/best_hp_results_$M_$S.csv)))
+BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/$M.$S.csv)))
 
-LEVEL=phylum
+# EMPTY :=
+# SPACE := $(EMPTY) $(EMPTY)
+#
+# .SECONDEXPANSION:
+# data/phylum/best_hp_results_L2_Logistic_Regression_1.csv : \
+# 	$$(dir $$@)input_data.csv\
+# 	data/default_hyperparameters/$$(subst $$(SPACE),_,$$(filter-out $$(SEED),$$(subst _, ,$$(basename $$(subst best_hp_results_,,$$(notdir $$@)))))).csv
+# 	$(eval S=$(lastword $(subst _, ,$(basename $@))))
+# 	$(eval M=$(subst $(SPACE),_,$(filter-out $(SEED),$(subst _, ,$(subst best_hp_results_,,$(basename $(notdir $@)))))))
+# 	$(eval L=$(subst /,,$(subst data/,,$(dir $@))))
+# 	Rscript code/R/main.R --seed=$(S) --model=$(M) --taxonomy=$(L) --data=data/$(L)/input_data.csv --hyperparams=data/default_hyperparameters/$(M).csv --outcome=dx
+
+.SECONDEXPANSION:
+$(BEST_RESULTS) : \
+			$$(dir $$@)input_data.csv\
+			data/default_hyperparameters/$$(basename $$(basename $$(notdir $$@))).csv
+	$(eval S=$(subst .,,$(suffix $(basename $@))))
+	$(eval M=$(notdir $(basename $(basename $@))))
+	$(eval L=$(subst /,,$(subst data/,,$(dir $@))))
+	Rscript code/R/main.R --seed=$(S) --model=$(M) --taxonomy=$(L) --data=data/$(L)/input_data.csv --hyperparams=data/default_hyperparameters/$(M).csv --outcome=dx
+
+
+################################################################################
+#
+# Part 5: Merge the Results
+#
+#	Generate a concatenated version of the results for each method 
+#       and taxonomic level
+#
+################################################################################
+
 METHOD=L2_Logistic_Regression
-SEED=1
+LEVEL=kingdom phylum class order family genus asv
+#CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/$L/
 
-data/phylum/best_hp_results_L2_Logistic_Regression_1.csv : data/$(LEVEL)/input_data.csv\
-			data/default_hyperparameters/$(METHOD).csv
-	Rscript code/R/main.R --seed=$(SEED) --model=$(METHOD) --taxonomy=$(LEVEL) --data=data/$(LEVEL)/input_data.csv --hyperparams=data/default_hyperparameters/$(METHOD).csv --outcome=dx
+blah : code/concat_pipeline_auc_output.py
+	echo $^
+	echo $@
+	#python concat_pipeline_auc_output.py --taxonomy $(LEVEL) --model $(METHOD)
+	
