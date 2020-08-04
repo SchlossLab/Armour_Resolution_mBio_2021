@@ -141,6 +141,12 @@ data/asv/input_data.csv : code/merge_metadata_shared.R\
 			data/asv/crc.shared
 	Rscript code/merge_metadata_shared.R asv
 
+# Generate otu input file
+data/otu/input_data.csv : code/merge_metadata_shared.R\
+			data/metadata/metadata.csv\
+			data/otu/crc.shared
+	Rscript code/merge_metadata_shared.R otu
+
 # Generate genus input file
 data/genus/input_data.csv : code/merge_metadata_shared.R\
                         data/metadata/metadata.csv\
@@ -186,8 +192,8 @@ data/kingdom/input_data.csv : code/merge_metadata_shared.R\
 #
 ################################################################################
 
-LEVEL=kingdom phylum class order family genus asv
-METHOD=L2_Logistic_Regression Random_Forest
+LEVEL=kingdom phylum class order family genus otu asv
+METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
 SEED:=$(shell seq 100)
 #BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/best_hp_results_$M_$S.csv)))
 BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/$M.$S.csv)))
@@ -223,12 +229,13 @@ $(BEST_RESULTS) : \
 #
 ################################################################################
 
-METHOD=L2_Logistic_Regression
-LEVEL=kingdom phylum class order family genus asv
-#CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/$L/
+METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
+LEVEL=kingdom phylum class order family genus otu asv
+CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined_$(L)_$(M).csv))
+SEED:=$(shell seq 100)
 
-blah : code/concat_pipeline_auc_output.py
-	echo $^
-	echo $@
-	#python concat_pipeline_auc_output.py --taxonomy $(LEVEL) --model $(METHOD)
+$(CONCAT) : code/concat_pipeline_auc_output.py \ 
+	$(eval M=$(notdir $(basename $(basename $@)))
+	$(eval L=$(
+#	python concat_pipeline_auc_output.py --taxonomy $(L) --model $(M)
 	
