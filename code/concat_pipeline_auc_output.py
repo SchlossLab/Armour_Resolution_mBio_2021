@@ -14,7 +14,7 @@ model = args.model
 
 
 search_dir = "data/temp/"+tax_level
-output_file = "data/process/combined_"+tax_level+"_"+model+".csv"
+output_file = "data/process/combined-"+tax_level+"-"+model+".csv"
 
 output = open(output_file, "w+" )
 seed = 1

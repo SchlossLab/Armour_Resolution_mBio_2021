@@ -86,9 +86,10 @@ data/asv/crc.shared : code/get_asv_shared.sh\
 
 # Generate OTU shared and taxonomy files
 data/otu/crc.shared : data/mothur/crc.fasta\
+			data/mothur/crc.taxonomy\
 			data/mothur/crc.count_table\
 			code/get_otu_shared.sh
-	bash code/get_otu_shared.sh data/mothur
+	bash code/get_otu_shared.sh
 
 # Generate genus shared and taxonomy files
 data/genus/crc.shared data/genus/crc.taxonomy : code/get_phylotype_shared.R\
@@ -195,20 +196,7 @@ data/kingdom/input_data.csv : code/merge_metadata_shared.R\
 LEVEL=kingdom phylum class order family genus otu asv
 METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
 SEED:=$(shell seq 100)
-#BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/best_hp_results_$M_$S.csv)))
 BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/$M.$S.csv)))
-
-# EMPTY :=
-# SPACE := $(EMPTY) $(EMPTY)
-#
-# .SECONDEXPANSION:
-# data/phylum/best_hp_results_L2_Logistic_Regression_1.csv : \
-# 	$$(dir $$@)input_data.csv\
-# 	data/default_hyperparameters/$$(subst $$(SPACE),_,$$(filter-out $$(SEED),$$(subst _, ,$$(basename $$(subst best_hp_results_,,$$(notdir $$@)))))).csv
-# 	$(eval S=$(lastword $(subst _, ,$(basename $@))))
-# 	$(eval M=$(subst $(SPACE),_,$(filter-out $(SEED),$(subst _, ,$(subst best_hp_results_,,$(basename $(notdir $@)))))))
-# 	$(eval L=$(subst /,,$(subst data/,,$(dir $@))))
-# 	Rscript code/R/main.R --seed=$(S) --model=$(M) --taxonomy=$(L) --data=data/$(L)/input_data.csv --hyperparams=data/default_hyperparameters/$(M).csv --outcome=dx
 
 .SECONDEXPANSION:
 $(BEST_RESULTS) : \
@@ -231,11 +219,14 @@ $(BEST_RESULTS) : \
 
 METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
 LEVEL=kingdom phylum class order family genus otu asv
-CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined_$(L)_$(M).csv))
+CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined-$(L)-$(M).csv))
 SEED:=$(shell seq 100)
 
-$(CONCAT) : code/concat_pipeline_auc_output.py \ 
-	$(eval M=$(notdir $(basename $(basename $@)))
-	$(eval L=$(
-#	python concat_pipeline_auc_output.py --taxonomy $(L) --model $(M)
-	
+.SECONDEXPANSION:
+$(CONCAT) : \
+			code/concat_pipeline_auc_output.py \
+			$(foreach S,$(SEED), data/temp/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	python code/concat_pipeline_auc_output.py --taxonomy $(L) --model $(M)
+
