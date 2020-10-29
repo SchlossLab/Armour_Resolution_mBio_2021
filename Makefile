@@ -272,3 +272,29 @@ $(CONCAT) : \
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
 	python code/concat_pipeline_auc_output.py --taxonomy $(L) --model $(M)
 
+
+################################################################################
+#
+# Part 7: Quantify statistics
+#
+#	Calculate p-values using a permutaiton based method from Begum to compare
+#	difference in mean AUC values between models/taxonomic levels.
+#
+################################################################################
+
+METHOD=rpart2 rf regLogistic svmRadial xgbTree
+LEVEL=phylum class order family genus otu asv
+
+data/analysis/pvalues_by_level.csv : code/R/stats.R\
+			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
+	Rscript code/R/stats.R
+	
+
+
+################################################################################
+#
+# Part 8: Produce figures
+#
+#	Generate boxplots comparing model performace
+#
+################################################################################

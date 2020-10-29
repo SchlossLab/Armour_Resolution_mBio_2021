@@ -1,7 +1,7 @@
 PROCESSORSSPLIT=8
 PROCESSORSCLUSTER=1
 mkdir -p data/otu
-mothur "#set.seed(seed=19760620);
+bin/mothur/mothur "#set.seed(seed=19760620);
 	set.dir(input=data/mothur, output=data/otu);
 	cluster.split(fasta=crc.fasta, count=crc.count_table, taxonomy=crc.taxonomy, taxlevel=4, processors=$PROCESSORSSPLIT, runsensspec=FALSE, cluster=FALSE);
 	cluster.split(file=current, processors=$PROCESSORSCLUSTER, runsensspec=FALSE);

@@ -14,7 +14,7 @@ Rscript code/datasets_make_files.R $RAW
 
 
 # Run data through standard mothur pipeline through the steps prior to clustering
-mothur "#set.seed(seed=19760620);
+bin/mothur/mothur "#set.seed(seed=19760620);
 	set.dir(output=$MOTHUR);
 	make.contigs(inputdir=$RAW, file=data.files, processors=8);
 	screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8);

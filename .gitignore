@@ -6,7 +6,7 @@
 .DS_Store
 
 data/*/*
-!data/process/*
+data/process/*
 !data/metadata/*
 !data/default_hyperparameters/*
 !data/raw/Raw_hplc_files
