@@ -30,16 +30,16 @@ print-%:
 REFS = data/references
 
 $(REFS)/silva.v4.% :
-	wget -N -P $(REFS)/ https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v138.tgz
-	tar xvzf $(REFS)/silva.seed_v138.tgz -C $(REFS)/
-	mothur "#get.lineage(fasta=$(REFS)/silva.seed_v138.align, taxonomy=$(REFS)/silva.seed_v138.tax, taxon=Bacteria);pcr.seqs(start=13862, end=23445, keepdots=F, processors=8);degap.seqs();unique.seqs()"
-	cut -f 1 $(REFS)/silva.seed_v138.pick.pcr.ng.names > $(REFS)/silva.seed_v138.pick.pcr.ng.accnos
-	mothur "#get.seqs(fasta=$(REFS)/silva.seed_v138.pick.pcr.align, accnos=$(REFS)/silva.seed_v138.pick.pcr.ng.accnos);screen.seqs(minlength=240, maxlength=275, maxambig=0, maxhomop=8, processors=8)"
-	mv $(REFS)/silva.seed_v138.pick.pcr.pick.good.align $(REFS)/silva.v4.align
+	wget -N -P $(REFS)/ https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v132.tgz
+	tar xvzf $(REFS)/silva.seed_v132.tgz -C $(REFS)/
+	bin/mothur/mothur "#get.lineage(fasta=$(REFS)/silva.seed_v132.align, taxonomy=$(REFS)/silva.seed_v132.tax, taxon=Bacteria);pcr.seqs(start=11894, end=25319, keepdots=F, processors=8);degap.seqs();unique.seqs()"
+	cut -f 1 $(REFS)/silva.seed_v132.pick.pcr.ng.names > $(REFS)/silva.seed_v132.pick.pcr.ng.accnos
+	bin/mothur/mothur "#get.seqs(fasta=$(REFS)/silva.seed_v132.pick.pcr.align, accnos=$(REFS)/silva.seed_v132.pick.pcr.ng.accnos);screen.seqs(minlength=240, maxlength=275, maxambig=0, maxhomop=8, processors=8)"
+	mv $(REFS)/silva.seed_v132.pick.pcr.pick.good.align $(REFS)/silva.v4.align
 	grep "^>" $(REFS)/silva.v4.align | cut -c 2- > $(REFS)/silva.v4.accnos
-	mothur "#get.seqs(taxonomy=$(REFS)/silva.seed_v138.pick.tax, accnos=$(REFS)/silva.v4.accnos)"
-	mv $(REFS)/silva.seed_v138.pick.pick.tax  $(REFS)/silva.v4.tax
-	rm $(REFS)/?ilva.seed_v138* $(REFS)/silva.v4.accnos
+	bin/mothur/mothur "#get.seqs(taxonomy=$(REFS)/silva.seed_v132.pick.tax, accnos=$(REFS)/silva.v4.accnos)"
+	mv $(REFS)/silva.seed_v132.pick.pick.tax  $(REFS)/silva.v4.tax
+	rm $(REFS)/?ilva.seed_v132* $(REFS)/silva.v4.accnos
 
 $(REFS)/trainset16_022016.pds.% :
 	mkdir -p $(REFS)/rdp
@@ -184,48 +184,90 @@ data/kingdom/input_data.csv : code/merge_metadata_shared.R\
 			data/kingdom/crc.shared
 	Rscript code/merge_metadata_shared.R kingdom
 
+################################################################################
+#
+# Part 4: Preprocess data
+#
+#	Generate the preprocessed input data file (saves time to only do once)
+#	currently runs mikRopML default preprocessing method (zscore)
+#
+################################################################################
+
+# Generate ASV preprocessed input file
+data/asv/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/asv/input_data.csv
+	Rscript --max-ppsize=500000 code/R/preprocess_data.R --data=data/asv/input_data.csv --taxonomy=asv
+
+# Generate OTU preprocessed input file
+data/otu/input_data_preproc.csv	: code/R/preprocess_data.R\
+			data/otu/input_data.csv
+	Rscript	--max-ppsize=500000 code/R/preprocess_data.R --data=data/otu/input_data.csv --taxonomy=otu
+
+# Generate Genus preprocessed input file
+data/genus/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/genus/input_data.csv
+	Rscript code/R/preprocess_data.R --data=data/genus/input_data.csv --taxonomy=genus
+
+# Generate Family preprocessed input file
+data/family/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/family/input_data.csv
+	Rscript code/R/preprocess_data.R --data=data/family/input_data.csv --taxonomy=family
+
+# Generate Order preprocessed input file
+data/order/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/order/input_data.csv
+	Rscript	code/R/preprocess_data.R --data=data/order/input_data.csv --taxonomy=order
+
+# Generate class  preprocessed input file
+data/class/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/class/input_data.csv
+	Rscript code/R/preprocess_data.R --data=data/class/input_data.csv --taxonomy=class			
+
+# Generate phylum preprocessed input file
+data/phylum/input_data_preproc.csv : code/R/preprocess_data.R\
+			data/phylum/input_data.csv
+	Rscript	code/R/preprocess_data.R --data=data/phylum/input_data.csv --taxonomy=phylum
 
 ################################################################################
 #
-# Part 4: Generate the models
+# Part 5: Generate the models
 #
 #	Generate the various ML models for each of the shared files
 #
 ################################################################################
 
-LEVEL=kingdom phylum class order family genus otu asv
-METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
+LEVEL=phylum class order family genus otu asv
+METHOD=rpart2 rf regLogistic svmRadial xgbTree
 SEED:=$(shell seq 100)
-BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/$M.$S.csv)))
+BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/temp/$M.$S.csv)))
 
 .SECONDEXPANSION:
-$(BEST_RESULTS) : \
-			$$(dir $$@)input_data.csv\
-			data/default_hyperparameters/$$(basename $$(basename $$(notdir $$@))).csv
+$(BEST_RESULTS) : code/R/run_model.R \
+			data/$$(word 2,$$(subst /, ,$$(dir $$@)))/input_data.csv
 	$(eval S=$(subst .,,$(suffix $(basename $@))))
 	$(eval M=$(notdir $(basename $(basename $@))))
-	$(eval L=$(subst /,,$(subst data/,,$(dir $@))))
-	Rscript code/R/main.R --seed=$(S) --model=$(M) --taxonomy=$(L) --data=data/$(L)/input_data.csv --hyperparams=data/default_hyperparameters/$(M).csv --outcome=dx
+	$(eval L=$(subst temp,,$(subst /,,$(subst data/,,$(dir $@)))))
+	Rscript --max-ppsize=500000 code/R/run_model.R --data=data/$L/input_data.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S
 
 
 ################################################################################
 #
-# Part 5: Merge the Results
+# Part 6: Merge the Results
 #
 #	Generate a concatenated version of the results for each method 
 #       and taxonomic level
 #
 ################################################################################
 
-METHOD=L2_Logistic_Regression Random_Forest Decision_Tree L1_Linear_SVM L2_Linear_SVM RBF_SVM XGBoost
-LEVEL=kingdom phylum class order family genus otu asv
+METHOD=rpart2 rf regLogistic svmRadial xgbTree
+LEVEL=phylum class order family genus otu asv
 CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined-$(L)-$(M).csv))
 SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
 $(CONCAT) : \
 			code/concat_pipeline_auc_output.py \
-			$(foreach S,$(SEED), data/temp/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
 	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
 	python code/concat_pipeline_auc_output.py --taxonomy $(L) --model $(M)
