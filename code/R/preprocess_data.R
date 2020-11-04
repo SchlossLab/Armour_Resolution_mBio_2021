@@ -3,7 +3,7 @@ library(mikropml)
 library(tidyverse)
 library(data.table)
 
-'Naval Fate.
+'mikropml preprocess data
 
 Usage:
   preprocess_data.R --data=<csv> --taxonomy=<level>
@@ -12,11 +12,13 @@ Usage:
 Options:
   -h --help           Show this screen.
   --data=<csv>        Input data in csv format.
-  --taxonomy=<level>  Speed in knots [default: 10].
+  --taxonomy=<level>  taxonomic level.
 
 ' -> doc
 
 args <- docopt(doc)
+
+print(R.version$version.string) 
 
 outdir <- paste0("./data/",args$taxonomy,"/")
 
