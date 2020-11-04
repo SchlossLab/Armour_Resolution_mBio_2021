@@ -15,6 +15,7 @@ data/process/*
 
 *.fasta
 
+data/references/README.md
 
 mothur*logfile
 *temp*
