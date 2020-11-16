@@ -237,7 +237,7 @@ data/phylum/input_data_preproc.csv : code/R/preprocess_data.R\
 ################################################################################
 
 LEVEL=phylum class order family genus otu asv
-METHOD=rpart2 rf regLogistic svmRadial xgbTree
+METHOD=rpart2 rf glmnet svmRadial xgbTree
 SEED:=$(shell seq 100)
 BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/temp/$M.$S.csv)))
 
@@ -259,7 +259,7 @@ $(BEST_RESULTS) : code/R/run_model.R \
 #
 ################################################################################
 
-METHOD=rpart2 rf regLogistic svmRadial xgbTree
+METHOD=rpart2 rf glmnet svmRadial xgbTree
 LEVEL=phylum class order family genus otu asv
 CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined-$(L)-$(M).csv))
 SEED:=$(shell seq 100)
@@ -282,7 +282,7 @@ $(CONCAT) : \
 #
 ################################################################################
 
-METHOD=rpart2 rf regLogistic svmRadial xgbTree
+METHOD=rpart2 rf glmnet svmRadial xgbTree
 LEVEL=phylum class order family genus otu asv
 
 data/analysis/pvalues_by_level.csv : code/R/stats.R\
