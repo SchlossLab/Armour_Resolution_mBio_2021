@@ -32,7 +32,7 @@ REFS = data/references
 $(REFS)/silva.v4.% :
 	wget -N -P $(REFS)/ https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v132.tgz
 	tar xvzf $(REFS)/silva.seed_v132.tgz -C $(REFS)/
-	bin/mothur/mothur "#get.lineage(fasta=$(REFS)/silva.seed_v132.align, taxonomy=$(REFS)/silva.seed_v132.tax, taxon=Bacteria);pcr.seqs(start=11894, end=25319, keepdots=F, processors=8);degap.seqs();unique.seqs()"
+	bin/mothur/mothur "#get.lineage(fasta=$(REFS)/silva.seed_v132.align, taxonomy=$(REFS)/silva.seed_v132.tax, taxon=Bacteria);pcr.seqs(start=13862, end=23445, keepdots=F, processors=8);degap.seqs();unique.seqs()"
 	cut -f 1 $(REFS)/silva.seed_v132.pick.pcr.ng.names > $(REFS)/silva.seed_v132.pick.pcr.ng.accnos
 	bin/mothur/mothur "#get.seqs(fasta=$(REFS)/silva.seed_v132.pick.pcr.align, accnos=$(REFS)/silva.seed_v132.pick.pcr.ng.accnos);screen.seqs(minlength=240, maxlength=275, maxambig=0, maxhomop=8, processors=8)"
 	mv $(REFS)/silva.seed_v132.pick.pcr.pick.good.align $(REFS)/silva.v4.align
@@ -290,10 +290,47 @@ data/analysis/pvalues_by_level.csv : code/R/stats.R\
 	Rscript code/R/stats.R
 	
 
+################################################################################
+#
+# Part 8: Merge Importance
+#
+#	Generate concatenated importance tables for each level and method
+#
+################################################################################
+
+MERGE=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/importance-$(L)-$(M).csv))
+SEED:=$(shell seq 100)
+
+.SECONDEXPANSION:
+$(MERGE) : \
+			code/R/merge_importance.R \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/importance_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/merge_importance.R --level=$(L) --method=$(M)
 
 ################################################################################
 #
-# Part 8: Produce figures
+# Part 9: Merge Hyperparamter Performance
+#
+#	Generate concatenated hyperparameter tables for each level and method
+#
+################################################################################
+
+MERGE=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/hp-$(L)-$(M).csv))
+SEED:=$(shell seq 100)
+
+.SECONDEXPANSION:
+$(MERGE) : \
+			code/R/merge_hyperparameters.R \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/hp_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/merge_hyperparameters.R --level=$(L) --method=$(M)	
+
+################################################################################
+#
+# Part X: Produce figures
 #
 #	Generate boxplots comparing model performace
 #
