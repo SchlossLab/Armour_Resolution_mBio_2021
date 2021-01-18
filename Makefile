@@ -243,11 +243,12 @@ BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), dat
 
 .SECONDEXPANSION:
 $(BEST_RESULTS) : code/R/run_model.R \
-			data/$$(word 2,$$(subst /, ,$$(dir $$@)))/input_data.csv
+			data/hyperparameters/hyperparameters.csv \
+			data/$$(word 2,$$(subst /, ,$$(dir $$@)))/input_data_preproc.csv
 	$(eval S=$(subst .,,$(suffix $(basename $@))))
 	$(eval M=$(notdir $(basename $(basename $@))))
 	$(eval L=$(subst temp,,$(subst /,,$(subst data/,,$(dir $@)))))
-	Rscript --max-ppsize=500000 code/R/run_model.R --data=data/$L/input_data.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S
+	Rscript --max-ppsize=500000 code/R/run_model.R --data=data/$L/input_data_preproc.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S --hyperparams=data/hyperparameters/hyperparameters.csv
 
 
 ################################################################################
