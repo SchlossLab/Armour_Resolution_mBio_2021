@@ -39,7 +39,7 @@ Ann Arbor, MI 48109
 
 \vspace{20mm}
 
-**(observation format - max 1200 words, 2 figures, 25 ref)**
+**observation format - max 1200 words, 2 figures, 25 ref**
 
 \newpage
 
@@ -53,9 +53,21 @@ Ann Arbor, MI 48109
 
 ## Introduction
 
+- CRC is one of the most common cancers and a leading cause of cancer related death
+- There is evidence that the microbiome has a role in CRC development/progression and could be useful for biomarker detection and diagnostics.
+- Begum et al (mBio 2020) recently demonstrated effective application of machine learning (ML) to microbiome based classification problems and developed a framework for applying ML practices in a more reproducible way (mikropml).
+- A common question when applying ML methods to microbiome data is which method and taxonomic level should be use.
+- This analysis utilizes the reproducible framework developed by Begum et al to quantify which ML method and taxonomic level produce the best performing classifier for CRC data.
+
+
 \newpage
 
 ## Results
+- Of the five ML methods tested, Random forest was consistently the top performer (supplemental figure of all models?) at most taxonomic levels.
+  - RF might be more appropriate anyways since its more suitable for zero inflated data? (need to look into literature)
+- Within the RF model, the highest AUCs were observed for family, genus, and otu level data with no significant difference between the three. (Figure 1)
+
+
 
 \newpage
 
@@ -64,7 +76,9 @@ Ann Arbor, MI 48109
 \newpage
 
 ## Materials and Methods
-(data availability)
+- data from prior study {baxter}
+- mikropml package
+- pvalues as previously described {begum}
 
 \newpage
 
