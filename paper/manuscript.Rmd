@@ -1,0 +1,75 @@
+---
+output:
+  word_document: default
+  pdf_document:
+    keep_tex: true
+geometry: margin=1.0in
+font-size: 11pt
+header-includes:
+  - \usepackage{helvet}
+  - \renewcommand*\familydefault{\sfdefault}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage[left]{lineno}
+  - \linenumbers
+---
+
+
+# TITLE GOES HERE
+
+\vspace{20mm}
+
+**Running title:** Optimal resolution
+
+\vspace{10mm}
+
+Courtney R. Armour, (ande? begum? etc?), Patrick D. Schloss ${^\dagger}$
+
+\vspace{20mm}
+
+${\dagger}$ To whom correspondence should be addressed:
+
+\href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+
+Department of Microbiology
+
+University of Michigan
+
+Ann Arbor, MI 48109
+
+\vspace{20mm}
+
+**(observation format - max 1200 words, 2 figures, 25 ref)**
+
+\newpage
+
+
+
+## Abstract (max 250 words)
+
+## Importance (max 150 words)
+
+\newpage
+
+## Introduction
+
+\newpage
+
+## Results
+
+\newpage
+
+## Conclusion
+
+\newpage
+
+## Materials and Methods
+(data availability)
+
+\newpage
+
+## Acknowledgements
+
+\newpage
+
+## Figures

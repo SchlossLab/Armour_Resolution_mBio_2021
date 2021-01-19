@@ -336,3 +336,14 @@ $(MERGE) : \
 #	Generate boxplots comparing model performace
 #
 ################################################################################
+
+
+
+################################################################################
+#
+# Make manuscript
+#
+################################################################################
+
+paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd 
+	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
