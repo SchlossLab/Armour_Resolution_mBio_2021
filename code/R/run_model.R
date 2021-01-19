@@ -37,27 +37,36 @@ if( !dir.exists(outdir) ){
 # read in preprocessed data
 data_proc <- read_csv(args$data)
 
-# get hyperparamter values for model/taxonomy
-hp <- read_csv(args$hyperparams)
-sub_hp <- hp %>% 
-	filter(model == args$method, level == args$taxonomy)
+if(args$method == "rf"){
+  # get hyperparamter values for model/taxonomy
+  hp <- read_csv(args$hyperparams)
+  sub_hp <- hp %>%
+  	filter(model == args$method, level == args$taxonomy)
 
-# create list of hyperparams
-new_hp <- list()
-params <- unique(sub_hp$param)
-for(i in 1:length(params)){
-	p <- params[i]  
-	new_hp[[p]] <- sub_hp %>% 
-		filter(param == p) %>% 
-		pull(number)    
+  # create list of hyperparams
+  new_hp <- list()
+  params <- unique(sub_hp$param)
+  for(i in 1:length(params)){
+  	p <- params[i]
+  	new_hp[[p]] <- sub_hp %>%
+  		filter(param == p) %>%
+  		pull(number)
+  }
+
+  model <- mikropml::run_ml(dataset = data_proc,
+                            method = args$method,
+                            outcome_colname = args$outcome_colname,
+                            seed = as.numeric(as.character(args$seed)),
+  			  find_feature_importance=TRUE,
+  			  hyperparameters = new_hp )
+}else {
+  model <- mikropml::run_ml(dataset = data_proc,
+                            method = args$method,
+                            outcome_colname = args$outcome_colname,
+                            seed = as.numeric(as.character(args$seed)),
+                            find_feature_importance=TRUE)
+
 }
-
-model <- mikropml::run_ml(dataset = data_proc,
-                          method = args$method,
-                          outcome_colname = args$outcome_colname, 
-                          seed = as.numeric(as.character(args$seed)),
-			  find_feature_importance=TRUE,
-			  hyperparameters = new_hp )
 
 feature_importance <- model$feature_importance
 write_csv(feature_importance,paste0(outdir,"importance_",args$method,".",args$seed,".csv"))
