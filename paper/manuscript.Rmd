@@ -63,10 +63,10 @@ Ann Arbor, MI 48109
 \newpage
 
 ## Results
-- Of the five ML methods tested, Random forest was consistently the top performer (supplemental figure of all models?) at most taxonomic levels.
-  - RF might be more appropriate anyways since its more suitable for zero inflated data? (need to look into literature)
-- Within the RF model, the highest AUCs were observed for family, genus, and otu level data with no significant difference between the three. (Figure 1)
-
+- Across the five ML methods tested, model performance tends to increase with taxnomic level usually peaking around genus level and dropping off slightly with ASVs.
+- Random forest was consistently the top performer at most taxonomic levels.
+  - RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data (need to look into literature)
+- Within the RF model, the highest AUCs were observed for family, genus, and otu level data with no significant difference between the three (Figure 1). ASV performed significantly lower than OTU but not family and genus levels.
 
 
 \newpage

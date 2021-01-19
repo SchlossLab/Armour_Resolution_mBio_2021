@@ -98,7 +98,7 @@ Ann Arbor, MI 48109
 
 \vspace{20mm}
 
-\textbf{(observation format - max 1200 words, 2 figures, 25 ref)}
+\textbf{observation format - max 1200 words, 2 figures, 25 ref}
 
 \newpage
 
@@ -144,20 +144,24 @@ Ann Arbor, MI 48109
 \begin{itemize}
 \tightlist
 \item
-  Of the five ML methods tested, Random forest was consistently the top
-  performer (supplemental figure of all models?) at most taxonomic
+  Across the five ML methods tested, model performance tends to increase
+  with taxnomic level usually peaking around genus level and dropping
+  off slightly with ASVs.
+\item
+  Random forest was consistently the top performer at most taxonomic
   levels.
 
   \begin{itemize}
   \tightlist
   \item
-    RF might be more appropriate anyways since its more suitable for
-    zero inflated data? (need to look into literature)
+    RF might be more appropriate for microbiome analysis since its more
+    suitable for zero inflated data (need to look into literature)
   \end{itemize}
 \item
   Within the RF model, the highest AUCs were observed for family, genus,
-  and otu level data with no significant difference between the three.
-  (Figure 1)
+  and otu level data with no significant difference between the three
+  (Figure 1). ASV performed significantly lower than OTU but not family
+  and genus levels.
 \end{itemize}
 
 \newpage
