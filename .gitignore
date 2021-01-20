@@ -25,3 +25,5 @@ mothur*logfile
 *slurm*
 
 xdelete/
+
+test.sh
