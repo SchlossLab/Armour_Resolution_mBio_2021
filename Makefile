@@ -154,7 +154,7 @@ data/genus/input_data.csv : code/merge_metadata_shared.R\
                         data/genus/crc.shared
 	Rscript code/merge_metadata_shared.R genus
 
-# Generate family input file     
+# Generate family input file
 data/family/input_data.csv : code/merge_metadata_shared.R\
 			data/metadata/metadata.csv\
 			data/family/crc.shared
@@ -221,7 +221,7 @@ data/order/input_data_preproc.csv : code/R/preprocess_data.R\
 # Generate class  preprocessed input file
 data/class/input_data_preproc.csv : code/R/preprocess_data.R\
 			data/class/input_data.csv
-	Rscript code/R/preprocess_data.R --data=data/class/input_data.csv --taxonomy=class			
+	Rscript code/R/preprocess_data.R --data=data/class/input_data.csv --taxonomy=class
 
 # Generate phylum preprocessed input file
 data/phylum/input_data_preproc.csv : code/R/preprocess_data.R\
@@ -255,7 +255,7 @@ $(BEST_RESULTS) : code/R/run_model.R \
 #
 # Part 6: Merge the Results
 #
-#	Generate a concatenated version of the results for each method 
+#	Generate a concatenated version of the results for each method
 #       and taxonomic level
 #
 ################################################################################
@@ -289,7 +289,7 @@ LEVEL=phylum class order family genus otu asv
 data/analysis/pvalues_by_level.csv : code/R/stats.R\
 			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
 	Rscript code/R/stats.R
-	
+
 
 ################################################################################
 #
@@ -327,7 +327,24 @@ $(MERGE) : \
 			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/hp_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
 	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
-	Rscript code/R/merge_hyperparameters.R --level=$(L) --method=$(M)	
+	Rscript code/R/merge_hyperparameters.R --level=$(L) --method=$(M)
+
+################################################################################
+#
+# Part 10: Plot Hyperparamter Performance
+#
+#	Generate plots of hyperparameter performance for each level and method
+#
+################################################################################
+
+HPPLOT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), analysis/hp-$(L)-$(M).png))
+
+.SECONDEXPANSION:
+$(HPPLOT) : \
+			code/R/plot_hp_performance.R \
+			data/process/hp-$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))-$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).csv
+	$^
+
 
 ################################################################################
 #
@@ -345,5 +362,5 @@ $(MERGE) : \
 #
 ################################################################################
 
-paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd 
+paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
