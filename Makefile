@@ -248,7 +248,7 @@ $(BEST_RESULTS) : code/R/run_model.R \
 	$(eval S=$(subst .,,$(suffix $(basename $@))))
 	$(eval M=$(notdir $(basename $(basename $@))))
 	$(eval L=$(subst temp,,$(subst /,,$(subst data/,,$(dir $@)))))
-	Rscript --max-ppsize=500000 code/R/run_model.R --data=data/$L/input_data_preproc.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S --hyperparams=data/hyperparameters/hyperparameters.csv
+	Rscript --max-ppsize=500000 code/R/run_model.R --data=data/$L/input_data_preproc.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S --hyperparams=data/hyperparameters/$(M)_hyperparameters.csv
 
 
 ################################################################################
@@ -337,13 +337,14 @@ $(MERGE) : \
 #
 ################################################################################
 
-HPPLOT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), analysis/hp-$(L)-$(M).png))
+HPPLOT=$(foreach M,$(METHOD), analysis/hp-$(M).png)
 
 .SECONDEXPANSION:
 $(HPPLOT) : \
 			code/R/plot_hp_performance.R \
-			data/process/hp-$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))-$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).csv
-	$^
+			$(foreach L,$(LEVEL), data/process/hp-$(L)-$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@)))).csv)
+	$(eval M=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/plot_hp_performance.R --method=$(M)
 
 
 ################################################################################

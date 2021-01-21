@@ -37,7 +37,7 @@ if( !dir.exists(outdir) ){
 # read in preprocessed data
 data_proc <- read_csv(args$data)
 
-if(args$method == "rf"){
+if(args$method %in% c("rf","rpart2","glmnet","svmRadial")){
   # get hyperparamter values for model/taxonomy
   hp <- read_csv(args$hyperparams)
   sub_hp <- hp %>%
