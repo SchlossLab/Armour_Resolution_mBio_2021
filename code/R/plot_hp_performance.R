@@ -84,13 +84,37 @@ if(args$method == "svmRadial"){
       width = .001)
 
   plot_grid(p1,p2)
-  ggsave(paste0("analysis/hp-",args$method,".png"),height=5,width=10)
+  ggsave(paste0("analysis/hp-",args$method,".png"),height=4,width=10)
 
+}
+if(args$method == "glmnet"){
+  hp.df <- hp.df %>%
+    select(-alpha)
+
+  param <- colnames(hp.df)[1]
+
+  hp.df %>%
+    rename(param := !!param) %>%
+    group_by(param,level) %>%
+    summarise("mean_AUC" = mean(AUC),
+              "sd_AUC" = sd(AUC),
+              # is there a less repetitive way to do this cleanly?
+              ymin_metric = mean_AUC - sd_AUC,
+              ymax_metric = mean_AUC + sd_AUC) %>%
+    mutate(level=factor(level,levels=c("phylum","class","order","family","genus","otu","asv"),
+                        labels=c("Phylum","Class","Order","Family","Genus","OTU","ASV"))) %>%
+    ggplot(aes(x=param,y=mean_AUC)) +
+    geom_point(size=2,alpha=0.5) + geom_line(alpha=0.5) +
+    facet_grid(.~level,scales = "free_x") +
+    theme_bw() +
+    xlab(param) +
+    scale_x_continuous(trans='log10') +
+    geom_errorbar(aes(
+      ymin = .data$ymin_metric,
+      ymax = .data$ymax_metric),
+      width = .001)
+  ggsave(paste0("analysis/hp-",args$method,".png"),height=4,width=7)
 }else{
-  if(args$method == "glmnet"){
-    hp.df <- hp.df %>%
-	select(-alpha)
-  }
 
   param <- colnames(hp.df)[1]
 
@@ -113,5 +137,5 @@ if(args$method == "svmRadial"){
       ymin = .data$ymin_metric,
       ymax = .data$ymax_metric),
       width = .001)
-  ggsave(paste0("analysis/hp-",args$method,".png"),height=5,width=7)
+  ggsave(paste0("analysis/hp-",args$method,".png"),height=4,width=7)
 }

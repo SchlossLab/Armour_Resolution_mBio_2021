@@ -350,13 +350,16 @@ $(HPPLOT) : \
 
 ################################################################################
 #
-# Part X: Produce figures
+# Part X: Plot model performance
 #
 #	Generate boxplots comparing model performace
 #
 ################################################################################
 
-
+auc_by_model.png : \
+			analysis/pvalues_by_level.csv \
+			analysis/pvalues_by_model.csv
+	Rscript plot_auc.R
 
 ################################################################################
 #
