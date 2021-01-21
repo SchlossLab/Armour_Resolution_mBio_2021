@@ -286,9 +286,10 @@ $(CONCAT) : \
 METHOD=rpart2 rf glmnet svmRadial xgbTree
 LEVEL=phylum class order family genus otu asv
 
-data/analysis/pvalues_by_level.csv : code/R/stats.R\
+analysis/pvalues_by_level.csv analysis/pvalues_by_model.csv: \
+			code/R/calculate_pvalues.R \
 			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
-	Rscript code/R/stats.R
+	Rscript code/R/calculate_pvalues.R
 
 
 ################################################################################
