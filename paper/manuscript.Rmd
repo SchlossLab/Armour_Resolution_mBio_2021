@@ -15,15 +15,15 @@ header-includes:
 ---
 
 
-# TITLE GOES HERE
+# Optimal Resolution for Microbiome-Based Classification of Colorectal Cancer
 
 \vspace{20mm}
 
-**Running title:** Optimal resolution
+**Running title:** Optimal Resolution
 
 \vspace{10mm}
 
-Courtney R. Armour, (ande? begum? etc?), Patrick D. Schloss ${^\dagger}$
+Courtney R. Armour, (ande? begum?), Patrick D. Schloss ${^\dagger}$
 
 \vspace{20mm}
 
@@ -47,7 +47,11 @@ Ann Arbor, MI 48109
 
 ## Abstract (max 250 words)
 
+
+
 ## Importance (max 150 words)
+
+
 
 \newpage
 
@@ -56,14 +60,14 @@ Ann Arbor, MI 48109
 - CRC is one of the most common cancers and a leading cause of cancer related death
 - There is evidence that the microbiome has a role in CRC development/progression and could be useful for biomarker detection and diagnostics.
 - Begum et al (mBio 2020) recently demonstrated effective application of machine learning (ML) to microbiome based classification problems and developed a framework for applying ML practices in a more reproducible way (mikropml).
-- A common question when applying ML methods to microbiome data is which method and taxonomic level should be use.
+- A common question when applying ML methods to microbiome data is which method and taxonomic level is optimal.
 - This analysis utilizes the reproducible framework developed by Begum et al to quantify which ML method and taxonomic level produce the best performing classifier for CRC data.
 
 
 \newpage
 
 ## Results
-- Across the five ML methods tested, model performance tends to increase with taxnomic level usually peaking around genus level and dropping off slightly with ASVs.
+- Across the five ML methods tested, model performance tends to increase with taxonomic level usually peaking around genus/otu level and dropping off slightly with ASVs.
 - Random forest was consistently the top performer at most taxonomic levels.
   - RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data (need to look into literature)
 - Within the RF model, the highest AUCs were observed for family, genus, and otu level data with no significant difference between the three (Figure 1). ASV performed significantly lower than OTU but not family and genus levels.
@@ -78,6 +82,9 @@ Ann Arbor, MI 48109
 ## Materials and Methods
 - data from prior study {baxter}
 - mikropml package
+  - preprocessing
+  - hp tuning
+  - n seeds
 - pvalues as previously described {begum}
 
 \newpage
