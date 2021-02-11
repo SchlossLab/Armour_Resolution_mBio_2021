@@ -1,81 +1,81 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
-\PassOptionsToPackage{hyphens}{url}
-%
-\documentclass[
-]{article}
-\usepackage{amsmath,amssymb}
+\documentclass[]{article}
+\usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
 \usepackage[margin=1.0in]{geometry}
 \usepackage{graphicx}
+% Redefine \includegraphics so that, unless explicit options are
+% given, the image width will not exceed the width of the page.
+% Images get their normal width if they fit onto the page, but
+% are scaled down if they would overflow the margins.
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\def\ScaleIfNeeded{%
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
 \makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\let\Oldincludegraphics\includegraphics
+{%
+ \catcode`\@=11\relax%
+ \gdef\includegraphics{\@ifnextchar[{\Oldincludegraphics}{\Oldincludegraphics[width=\ScaleIfNeeded]}}%
+}%
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+\author{}
+\date{\vspace{-2.5em}}
 \usepackage{helvet}
 \renewcommand*\familydefault{\sfdefault}
 \usepackage{setspace}
 \doublespacing
 \usepackage[left]{lineno}
 \linenumbers
-\ifluatex
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-
-\author{}
-\date{\vspace{-2.5em}}
 
 \begin{document}
 
-\hypertarget{optimal-resolution-for-microbiome-based-classification-of-colorectal-cancer}{%
 \section{Optimal Resolution for Microbiome-Based Classification of
 Colorectal
-Cancer}\label{optimal-resolution-for-microbiome-based-classification-of-colorectal-cancer}}
+Cancer}\label{optimal-resolution-for-microbiome-based-classification-of-colorectal-cancer}
 
 \vspace{20mm}
 
@@ -83,11 +83,11 @@ Cancer}\label{optimal-resolution-for-microbiome-based-classification-of-colorect
 
 \vspace{10mm}
 
-Courtney R. Armour, (ande? begum?), Patrick D. Schloss \({^\dagger}\)
+Courtney R. Armour, (ande? begum?), Patrick D. Schloss ${^\dagger}$
 
 \vspace{20mm}
 
-\({\dagger}\) To whom correspondence should be addressed:
+${\dagger}$ To whom correspondence should be addressed:
 
 \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
 
@@ -103,19 +103,16 @@ Ann Arbor, MI 48109
 
 \newpage
 
-\hypertarget{abstract-max-250-words}{%
-\subsection{Abstract (max 250 words)}\label{abstract-max-250-words}}
+\subsection{Abstract (max 250 words)}\label{abstract-max-250-words}
 
-\hypertarget{importance-max-150-words}{%
-\subsection{Importance (max 150 words)}\label{importance-max-150-words}}
+\subsection{Importance (max 150 words)}\label{importance-max-150-words}
 
 \newpage
 
-\hypertarget{introduction}{%
-\subsection{Introduction}\label{introduction}}
+\subsection{Introduction}\label{introduction}
 
 \begin{itemize}
-\tightlist
+\itemsep1pt\parskip0pt\parsep0pt
 \item
   CRC is one of the most common cancers and a leading cause of cancer
   related death
@@ -134,16 +131,15 @@ Ann Arbor, MI 48109
 \item
   This analysis utilizes the reproducible framework developed by Begum
   et al to quantify which ML method and taxonomic level produce the best
-  performing classifier for CRC data.
+  performing classifier for detecting SRNs from microbiome data.
 \end{itemize}
 
 \newpage
 
-\hypertarget{results}{%
-\subsection{Results}\label{results}}
+\subsection{Results}\label{results}
 
 \begin{itemize}
-\tightlist
+\itemsep1pt\parskip0pt\parsep0pt
 \item
   Across the five ML methods tested, model performance tends to increase
   with taxonomic level usually peaking around genus/otu level and
@@ -151,13 +147,9 @@ Ann Arbor, MI 48109
 \item
   Random forest was consistently the top performer at most taxonomic
   levels.
-
-  \begin{itemize}
-  \tightlist
-  \item
-    RF might be more appropriate for microbiome analysis since its more
-    suitable for zero inflated data (need to look into literature)
-  \end{itemize}
+\item
+  RF might be more appropriate for microbiome analysis since its more
+  suitable for zero inflated data (need to look into literature)
 \item
   Within the RF model, the highest AUCs were observed for family, genus,
   and otu level data with no significant difference between the three
@@ -167,32 +159,34 @@ Ann Arbor, MI 48109
 
 \newpage
 
-\hypertarget{conclusion}{%
-\subsection{Conclusion}\label{conclusion}}
+\subsection{Conclusion}\label{conclusion}
 
 \newpage
 
-\hypertarget{materials-and-methods}{%
-\subsection{Materials and Methods}\label{materials-and-methods}}
+\subsection{Materials and Methods}\label{materials-and-methods}
 
 \begin{itemize}
-\tightlist
+\itemsep1pt\parskip0pt\parsep0pt
 \item
   data from prior study \{baxter\}
 \item
   mikropml package
+\item
+  preprocessing
+\item
+  hp tuning
+\item
+  n seeds
 \item
   pvalues as previously described \{begum\}
 \end{itemize}
 
 \newpage
 
-\hypertarget{acknowledgements}{%
-\subsection{Acknowledgements}\label{acknowledgements}}
+\subsection{Acknowledgements}\label{acknowledgements}
 
 \newpage
 
-\hypertarget{figures}{%
-\subsection{Figures}\label{figures}}
+\subsection{Figures}\label{figures}
 
 \end{document}
