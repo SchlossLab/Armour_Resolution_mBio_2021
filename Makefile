@@ -286,11 +286,17 @@ $(CONCAT) : \
 METHOD=rpart2 rf glmnet svmRadial xgbTree
 LEVEL=phylum class order family genus otu asv
 
+#produce files of pvalues comparing tax levels within model and between models
 analysis/pvalues_by_level.csv analysis/pvalues_by_model.csv: \
 			code/R/calculate_pvalues.R \
 			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
 	Rscript code/R/calculate_pvalues.R
 
+# produce summary table of number of samples and features by level
+analysis/input_values.csv : code/R/quantify_input_values.R \
+			$(foreach L,$(LEVEL),data/$L/input_data.csv) \
+			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv) 
+	Rscript code/R/quantify_input_values.R
 
 ################################################################################
 #

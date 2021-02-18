@@ -1,0 +1,8 @@
+level,n_samples,n_features,n_features_preproc
+phylum,490,19,9
+class,490,36,19
+order,490,65,28
+family,490,124,54
+genus,490,316,115
+otu,490,20079,705
+asv,490,104106,478
