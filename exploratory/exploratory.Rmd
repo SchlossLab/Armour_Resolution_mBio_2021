@@ -1,0 +1,81 @@
+---
+title: "Exploratory: Optimal Resolution"
+author: "Courtney R Armour"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+```{r setup_environment, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(ggpubr)
+library(nationalparkcolors)
+library(data.table)
+library(cowplot)
+
+models <- c("rf","glmnet","xgbTree","svmRadial","rpart2")
+levels <- c("phylum","class","order","family","genus","otu","asv")
+levels_names <- c("Phylum","Class","Order","Family","Genus","OTU","ASV")
+pal <- park_palette("Everglades",length(models))
+names(pal) <- models
+pal2 <- park_palette("Everglades",length(models))
+names(pal2) <- c("Random Forest","Logistic Regression","XGBoost","SVM Radial","Decision Tree")
+
+full_df <- NULL
+auc_df <- NULL
+cv_table <- tibble(level=c("phylum","class","order","family","genus","otu","asv"))
+t_table <- tibble(level=c("phylum","class","order","family","genus","otu","asv"))
+
+for( m in models ){
+  phylum <- read_csv(paste0("./data/final/process/combined-phylum-",m,".csv")) %>% 
+    mutate(level="phylum")
+  class <- read_csv(paste0("./data/final/process/combined-class-",m,".csv")) %>% 
+    mutate(level="class")
+  order <- read_csv(paste0("./data/final/process/combined-order-",m,".csv")) %>% 
+    mutate(level="order")
+  family <- read_csv(paste0("./data/final/process/combined-family-",m,".csv")) %>% 
+    mutate(level="family")
+  genus <- read_csv(paste0("./data/final/process/combined-genus-",m,".csv")) %>%
+    mutate(level="genus")
+  otu <- read_csv(paste0("./data/final/process/combined-otu-",m,".csv")) %>%
+    mutate(level="otu")
+  asv <- read_csv(paste0("./data/final/process/combined-asv-",m,".csv")) %>%
+    mutate(level="asv")
+  
+  model_df <- bind_rows(phylum,class,order,family,genus,otu,asv)
+    
+  full_df <- bind_rows(full_df,model_df)
+  
+  m_auc.df <- select(model_df,cv_metric_AUC,AUC,method,level) %>% 
+    rename(test_AUC=AUC) %>% 
+    pivot_longer(cols = c("cv_metric_AUC","test_AUC"),names_to="auc_type",values_to="AUC")
+  
+  m_auc.df$level <- factor(m_auc.df$level,levels=c("phylum","class","order","family","genus","otu","asv"))
+  
+  auc_df <- bind_rows(auc_df,m_auc.df)
+  
+  cv_med <- m_auc.df %>%
+    filter(auc_type == "cv_metric_AUC") %>%
+    group_by(level) %>% 
+    summarise(!!m := median(AUC))
+  
+  t_med <- m_auc.df %>% 
+    filter(auc_type == "test_AUC") %>%
+    group_by(level) %>% 
+    summarise(!!m := median(AUC))
+      
+  cv_table <- inner_join(cv_table,cv_med,by="level")
+  t_table <- inner_join(t_table,t_med,by="level")
+}
+
+#compare two models levels within a taxonomic level
+p.table.level <- read_csv("./data/analysis/exploratory3/pvalues_by_level.csv")
+#compare two taxonomic levels within a model type
+p.table.model <- read_csv("./data/analysis/exploratory3/pvalues_by_model.csv")
+
+
+```
+
