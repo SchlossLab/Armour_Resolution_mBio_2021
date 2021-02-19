@@ -38,7 +38,6 @@ if(args$method == "svmRadial"){
   param1 <- colnames(hp.df)[1]
   param2 <- colnames(hp.df)[2]
 
-
   p1 <- hp.df %>%
     rename(param1 := !!param1, param2 := !!param2) %>%
     mutate(param1 = as.factor(param1)) %>%
@@ -52,10 +51,10 @@ if(args$method == "svmRadial"){
                         labels=c("Phylum","Class","Order","Family","Genus","OTU","ASV"))) %>%
     ggplot(aes(x=param2,y=mean_AUC,color=param1)) +
     geom_point(size=2,alpha=0.5) + geom_line(alpha=0.5) +
-    facet_grid(.~level,scales = "free_x") +
+    facet_wrap(.~level,scales = "free_x",ncol=1) +
     theme_bw() +
     xlab(param2) +
-    scale_x_continuous(trans='log10')
+    scale_x_continuous(trans='log10') +
     geom_errorbar(aes(
       ymin = .data$ymin_metric,
       ymax = .data$ymax_metric),
@@ -74,19 +73,19 @@ if(args$method == "svmRadial"){
                         labels=c("Phylum","Class","Order","Family","Genus","OTU","ASV"))) %>%
     ggplot(aes(x=param1,y=mean_AUC,color=param2)) +
     geom_point(size=2,alpha=0.5) + geom_line(alpha=0.5) +
-    facet_grid(.~level,scales = "free_x") +
+    facet_wrap(.~level,scales = "free_x",ncol=1) +
     theme_bw() +
     xlab(param1) +
-    scale_x_continuous(trans='log10')
+    scale_x_continuous(trans='log10') +
     geom_errorbar(aes(
       ymin = .data$ymin_metric,
       ymax = .data$ymax_metric),
       width = .001)
 
-  plot_grid(p1,p2)
-  ggsave(paste0("analysis/hp-",args$method,".png"),height=4,width=10)
-
+  plot <- plot_grid(p1,p2,ncol=2)
+  save_plot(filename=paste0("analysis/hp-",args$method,".png"),plot,base_height=10,base_width=8)
 }
+
 if(args$method == "glmnet"){
   hp.df <- hp.df %>%
     select(-alpha)
@@ -114,7 +113,9 @@ if(args$method == "glmnet"){
       ymax = .data$ymax_metric),
       width = .001)
   ggsave(paste0("analysis/hp-",args$method,".png"),height=4,width=7)
-}else{
+}
+
+if(args$method %in% c("rpart2","rf")){
 
   param <- colnames(hp.df)[1]
 
