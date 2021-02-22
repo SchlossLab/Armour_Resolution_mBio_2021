@@ -1,8 +1,8 @@
 ---
 output:
-  word_document: default
   pdf_document:
     keep_tex: true
+  word_document: default
 geometry: margin=1.0in
 font-size: 11pt
 header-includes:
@@ -14,12 +14,20 @@ header-includes:
   - \linenumbers
 ---
 
+```{r setup_environment, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message=FALSE)
+options(scipen=999)
+library(tidyverse)
+```
 
-# Optimal Resolution for Microbiome-Based Classification of Colorectal Cancer
+
+# Optimal Taxonomic Resolution for Microbiome-Based Classification of Colorectal Cancer
 
 \vspace{20mm}
 
-**Running title:** ASV level resolution is unnecessary for prediction of SRNs from microbiome data
+**Other title options:**  
+ASV level resolution is unnecessary for prediction of SRNs from microbiome data  
+OTUs are the Optimal Taxonomic Level for Microbiome-Based Classification of Colorectal Cancer
 
 \vspace{10mm}
 
@@ -57,40 +65,97 @@ Ann Arbor, MI 48109
 
 ## Introduction
 
-- CRC is one of the most common cancers and a leading cause of cancer related death in the United States.
-- There is evidence that the microbiome has a role in CRC development/progression and could be useful for biomarker detection and diagnostics.
-- Begum et al (mBio 2020) recently demonstrated effective application of machine learning (ML) to microbiome based classification problems and developed a framework for applying ML practices in a more reproducible way (mikropml).
-- A common question when applying ML methods to microbiome data is which method and taxonomic level is optimal.
-- This analysis utilizes the reproducible framework developed by Begum et al to quantify which ML method and taxonomic level produce the best performing classifier for detecting SRNs from microbiome data.
+- Colorectal cancer (CRC) is one of the most common cancers in men and women and a leading cause of cancer related death in the United States {}. 
+- Early detection and treatment are essential to increase survival rates, but for a variety of reasons including the invasiveness and high cost of screening (i.e. colonoscopy), many people do not comply with recommended screening guidelines {}. 
+- Less invasive and more affordable screening methods (e.g. fecal immunochemical test) are available, however these tests are less sensitive than colonoscopies, especially for detecting early stage adenomas.
+- A growing body of research points to the gut microbiome as having a role in tumor development and progression {}. For example, studies find that Fusobacterium nucleatum and enterotoxigenic Bacteriodes fragilis tend to be enriched in the gut microbiome of subjects with CRC relative to healthy controls {}, while potentially protective bacteria such as members of Lachnospiraceae tend to be depleted {}. 
+- The gut microbiome shows promise as diagnostic {}
+- Efforts to realize the diagnostic potential of the gut microbiome in detecting screen relevant neoplasias (SRNs) have focused on machine learning (ML) methods using abundances from operational taxonomic unit (OTU) classifications based on the amplicon sequencing of the v4 region of the 16S rRNA gene {}. However, whether this is the optimal taxonomic resolution for classifying SRNs from microbiome data is unknown. 
+  - Additionally, recent work has pushed for the use of amplicon sequence variants (ASVs) to replace OTUs for marker-gene analysis because of the improved resolution with ASVs. However, whether the additional resolution provided by ASVs is useful for ML classification is unclear. 
+    - Since ML classification relies on consistent differences between groups, its possible that the resolution at the ASV level is too individualized to accurately differentiate groups. 
+- Topçuoğlu *et al* (mBio 2020) recently demonstrated effective application of machine learning (ML) to microbiome based classification problems and developed a framework for applying ML practices in a more reproducible way (mikropml).
+- This analysis utilizes the reproducible framework developed by Topçuoğlu *et al* to quantify which ML method and taxonomic level produce the best performing classifier for detecting SRNs from microbiome data.
 
-
-\newpage
-
+  
 ## Results
-- Across the five ML methods tested, model performance tends to increase with taxonomic level usually peaking around genus/OTU level and dropping off slightly with ASVs.
+
+```{r median_AUC}
+table <- read_csv("../exploratory/figures/median_test_auc.csv")
+
+rf_med_auc <- table %>% 
+  pull(rf)
+
+names(rf_med_auc) <- table %>% pull(level)
+```
+
+```{r input_table}
+input <- read_csv("../analysis/input_values.csv") %>% 
+  mutate(pct_kept = round(n_features_preproc/n_features,digits=3)*100)
+```
+
+- Across the five ML methods tested, model performance tended to increase with taxonomic level usually peaking around genus/OTU level before dropping off slightly with ASVs. [(Figure)](#model-performance-across-taxonomy)
 - Random forest was consistently the top performer at most taxonomic levels.
-  - RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data (need to look into literature)
-- Within the RF model, the highest AUCs were observed for family, genus, and OTU level data with no significant difference between the three (Figure 1). ASV performed significantly lower than OTU but not family and genus levels.
+  - RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data 
+  - TODO: dig into literature on this
+  - TODO: address lower L2 logistic performance that prior results?
+- Within the RF model, the highest AUCs were observed for family (median AUC: `r round(rf_med_auc["family"],digits=3)`), genus(median AUC: `r round(rf_med_auc["genus"],digits=3)`), and OTU (median AUC: `r round(rf_med_auc["otu"],digits=3)`) level data with no significant difference between the three. [(Figure)](#random-forest-model-performance-with-significance) 
+  - ASV (median AUC: `r round(rf_med_auc["asv"],digits=3)`) performed significantly lower than OTU and genus (p < 0.05) but not family level P = 0.06).
+- One hypothesis for the observation that model performance increases from phylum to OTU level then drops slightly at ASV level is that at higher taxonomic levels (e.g. phylum) there are too few taxa and too much overlap to reliably differentiate between cases and controls. 
+  - As you reach genus/OTU level data there is enough data and variation but at the ASV level, the data is too specific to individuals and doesn't overlap enough. 
+  - Examination of the prevalence of taxa in samples at each level supports this idea. A majority of taxa are present in greater than 75% of samples at the phylum (67% of taxa) and class (63% of taxa) levels.  The opposite is observed at the OTU and ASV level where 60% and 53% of taxa respectively are only present in less than 25% of samples. [(Figure)](#prevalence-of-taxa-in-samples)
+- Of note, the ML pipeline includes a pre-processing step that occurs prior to training and classifying the ML models (methods). As part of this step, features are removed that wont provide useful information to build the model. For example, strongly correlated features provide the same information to build the model and thus can be collapsed. Additionally, features with zero or near-zero variance will not help the model differentiate groups and thus can be removed.
+  - Interestingly, despite starting with `r input %>% filter(level == "asv") %>% select(n_features) %>% pull()` features at the ASV level, only `r input %>% filter(level == "asv") %>% select(n_features_preproc) %>% pull()` (`r input %>% filter(level == "asv") %>% select(pct_kept) %>% pull()`%) remained after pre-processing. At the OTU level, `r input %>% filter(level == "otu") %>% select(n_features) %>% pull()` of the `r input %>% filter(level == "otu") %>% select(n_features_preproc) %>% pull()` features (`r input %>% filter(level == "otu") %>% select(pct_kept) %>% pull()`%) remained after preprocessing. [(Table)](#summary-of-features)
+  - TODO: check why ASVs were removed in preprocessing (nzv?)
+  - (depending on above can discuss why features were removed - e.g. only in one or a few samples)
+- OTU level data provides an idea balance of overlap and distinction to classify samples. 
+- Overall, the fine resolution of ASVs is unnecessary for ML classification with microbiome data since the vast majority of the ASVs are removed during preprocessing and the model performance is diminshed compared to other taxonomic levels.  
+  
+other items that could be addressed:  
 
+- what are important taxa, patterns along levels (e.g fuso always in top )
+- abundance of important taxa: many of the top important features are low abund [(Figure)](#relative-abundance-of-important-features)
+ 
 
-\newpage
+## Conclusions
 
-## Conclusion
-
-\newpage
 
 ## Materials and Methods
-- data from prior study {baxter}
-- mikropml package
+- 16S rRNA data from 490 subjects {baxter}
+  - 261 controls
+  - 229 cases
+- processed with mothur v1.44.3
+  - SILVA v132 reference
+- ML with mikropml package
   - preprocessing
+    -normalize values
+    - what is removed and why
+      - near zero variance & zero variance removed
+      - correlated collapsed
   - hp tuning
   - n seeds
-- pvalues as previously described {begum}
-
-\newpage
+  - for more detail see mikropml package{}
+- pvalues calculated as previously described {begum}
+- prevalence = number of samples with non-zero abundance / total number of samples
 
 ## Acknowledgements
 
-\newpage
 
 ## Figures
+
+### Model Performance across Taxonomy  
+![](../exploratory/figures/all_model_level.png)
+
+### Random Forest Model Performance with Significance  
+![](../exploratory/figures/rf_with_stats.png){width=75%}
+
+### Prevalence of Taxa in Samples  
+![](../exploratory/figures/bin_prevalence.png){height=50%}
+
+### Summary of Features
+```{r feats}
+knitr::kable(input)
+```
+
+### Relative Abundance of Important Features
+![](../exploratory/figures/relabund_top10.png){height=95%}
+

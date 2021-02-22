@@ -1,93 +1,107 @@
-\documentclass[]{article}
-\usepackage[T1]{fontenc}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use microtype if available
-\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
-\usepackage[margin=1.0in]{geometry}
-\usepackage{graphicx}
-% Redefine \includegraphics so that, unless explicit options are
-% given, the image width will not exceed the width of the page.
-% Images get their normal width if they fit onto the page, but
-% are scaled down if they would overflow the margins.
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
 \makeatletter
-\def\ScaleIfNeeded{%
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
 \makeatother
-\let\Oldincludegraphics\includegraphics
-{%
- \catcode`\@=11\relax%
- \gdef\includegraphics{\@ifnextchar[{\Oldincludegraphics}{\Oldincludegraphics[width=\ScaleIfNeeded]}}%
-}%
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={},
-            pdftitle={},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\setcounter{secnumdepth}{0}
-
-\author{}
-\date{\vspace{-2.5em}}
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1.0in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{helvet}
 \renewcommand*\familydefault{\sfdefault}
 \usepackage{setspace}
 \doublespacing
 \usepackage[left]{lineno}
 \linenumbers
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\author{}
+\date{\vspace{-2.5em}}
 
 \begin{document}
 
-\section{Optimal Resolution for Microbiome-Based Classification of
-Colorectal
-Cancer}\label{optimal-resolution-for-microbiome-based-classification-of-colorectal-cancer}
+\hypertarget{optimal-taxonomic-resolution-for-microbiome-based-classification-of-colorectal-cancer}{%
+\section{Optimal Taxonomic Resolution for Microbiome-Based
+Classification of Colorectal
+Cancer}\label{optimal-taxonomic-resolution-for-microbiome-based-classification-of-colorectal-cancer}}
 
 \vspace{20mm}
 
-\textbf{Running title:} Optimal Resolution
+\textbf{Other title options:}\\
+ASV level resolution is unnecessary for prediction of SRNs from
+microbiome data\\
+OTUs are the Optimal Taxonomic Level for Microbiome-Based Classification
+of Colorectal Cancer
 
 \vspace{10mm}
 
-Courtney R. Armour, (ande? begum?), Patrick D. Schloss ${^\dagger}$
+Courtney R. Armour, (ande? begum?), Patrick D. Schloss \({^\dagger}\)
 
 \vspace{20mm}
 
-${\dagger}$ To whom correspondence should be addressed:
+\({\dagger}\) To whom correspondence should be addressed:
 
 \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
 
@@ -103,90 +117,290 @@ Ann Arbor, MI 48109
 
 \newpage
 
-\subsection{Abstract (max 250 words)}\label{abstract-max-250-words}
+\hypertarget{abstract-max-250-words}{%
+\subsection{Abstract (max 250 words)}\label{abstract-max-250-words}}
 
-\subsection{Importance (max 150 words)}\label{importance-max-150-words}
+\hypertarget{importance-max-150-words}{%
+\subsection{Importance (max 150 words)}\label{importance-max-150-words}}
 
 \newpage
 
-\subsection{Introduction}\label{introduction}
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
-  CRC is one of the most common cancers and a leading cause of cancer
-  related death
+  Colorectal cancer (CRC) is one of the most common cancers in men and
+  women and a leading cause of cancer related death in the United States
+  \{\}.
 \item
-  There is evidence that the microbiome has a role in CRC
-  development/progression and could be useful for biomarker detection
-  and diagnostics.
+  Early detection and treatment are essential to increase survival
+  rates, but for a variety of reasons including the invasiveness and
+  high cost of screening (i.e.~colonoscopy), many people do not comply
+  with recommended screening guidelines \{\}.
 \item
-  Begum et al (mBio 2020) recently demonstrated effective application of
-  machine learning (ML) to microbiome based classification problems and
-  developed a framework for applying ML practices in a more reproducible
-  way (mikropml).
+  Less invasive and more affordable screening methods (e.g.~fecal
+  immunochemical test) are available, however these tests are less
+  sensitive than colonoscopies, especially for detecting early stage
+  adenomas.
 \item
-  A common question when applying ML methods to microbiome data is which
-  method and taxonomic level is optimal.
+  A growing body of research points to the gut microbiome as having a
+  role in tumor development and progression \{\}. For example, studies
+  find that Fusobacterium nucleatum and enterotoxigenic Bacteriodes
+  fragilis tend to be enriched in the gut microbiome of subjects with
+  CRC relative to healthy controls \{\}, while potentially protective
+  bacteria such as members of Lachnospiraceae tend to be depleted \{\}.
 \item
-  This analysis utilizes the reproducible framework developed by Begum
-  et al to quantify which ML method and taxonomic level produce the best
-  performing classifier for detecting SRNs from microbiome data.
+  The gut microbiome shows promise as diagnostic \{\}
+\item
+  Efforts to realize the diagnostic potential of the gut microbiome in
+  detecting screen relevant neoplasias (SRNs) have focused on machine
+  learning (ML) methods using abundances from operational taxonomic unit
+  (OTU) classifications based on the amplicon sequencing of the v4
+  region of the 16S rRNA gene \{\}. However, whether this is the optimal
+  taxonomic resolution for classifying SRNs from microbiome data is
+  unknown.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Additionally, recent work has pushed for the use of amplicon
+    sequence variants (ASVs) to replace OTUs for marker-gene analysis
+    because of the improved resolution with ASVs. However, whether the
+    additional resolution provided by ASVs is useful for ML
+    classification is unclear.
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Since ML classification relies on consistent differences between
+      groups, its possible that the resolution at the ASV level is too
+      individualized to accurately differentiate groups.
+    \end{itemize}
+  \end{itemize}
+\item
+  Topçuoğlu \emph{et al} (mBio 2020) recently demonstrated effective
+  application of machine learning (ML) to microbiome based
+  classification problems and developed a framework for applying ML
+  practices in a more reproducible way (mikropml).
+\item
+  This analysis utilizes the reproducible framework developed by
+  Topçuoğlu \emph{et al} to quantify which ML method and taxonomic level
+  produce the best performing classifier for detecting SRNs from
+  microbiome data.
 \end{itemize}
 
-\newpage
-
-\subsection{Results}\label{results}
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
-  Across the five ML methods tested, model performance tends to increase
-  with taxonomic level usually peaking around genus/otu level and
-  dropping off slightly with ASVs.
+  Across the five ML methods tested, model performance tended to
+  increase with taxonomic level usually peaking around genus/OTU level
+  before dropping off slightly with ASVs.
+  \protect\hyperlink{model-performance-across-taxonomy}{(Figure)}
 \item
   Random forest was consistently the top performer at most taxonomic
   levels.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    RF might be more appropriate for microbiome analysis since its more
+    suitable for zero inflated data
+  \item
+    TODO: dig into literature on this
+  \item
+    TODO: address lower L2 logistic performance that prior results?
+  \end{itemize}
 \item
-  RF might be more appropriate for microbiome analysis since its more
-  suitable for zero inflated data (need to look into literature)
+  Within the RF model, the highest AUCs were observed for family (median
+  AUC: 0.687), genus(median AUC: 0.686), and OTU (median AUC: 0.698)
+  level data with no significant difference between the three.
+  \protect\hyperlink{random-forest-model-performance-with-significance}{(Figure)}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    ASV (median AUC: 0.676) performed significantly lower than OTU and
+    genus (p \textless{} 0.05) but not family level P = 0.06).
+  \end{itemize}
 \item
-  Within the RF model, the highest AUCs were observed for family, genus,
-  and otu level data with no significant difference between the three
-  (Figure 1). ASV performed significantly lower than OTU but not family
-  and genus levels.
+  One hypothesis for the observation that model performance increases
+  from phylum to OTU level then drops slightly at ASV level is that at
+  higher taxonomic levels (e.g.~phylum) there are too few taxa and too
+  much overlap to reliably differentiate between cases and controls.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    As you reach genus/OTU level data there is enough data and variation
+    but at the ASV level, the data is too specific to individuals and
+    doesn't overlap enough.
+  \item
+    Examination of the prevalence of taxa in samples at each level
+    supports this idea. A majority of taxa are present in greater than
+    75\% of samples at the phylum (67\% of taxa) and class (63\% of
+    taxa) levels. The opposite is observed at the OTU and ASV level
+    where 60\% and 53\% of taxa respectively are only present in less
+    than 25\% of samples.
+    \protect\hyperlink{prevalence-of-taxa-in-samples}{(Figure)}
+  \end{itemize}
+\item
+  Of note, the ML pipeline includes a pre-processing step that occurs
+  prior to training and classifying the ML models (methods). As part of
+  this step, features are removed that wont provide useful information
+  to build the model. For example, strongly correlated features provide
+  the same information to build the model and thus can be collapsed.
+  Additionally, features with zero or near-zero variance will not help
+  the model differentiate groups and thus can be removed.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Interestingly, despite starting with 104106 features at the ASV
+    level, only 478 (0.5\%) remained after pre-processing. At the OTU
+    level, 20079 of the 705 features (3.5\%) remained after
+    preprocessing. \protect\hyperlink{summary-of-features}{(Table)}
+  \item
+    TODO: check why ASVs were removed in preprocessing (nzv?)
+  \item
+    (depending on above can discuss why features were removed -
+    e.g.~only in one or a few samples)
+  \end{itemize}
+\item
+  OTU level data provides an idea balance of overlap and distinction to
+  classify samples.
+\item
+  Overall, the fine resolution of ASVs is unnecessary for ML
+  classification with microbiome data since the vast majority of the
+  ASVs are removed during preprocessing and the model performance is
+  diminshed compared to other taxonomic levels.
 \end{itemize}
 
-\newpage
-
-\subsection{Conclusion}\label{conclusion}
-
-\newpage
-
-\subsection{Materials and Methods}\label{materials-and-methods}
+other items that could be addressed:
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
-  data from prior study \{baxter\}
+  what are important taxa, patterns along levels (e.g fuso always in top
+  )
 \item
-  mikropml package
-\item
-  preprocessing
-\item
-  hp tuning
-\item
-  n seeds
-\item
-  pvalues as previously described \{begum\}
+  abundance of important taxa: many of the top important features are
+  low abund
+  \protect\hyperlink{relative-abundance-of-important-features}{(Figure)}
 \end{itemize}
 
-\newpage
+\hypertarget{conclusions}{%
+\subsection{Conclusions}\label{conclusions}}
 
-\subsection{Acknowledgements}\label{acknowledgements}
+\hypertarget{materials-and-methods}{%
+\subsection{Materials and Methods}\label{materials-and-methods}}
 
-\newpage
+\begin{itemize}
+\tightlist
+\item
+  16S rRNA data from 490 subjects \{baxter\}
 
-\subsection{Figures}\label{figures}
+  \begin{itemize}
+  \tightlist
+  \item
+    261 controls
+  \item
+    229 cases
+  \end{itemize}
+\item
+  processed with mothur v1.44.3
+
+  \begin{itemize}
+  \tightlist
+  \item
+    SILVA v132 reference
+  \end{itemize}
+\item
+  ML with mikropml package
+
+  \begin{itemize}
+  \tightlist
+  \item
+    preprocessing -normalize values
+
+    \begin{itemize}
+    \tightlist
+    \item
+      what is removed and why
+
+      \begin{itemize}
+      \tightlist
+      \item
+        near zero variance \& zero variance removed
+      \item
+        correlated collapsed
+      \end{itemize}
+    \end{itemize}
+  \item
+    hp tuning
+  \item
+    n seeds
+  \item
+    for more detail see mikropml package\{\}
+  \end{itemize}
+\item
+  pvalues calculated as previously described \{begum\}
+\item
+  prevalence = number of samples with non-zero abundance / total number
+  of samples
+\end{itemize}
+
+\hypertarget{acknowledgements}{%
+\subsection{Acknowledgements}\label{acknowledgements}}
+
+\hypertarget{figures}{%
+\subsection{Figures}\label{figures}}
+
+\hypertarget{model-performance-across-taxonomy}{%
+\subsubsection{Model Performance across
+Taxonomy}\label{model-performance-across-taxonomy}}
+
+\includegraphics{../exploratory/figures/all_model_level.png}
+
+\hypertarget{random-forest-model-performance-with-significance}{%
+\subsubsection{Random Forest Model Performance with
+Significance}\label{random-forest-model-performance-with-significance}}
+
+\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats.png}
+
+\hypertarget{prevalence-of-taxa-in-samples}{%
+\subsubsection{Prevalence of Taxa in
+Samples}\label{prevalence-of-taxa-in-samples}}
+
+\includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/bin_prevalence.png}
+
+\hypertarget{summary-of-features}{%
+\subsubsection{Summary of Features}\label{summary-of-features}}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule
+level & n\_samples & n\_features & n\_features\_preproc &
+pct\_kept \\ \addlinespace
+\midrule
+\endhead
+phylum & 490 & 19 & 9 & 47.4 \\ \addlinespace
+class & 490 & 36 & 19 & 52.8 \\ \addlinespace
+order & 490 & 65 & 28 & 43.1 \\ \addlinespace
+family & 490 & 124 & 54 & 43.5 \\ \addlinespace
+genus & 490 & 316 & 115 & 36.4 \\ \addlinespace
+otu & 490 & 20079 & 705 & 3.5 \\ \addlinespace
+asv & 490 & 104106 & 478 & 0.5 \\ \addlinespace
+\bottomrule
+\end{longtable}
+
+\hypertarget{relative-abundance-of-important-features}{%
+\subsubsection{Relative Abundance of Important
+Features}\label{relative-abundance-of-important-features}}
+
+\includegraphics[width=\textwidth,height=0.95\textheight]{../exploratory/figures/relabund_top10.png}
 
 \end{document}
