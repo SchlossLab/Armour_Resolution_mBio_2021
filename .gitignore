@@ -6,6 +6,7 @@
 .DS_Store
 
 data/*/*
+!data/mothur/crc.taxonomy
 !data/process/*
 !data/metadata/*
 !data/default_hyperparameters/*
