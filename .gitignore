@@ -6,6 +6,7 @@
 .DS_Store
 
 data/*/*
+!data/dada2/process/
 !data/mothur/crc.taxonomy
 !data/process/*
 !data/metadata/*

@@ -295,7 +295,7 @@ analysis/pvalues_by_level.csv analysis/pvalues_by_model.csv: \
 # produce summary table of number of samples and features by level
 analysis/input_values.csv : code/R/quantify_input_values.R \
 			$(foreach L,$(LEVEL),data/$L/input_data.csv) \
-			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv) 
+			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv)
 	Rscript code/R/quantify_input_values.R
 
 ################################################################################
@@ -366,6 +366,78 @@ auc_by_model.png : \
 			analysis/pvalues_by_level.csv \
 			analysis/pvalues_by_model.csv
 	Rscript plot_auc.R
+
+
+################################################################################
+#
+# Part X: DADA2 ASV Comparison
+#
+#	Generate ASV table with DADA2 and quantify performance
+#
+################################################################################
+
+# merge fastqfiles by sample
+data/raw/merged : \
+			data/raw/data.files \
+			code/merge_fastq.pl
+	perl code/merge_fastq.pl data/raw/data.files
+
+#download reference files for dada2
+OUTPATH = data/dada2/
+data/dada2/silva_% :
+	mkdir -p $(OUTPATH)
+	wget -N -P $(OUTPATH) https://zenodo.org/record/1172783/files/silva_nr_v132_train_set.fa.gz
+	wget -N -P $(OUTPATH) https://zenodo.org/record/1172783/files/silva_species_assignment_v132.fa.gz
+
+#run dada2 pipeline to generate asv table
+data/dada2/asv_table.tsv : \
+			code/R/dada2.R \
+			data/dada2/silva_nr_v132_train_set.fa.gz  \
+			data/dada2/silva_species_assignment_v132.fa.gz
+	Rscript code/R/dada2.R
+
+#merge with metadata and format for mikropml
+data/dada2/input_data.csv : \
+			data/dada2/asv_table.tsv \
+			data/metadata/metadata.csv \
+			code/R/merge_metadata_dada2.R
+	Rscript code/R/merge_metadata_dada2.R
+
+#preprocess input data
+data/dada2/input_data_preproc.csv: \
+				code/R/preprocess_data.R \
+				data/dada2/input_data.csv
+	Rscript code/R/preprocess_data.R --data=data/dada2/input_data.csv --taxonomy=dada2
+
+#run the models
+LEVEL=dada2
+METHOD=rpart2 rf glmnet svmRadial xgbTree
+SEED:=$(shell seq 100)
+BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/temp/$M.$S.csv)))
+
+.SECONDEXPANSION:
+$(BEST_RESULTS) : code/R/run_model_dada2.R \
+			data/$$(word 2,$$(subst /, ,$$(dir $$@)))/input_data_preproc.csv
+	$(eval S=$(subst .,,$(suffix $(basename $@))))
+	$(eval M=$(notdir $(basename $(basename $@))))
+	$(eval L=$(subst temp,,$(subst /,,$(subst data/,,$(dir $@)))))
+	Rscript --max-ppsize=500000 code/R/run_model_dada2.R --data=data/$L/input_data_preproc.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S
+
+# merge the data
+METHOD=rpart2 rf glmnet svmRadial xgbTree
+LEVEL=dada2
+CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/dada2/process/combined-$(L)-$(M).csv))
+SEED:=$(shell seq 100)
+
+.SECONDEXPANSION:
+$(CONCAT) : \
+			code/concat_pipeline_auc_output_dada2.py \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	mkdir -p data/dada2/process/
+	python code/concat_pipeline_auc_output_dada2.py --taxonomy $(L) --model $(M)
+
 
 ################################################################################
 #
