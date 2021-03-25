@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(description='Provide model and taxonomy level')
 parser.add_argument("--taxonomy", action ="store", dest="tax_level",
     help="Taxonomy options: kingdom, phylum, class, order, family, genus, otu, asv")
 parser.add_argument("--model", action="store", dest="model",
-    help= "Model options: rpart2, regLogistic, svmRadial, rf, xgbTree")
+    help= "Model options: rpart2, glmnet, svmRadial, rf, xgbTree")
 
 args = parser.parse_args()
 tax_level = args.tax_level
