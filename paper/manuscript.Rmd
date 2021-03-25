@@ -31,7 +31,7 @@ OTUs are the Optimal Taxonomic Level for Microbiome-Based Classification of Colo
 
 \vspace{10mm}
 
-Courtney R. Armour, (ande? begum?), Patrick D. Schloss ${^\dagger}$
+Courtney R. Armour, Begüm D.Topçuoğlu, Andrea Garretto, Patrick D. Schloss ${^\dagger}$
 
 \vspace{20mm}
 
@@ -97,9 +97,9 @@ input <- read_csv("../analysis/input_values.csv") %>%
 - Random forest was consistently the top performer at most taxonomic levels.
   - RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data 
   - TODO: dig into literature on this
-  - TODO: address lower L2 logistic performance that prior results?
 - Within the RF model, the highest AUCs were observed for family (median AUC: `r round(rf_med_auc["family"],digits=3)`), genus(median AUC: `r round(rf_med_auc["genus"],digits=3)`), and OTU (median AUC: `r round(rf_med_auc["otu"],digits=3)`) level data with no significant difference between the three. [(Figure)](#random-forest-model-performance-with-significance) 
   - ASV (median AUC: `r round(rf_med_auc["asv"],digits=3)`) performed significantly lower than OTU and genus (p < 0.05) but not family level P = 0.06).
+  - TODO: compare dada2 performance
 - One hypothesis for the observation that model performance increases from phylum to OTU level then drops slightly at ASV level is that at higher taxonomic levels (e.g. phylum) there are too few taxa and too much overlap to reliably differentiate between cases and controls. 
   - As you reach genus/OTU level data there is enough data and variation but at the ASV level, the data is too specific to individuals and doesn't overlap enough. 
   - Examination of the prevalence of taxa in samples at each level supports this idea. A majority of taxa are present in greater than 75% of samples at the phylum (67% of taxa) and class (63% of taxa) levels.  The opposite is observed at the OTU and ASV level where 60% and 53% of taxa respectively are only present in less than 25% of samples. [(Figure)](#prevalence-of-taxa-in-samples)
@@ -122,7 +122,7 @@ other items that could be addressed:
 ## Materials and Methods
 - 16S rRNA data from 490 subjects {baxter}
   - 261 controls
-  - 229 cases
+  - 229 SRNs (describe how SRN defined)
 - processed with mothur v1.44.3
   - SILVA v132 reference
 - ML with mikropml package
