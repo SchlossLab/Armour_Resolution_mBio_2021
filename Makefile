@@ -438,6 +438,11 @@ $(CONCAT) : \
 	mkdir -p data/dada2/process/
 	python code/concat_pipeline_auc_output_dada2.py --taxonomy $(L) --model $(M)
 
+#summarize input input_values
+data/dada2/process/summary_input_values.csv : code/R/quantify_input_values_dada2.R \
+			data/dada2/input_data.csv \
+			data/dada2/input_data_preproc.csv
+	Rscript code/R/quantify_input_values_dada2.R
 
 ################################################################################
 #
