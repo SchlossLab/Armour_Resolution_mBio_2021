@@ -4,7 +4,144 @@ output:
     keep_tex: true
   word_document: default
 geometry: margin=1.0in
+font-size: 11pt---
+output:
+  pdf_document:
+    keep_tex: true
+  word_document: default
+geometry: margin=1.0in
 font-size: 11pt
+header-includes:
+  - \usepackage{helvet}
+  - \renewcommand*\familydefault{\sfdefault}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage[left]{lineno}
+  - \linenumbers
+---
+
+```{r setup_environment, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message=FALSE)
+options(scipen=999)
+library(tidyverse)
+```
+
+
+# Optimal Taxonomic Resolution for Microbiome-Based Classification of Colorectal Cancer
+
+\vspace{20mm}
+
+**Other title options:**  
+ASV level resolution is unnecessary for prediction of SRNs from microbiome data  
+Taxonomic Resolution Matters for Microbiome-Based Classification of Colorectal Cancer
+
+
+\vspace{10mm}
+
+Courtney R. Armour, Begüm D.Topçuoğlu, Andrea Garretto, Patrick D. Schloss ${^\dagger}$
+
+\vspace{20mm}
+
+${\dagger}$ To whom correspondence should be addressed:
+
+\href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+
+Department of Microbiology
+
+University of Michigan
+
+Ann Arbor, MI 48109
+
+\vspace{20mm}
+
+**observation format - max 1200 words, 2 figures, 25 ref**
+
+\newpage
+
+
+
+## Abstract (max 250 words)
+
+
+
+## Importance (max 150 words)
+
+
+
+\newpage
+
+## Introduction
+
+Efforts to realize the diagnostic potential of the gut microbiome in detecting screen relevant neoplasias (SRNs) have focused on machine learning (ML) methods using abundances from operational taxonomic unit (OTU) classifications based on the amplicon sequencing of the v4 region of the 16S rRNA gene {}. However, whether this is the optimal taxonomic resolution for classifying SRNs from microbiome data is unknown. Additionally, recent work has pushed for the use of amplicon sequence variants (ASVs) to replace OTUs for marker-gene analysis because of the improved resolution with ASVs. However, whether the additional resolution provided by ASVs is useful for ML classification is unclear. Since ML classification relies on consistent differences between groups, its possible that the resolution at the ASV level is too individualized to accurately differentiate groups. Topçuoğlu *et al* (mBio 2020) recently demonstrated effective application of machine learning (ML) to microbiome based classification problems and developed a framework for applying ML practices in a more reproducible way (mikropml). This analysis utilizes the reproducible framework developed by Topçuoğlu *et al* to quantify which ML method and taxonomic level produce the best performing classifier for detecting SRNs from microbiome data.
+  
+## Results
+
+```{r median_AUC}
+table <- read_csv("../exploratory/figures/median_test_auc.csv")
+
+rf_med_auc <- table %>% 
+  pull(rf)
+
+names(rf_med_auc) <- table %>% pull(level)
+```
+
+```{r input_table}
+input <- read_csv("../analysis/input_values.csv") %>% 
+  mutate(pct_kept = round(n_features_preproc/n_features,digits=3)*100)
+```
+
+(one-two sentance summary of methods) Across the five machine learning methods tested, model performance tended to increase with taxonomic level usually peaking around genus/OTU level before dropping off slightly with ASVs. [(Figure)](#model-performance-across-taxonomy). Of the five ML methods, random forest (RF) was consistently the top performer at most taxonomic levels. [**TODO**: dig into literature on this: RF might be more appropriate for microbiome analysis since its more suitable for zero inflated data]. Within the RF model, the highest AUCs were observed for family (median AUC: `r round(rf_med_auc["family"],digits=3)`), genus(median AUC: `r round(rf_med_auc["genus"],digits=3)`), and OTU (median AUC: `r round(rf_med_auc["otu"],digits=3)`) level data with no significant difference between the three. [(Figure)](#random-forest-model-performance-with-significance) Perfomance with ASVs (median AUC: `r round(rf_med_auc["asv"],digits=3)`) was significantly lower than OTU and genus (p < 0.05) but not family level P = 0.06). These results were consistent with ASVs generated with DADA2 (median AUC: <fill in>) {}. 
+
+  One hypothesis for the observation that model performance increases from phylum to OTU level then drops slightly at ASV level is that at higher taxonomic levels (e.g. phylum) there are too few taxa and too much overlap to reliably differentiate between cases and controls. As you reach genus/OTU level data there is enough data and variation but at the ASV level, the data is too specific to individuals and doesn't overlap enough. Examination of the prevalence of taxa in samples at each level supports this idea. A majority of taxa are present in greater than 75% of samples at the phylum (67% of taxa) and class (63% of taxa) levels.  The opposite is observed at the OTU and ASV level where 60% and 53% of taxa respectively are only present in less than 25% of samples. [(Figure)](#prevalence-of-taxa-in-samples)  
+  
+  Of note, the ML pipeline includes a pre-processing step that occurs prior to training and classifying the ML models (methods). As part of this step, features are removed that wont provide useful information to build the model. For example, strongly correlated features provide the same information to build the model and thus can be collapsed. Additionally, features with zero or near-zero variance will not help the model differentiate groups and thus can be removed. Interestingly, despite starting with `r input %>% filter(level == "asv") %>% select(n_features) %>% pull()` features at the ASV level, only `r input %>% filter(level == "asv") %>% select(n_features_preproc) %>% pull()` (`r input %>% filter(level == "asv") %>% select(pct_kept) %>% pull()`%) remained after pre-processing. At the OTU level, `r input %>% filter(level == "otu") %>% select(n_features) %>% pull()` of the `r input %>% filter(level == "otu") %>% select(n_features_preproc) %>% pull()` features (`r input %>% filter(level == "otu") %>% select(pct_kept) %>% pull()`%) remained after preprocessing. [(Table)](#summary-of-features)
+
+
+- TODO: check why ASVs were removed in preprocessing (nzv?)
+- (depending on above can discuss why features were removed - e.g. only in one or a few samples)
+- OTU level data provides an idea balance of overlap and distinction to classify samples. 
+- Overall, the fine resolution of ASVs is unnecessary for ML classification with microbiome data since the vast majority of the ASVs are removed during preprocessing and the model performance is diminshed compared to other taxonomic levels.  
+  
+other items that could be addressed:  
+
+- what are important taxa, patterns along levels (e.g fuso always in top )
+- abundance of important taxa: many of the top important features are low abund [(Figure)](#relative-abundance-of-important-features)
+ 
+
+## Conclusions
+
+
+## Materials and Methods
+Raw sequence data generated from a prior anaoysis {Baxter} was downlaoded from SRA (accession #). This data contains stool samples from 490 subjects. Based on the available metadata, samples categorized as normal, high risk normal, or adenoma were labeled "normal" for this analysis and samples categorized as advanced adenoma or carcinoma were labeled as "screen relevant neoplasia" (SRN). This resulted in a totla of 261 "normal" samples and 229 "SRN" samples. Sequence data was processed with Mothur (1.44.3) using the SILVA reference database (v132) to produce count tables for phylum, class, order, family, genus, OTU, and ASV. 
+
+Machine learning models were run with mikropml (version) {}. Data was preprocessed to normalize values (scale/center? range?), remove values with zero or near-zero variance, and collapse collinear features using default parameters. Each taxnomic level/model combination was run with 100 different seeds. 
+
+- pvalues calculated as previously described {begum}
+- prevalence = number of samples with non-zero abundance / total number of samples
+
+## Acknowledgements
+
+
+## Figures
+
+### Model Performance across Taxonomy  
+![](../exploratory/figures/all_model_level.png)
+
+### Random Forest Model Performance with Significance  
+![](../exploratory/figures/rf_with_stats.png){width=75%}
+
+### Prevalence of Taxa in Samples  
+![](../exploratory/figures/bin_prevalence.png){height=50%}
+
+### Summary of Features
+```{r feats}
+knitr::kable(input)
+```
+
+### Relative Abundance of Important Features
+![](../exploratory/figures/relabund_top10.png){height=95%}
+
+
 header-includes:
   - \usepackage{helvet}
   - \renewcommand*\familydefault{\sfdefault}

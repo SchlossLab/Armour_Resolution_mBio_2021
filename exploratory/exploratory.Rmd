@@ -1,10 +1,9 @@
 ---
 title: "Exploratory: Optimal Resolution"
 author: "Courtney R Armour"
-date: '`r Sys.Date()`'
 output: html_document
 ---
-
+updated: `r Sys.Date()`
 ```{r setup_environment, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,message=FALSE)
 
@@ -83,6 +82,11 @@ p.table.model <- read_csv("../analysis/pvalues_by_model.csv")
 
 ```
 
+## Table of Contents
+- [Input data overview](#input-data-overview)
+- [Hyperparameter Performance](#hyperparameter-performance)
+- [Model Performance](#model-performance)
+- [DADA2 Comparison](#dada2-comparison)
 
 ## Input data overview
 
@@ -204,10 +208,13 @@ ggsave("./figures/all_model_level.png")
 
 ### DADA2 Comparison
 
-```{r dada2}
+```{r dada2_input}
 
-dada2_results <- read
+#mothur and dada2 input values
+input_data <- bind_rows(read_csv("../analysis/input_values.csv"),
+                        read_csv("../data/dada2/process/summary_input_values.csv"))
 
+kable(input_data) 
 ```
 
 
