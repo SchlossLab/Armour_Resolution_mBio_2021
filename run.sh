@@ -5,14 +5,14 @@
 #                             #
 ###############################
 # Name
-#SBATCH --job-name=prepdata
+#SBATCH --job-name=dada2
 # Resources
 # For MPI, increase ntasks-per-node
 # For multithreading, increase cpus-per-task
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=100GB
+#SBATCH --cpus-per-task=12
+#SBATCH --mem-per-cpu=10GB
 #SBATCH --time=20:00:00
 # Account
 #SBATCH --account=pschloss1
@@ -29,6 +29,14 @@
 #  2) Job Commands  #
 #                   #
 #####################
+
+# DADA2 analysis
+source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes cluster
+#make data/raw/merged
+#make data/dada2/silva_%
+#make data/dada2/asv_table.tsv
+#make data/dada2/input_data.csv
+#make data/dada2/input_data_preproc.csv
 
 #source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes cluster
 #make data/references/silva.v4.%
@@ -61,4 +69,4 @@
 
 #make data/asv/crc.shared
 #make data/asv/input_data.csv
-make data/asv/input_data_preproc.csv
+#make data/asv/input_data_preproc.csv
