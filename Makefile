@@ -442,7 +442,16 @@ $(CONCAT) : \
 data/dada2/process/summary_input_values.csv : code/R/quantify_input_values_dada2.R \
 			data/dada2/input_data.csv \
 			data/dada2/input_data_preproc.csv
+	$^
 	Rscript code/R/quantify_input_values_dada2.R
+
+# calculate statistics
+METHOD=rpart2 rf glmnet svmRadial xgbTree
+data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues_by_model.csv : \
+			code/R/calculate_pvalues_dada2.R \
+			$(foreach M,$(METHOD),data/process/combined-asv-$M.csv)
+			$(foreach M,$(METHOD),data/dada2/process/combined-dada2-$M.csv)
+	Rscript code/R/calculate_pvalues_dada2.R
 
 ################################################################################
 #

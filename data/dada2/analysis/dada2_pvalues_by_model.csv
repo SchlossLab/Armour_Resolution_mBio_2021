@@ -1,0 +1,6 @@
+model,level1,level2,p_value
+glmnet,asv,dada2,9.99900009999e-05
+rf,asv,dada2,0.0037996200379962
+rpart2,asv,dada2,0.055994400559944
+svmRadial,asv,dada2,9.99900009999e-05
+xgbTree,asv,dada2,0.392860713928607
