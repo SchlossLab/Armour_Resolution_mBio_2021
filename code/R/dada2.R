@@ -22,7 +22,7 @@ names(filtRs) <- sample.names
 
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
               maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
-              compress=TRUE, multithread=TRUE)
+              compress=TRUE, multithread=FALSE)
 saveRDS(out,paste0(outpath,"filter_trim.rds"))
 
 # learn error rates
@@ -38,8 +38,8 @@ plotErrors(errR, nominalQ=TRUE)
 dev.off()
 
 # sample inference
-dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
-dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
+dadaFs <- dada(filtFs, err=errF, multithread=TRUE,pool=TRUE)
+dadaRs <- dada(filtRs, err=errR, multithread=TRUE,pool=TRUE)
 
 print("Inspecting the returned dada-class object:")
 dadaFs[[1]]

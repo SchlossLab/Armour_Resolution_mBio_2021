@@ -1,11 +1,11 @@
 level,model1,model2,p_value
-dada2,glmnet,rpart2,0.022997700229977
-dada2,glmnet,svmRadial,0.0191980801919808
+dada2,glmnet,rpart2,0.0034996500349965
+dada2,glmnet,svmRadial,0.896710328967103
 dada2,glmnet,xgbTree,9.99900009999e-05
 dada2,rf,glmnet,9.99900009999e-05
 dada2,rf,rpart2,9.99900009999e-05
 dada2,rf,svmRadial,9.99900009999e-05
-dada2,rf,xgbTree,0.0238976102389761
-dada2,svmRadial,rpart2,9.99900009999e-05
+dada2,rf,xgbTree,0.0003999600039996
+dada2,svmRadial,rpart2,0.0033996600339966
 dada2,xgbTree,rpart2,9.99900009999e-05
-dada2,xgbTree,svmRadial,9.99900009999e-05
+dada2,xgbTree,svmRadial,0.0002999700029997

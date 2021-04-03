@@ -396,9 +396,21 @@ data/dada2/asv_table.tsv : \
 			data/dada2/silva_species_assignment_v132.fa.gz
 	Rscript code/R/dada2.R
 
+#format dada2 asv table as .shared file
+data/dada2/asv_table.shared : \
+			code/R/make_dada2_shared.R \
+			data/dada2/asv_table.tsv
+	Rscript code/R/make_dada2_shared.R
+
+#subsample to be consistent with Mothur
+data/dada2/asv_table.dada2.subsample.shared : \
+			code/bash/dada2_subsample.sh \
+			data/dada2/asv_table.shared
+	bash code/bash/dada2_subsample.sh
+
 #merge with metadata and format for mikropml
 data/dada2/input_data.csv : \
-			data/dada2/asv_table.tsv \
+			data/dada2/asv_table.dada2.subsample.shared \
 			data/metadata/metadata.csv \
 			code/R/merge_metadata_dada2.R
 	Rscript code/R/merge_metadata_dada2.R
@@ -442,7 +454,6 @@ $(CONCAT) : \
 data/dada2/process/summary_input_values.csv : code/R/quantify_input_values_dada2.R \
 			data/dada2/input_data.csv \
 			data/dada2/input_data_preproc.csv
-	$^
 	Rscript code/R/quantify_input_values_dada2.R
 
 # calculate statistics
