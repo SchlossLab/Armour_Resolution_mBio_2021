@@ -470,5 +470,8 @@ data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues
 #
 ################################################################################
 
+docs/exploratory.html :
+	R -e 'rmarkdown::render("exploratory/exploratory.Rmd",output_dir="docs")'
+
 paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
