@@ -9,6 +9,7 @@ data/*/*
 !data/dada2/process/
 !data/dada2/analysis/
 !data/mothur/crc.taxonomy
+!data/*/crc.taxonomy
 !data/process/*
 !data/metadata/*
 !data/default_hyperparameters/*
