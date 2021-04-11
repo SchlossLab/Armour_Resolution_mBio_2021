@@ -1,8 +1,8 @@
 library(tidyverse)
 library(mosaic)
 
-#models <- c("rf","glmnet","xgbTree","svmRadial","rpart2")
-models <- c("rf","glmnet","rpart2")
+models <- c("rf","glmnet","xgbTree","svmRadial","rpart2")
+#models <- c("rf","glmnet","rpart2")
 levels <- c("phylum","class","order","family","genus","otu","asv")
 
 #functions adapted from begum mbio paper
