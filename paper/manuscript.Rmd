@@ -112,6 +112,10 @@ other items that could be addressed:
 
 
 ## Materials and Methods
+Raw 16S rRNA gene amplicon sequence data isolated from human gut samples {Baxter} was downloaded from SRA (accession #). The sequence data was processed using mothur (v1.)
+
+sequences were processed using mothur according to the Schloss Lab MiSeq SOP as described in the mothur wiki and accompanying study by Kozich et al. (13, 14). These steps included trimming and filtering for quality, aligning to the SILVA reference alignment (11), discarding sequences that aligned outside the V4 region, removing chimeric reads with UCHIME (15), and calculating distances between all pairs of sequences within each dataset prior to clustering.
+
 Raw sequence data generated from a prior anaoysis {Baxter} was downlaoded from SRA (accession #). This data contains stool samples from 490 subjects. Based on the available metadata, samples categorized as normal, high risk normal, or adenoma were labeled "normal" for this analysis and samples categorized as advanced adenoma or carcinoma were labeled as "screen relevant neoplasia" (SRN). This resulted in a totla of 261 "normal" samples and 229 "SRN" samples. Sequence data was processed with Mothur (1.44.3) using the SILVA reference database (v132) to produce count tables for phylum, class, order, family, genus, OTU, and ASV. 
 
 Machine learning models were run with mikropml (version) {}. Data was preprocessed to normalize values (scale/center? range?), remove values with zero or near-zero variance, and collapse collinear features using default parameters. Each taxnomic level/model combination was run with 100 different seeds. 
