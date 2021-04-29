@@ -466,7 +466,7 @@ data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues
 
 ################################################################################
 #
-# Make manuscript
+# Make manuscript and exploratory document
 #
 ################################################################################
 

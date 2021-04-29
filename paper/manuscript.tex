@@ -73,6 +73,19 @@
 \doublespacing
 \usepackage[left]{lineno}
 \linenumbers
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
 \ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -82,18 +95,17 @@
 
 \begin{document}
 
-\hypertarget{optimal-taxonomic-resolution-for-microbiome-based-classification-of-colorectal-cancer}{%
-\section{Optimal Taxonomic Resolution for Microbiome-Based
+\hypertarget{taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}{%
+\section{Taxonomic Resolution Matters for Microbiome-Based
 Classification of Colorectal
-Cancer}\label{optimal-taxonomic-resolution-for-microbiome-based-classification-of-colorectal-cancer}}
+Cancer}\label{taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}}
 
-\vspace{20mm}
+\vspace{10mm}
 
 \textbf{Other title options:}\\
-ASV level resolution is unnecessary for prediction of SRNs from
-microbiome data\\
-OTUs are the Optimal Taxonomic Level for Microbiome-Based Classification
-of Colorectal Cancer
+Optimal Taxonomic Resolution for Microbiome-Based Classification of
+Colorectal Cancer ASV level resolution is unnecessary for prediction of
+SRNs from microbiome data \ldots{}
 
 \vspace{10mm}
 
@@ -126,282 +138,232 @@ Ann Arbor, MI 48109
 
 \newpage
 
-\hypertarget{introduction}{%
-\subsection{Introduction}\label{introduction}}
+\hypertarget{introduction-250-words}{%
+\subsection{Introduction (\textasciitilde250
+words)}\label{introduction-250-words}}
+
+Colorectal cancer is one of the most common cancers in men and women and
+a leading cause of cancer related deaths in the United States \{\}.
+Early detection and treatment are essential to increase survival rates,
+but for a variety of reasons including the invasiveness and high cost of
+screening (i.e.~colonoscopy), many people do not comply with recommended
+screening guidelines \{\} prompting a need for low cost, non-invasive
+detection methods. A growing body of research points to the gut
+microbiome as a promising target for non-invasive screening to detect
+screen relevant neoplasias (neoplasms?) (SRNs) consisting of
+pre-cancerous polyps (i.e.~advanced adenomas) and cancer. Efforts to
+realize the diagnostic potential of the gut microbiome in detecting SRNs
+have focused on machine learning (ML) methods using abundances from
+operational taxonomic unit (OTU) classifications based on the amplicon
+sequencing of the 16S rRNA gene \{\}. However, whether this is the
+optimal taxonomic resolution for classifying SRNs from microbiome data
+is unknown. Additionally, recent work has pushed for the use of amplicon
+sequence variants (ASVs) to replace OTUs for marker-gene analysis
+because of the improved resolution with ASVs \{\}. However, whether the
+additional resolution provided by ASVs is useful for ML classification
+is unclear. Since ML classification relies on consistent differences
+between groups, its possible that the resolution at the ASV level is too
+individualized to accurately differentiate groups. Topçuoğlu \emph{et
+al} \{mBio 2020\} recently demonstrated effective application of machine
+learning (ML) to microbiome based classification problems and developed
+a framework for applying ML practices in a more reproducible way
+(mikropml). This analysis utilizes the reproducible framework developed
+by Topçuoğlu \emph{et al} to quantify which ML method and taxonomic
+level produce the best performing classifier for detecting SRNs from
+microbiome data.
+
+\hypertarget{results-700-words}{%
+\subsection{Results (\textasciitilde700
+words)}\label{results-700-words}}
+
+Utilizing publicly available 16S rRNA sequence data from patients with
+cancer and healthy controls, we generated abundance tables with Mothur
+\{\} annotated to Phylum, Class, Order, Family, Genus, OTU and ASV
+levels. Using the taxonomic abundance data, we quanitfied how accurately
+samples could be classified as ``normal'' or ``SRN'' (i.e.~advanced
+adenoma or cancer) using machine learning (methods). Across the five
+machine learning methods tested, model performance tended to increase
+with taxonomic level usually peaking around genus/OTU level before
+dropping off slightly with ASVs (Supplemental Figure 1). Random forest
+(RF) was consistently the top performer at most taxonomic levels.
+{[}\textbf{TODO}: dig into literature on this: RF might be more
+appropriate for microbiome analysis since its more suitable for zero
+inflated data{]}. Within the RF model, the highest AUROCs were observed
+for family (median AUROC: 0.687), genus (median AUROC: 0.686), and OTU
+(median AUROC: 0.698) level data with no significant difference between
+the three (Figure 1). Performance with ASVs (median AUROC: 0.676) was
+significantly lower than OTU and genus (p \textless{} 0.05) but not
+family level P = 0.06). These results were consistent with ASVs
+generated with DADA2 \{\} (median AUROC: 0.66). These results suggest
+that finer taxonomic resolution is not necessarily better for
+differentiating a persons cancer status from the microbiome.
+
+One hypothesis for the observation that model performance increases from
+phylum to OTU level then drops slightly at ASV level is that at higher
+taxonomic levels (e.g.~phylum) there are too few taxa and too much
+overlap to reliably differentiate between cases and controls. At the
+level of genus/OTU data there is enough data and variation but at the
+ASV level, the data is too specific to individuals and doesn't overlap
+enough. Examination of the prevalence of taxa in samples at each level
+supports this idea. A majority of taxa are present in greater than 75\%
+of samples at the phylum (67\% of taxa) and class (63\% of taxa)
+levels). The opposite is observed at the OTU and ASV level where 60\%
+and 53\% of taxa respectively are only present in less than 25\% of
+samples (Supplemental Figure 2). \textbf{SUMMARY SENTANCE}
+
+~~\textbf{TODO: what are important taxa, patterns along levels (e.g fuso
+always in top )}
+
+Of note, the ML pipeline includes a pre-processing step that occurs
+prior to training and classifying the ML models (methods). As part of
+this step, features are removed that will not provide useful information
+to build the model. For example, strongly correlated features provide
+the same information to build the model and thus can be collapsed.
+Additionally, features with zero or near-zero variance will not help the
+model differentiate groups and thus can be removed. Interestingly,
+despite starting with 104106 features at the ASV level, only 478 (0.5\%)
+remained after pre-processing. At the OTU level, 20079 of the 705
+features (3.5\%) remained after preprocessing (Table 1).
+
+~~\textbf{TODO: check why ASVs were removed in preprocessing (nzv?)}\\
+\hspace*{0.333em}\hspace*{0.333em}(depending on answer can discuss why
+features were removed - e.g.~only in one or a few samples)
+
+\hypertarget{discussionconclusions-250-words}{%
+\subsection{Discussion/Conclusions (\textasciitilde250
+words)}\label{discussionconclusions-250-words}}
+
+These results demonstrate that consideration of the appropriate
+taxonomic resolution for utilizing the microbiome as a predictive tool.
+In general, we found that finer resolution (e.g.~ASVs) does not add
+additional sensitivity to model predicition and at the ASV level
+actually impedes model performance due to the sparsity of shared taxa.
+Additionally, utilizing genus or family level data could allow for
+merging data generated from different 16S regions or sequencing
+platforms.
 
 \begin{itemize}
 \tightlist
-\item
-  Colorectal cancer (CRC) is one of the most common cancers in men and
-  women and a leading cause of cancer related death in the United States
-  \{\}.
-\item
-  Early detection and treatment are essential to increase survival
-  rates, but for a variety of reasons including the invasiveness and
-  high cost of screening (i.e.~colonoscopy), many people do not comply
-  with recommended screening guidelines \{\}.
-\item
-  Less invasive and more affordable screening methods (e.g.~fecal
-  immunochemical test) are available, however these tests are less
-  sensitive than colonoscopies, especially for detecting early stage
-  adenomas.
-\item
-  A growing body of research points to the gut microbiome as having a
-  role in tumor development and progression \{\}. For example, studies
-  find that Fusobacterium nucleatum and enterotoxigenic Bacteriodes
-  fragilis tend to be enriched in the gut microbiome of subjects with
-  CRC relative to healthy controls \{\}, while potentially protective
-  bacteria such as members of Lachnospiraceae tend to be depleted \{\}.
-\item
-  The gut microbiome shows promise as diagnostic \{\}
-\item
-  Efforts to realize the diagnostic potential of the gut microbiome in
-  detecting screen relevant neoplasias (SRNs) have focused on machine
-  learning (ML) methods using abundances from operational taxonomic unit
-  (OTU) classifications based on the amplicon sequencing of the v4
-  region of the 16S rRNA gene \{\}. However, whether this is the optimal
-  taxonomic resolution for classifying SRNs from microbiome data is
-  unknown.
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Additionally, recent work has pushed for the use of amplicon
-    sequence variants (ASVs) to replace OTUs for marker-gene analysis
-    because of the improved resolution with ASVs. However, whether the
-    additional resolution provided by ASVs is useful for ML
-    classification is unclear.
-
-    \begin{itemize}
-    \tightlist
-    \item
-      Since ML classification relies on consistent differences between
-      groups, its possible that the resolution at the ASV level is too
-      individualized to accurately differentiate groups.
-    \end{itemize}
-  \end{itemize}
-\item
-  Topçuoğlu \emph{et al} (mBio 2020) recently demonstrated effective
-  application of machine learning (ML) to microbiome based
-  classification problems and developed a framework for applying ML
-  practices in a more reproducible way (mikropml).
-\item
-  This analysis utilizes the reproducible framework developed by
-  Topçuoğlu \emph{et al} to quantify which ML method and taxonomic level
-  produce the best performing classifier for detecting SRNs from
-  microbiome data.
-\end{itemize}
-
-\hypertarget{results}{%
-\subsection{Results}\label{results}}
-
-\begin{itemize}
-\tightlist
-\item
-  Across the five ML methods tested, model performance tended to
-  increase with taxonomic level usually peaking around genus/OTU level
-  before dropping off slightly with ASVs.
-  \protect\hyperlink{model-performance-across-taxonomy}{(Figure)}
-\item
-  Random forest was consistently the top performer at most taxonomic
-  levels.
-
-  \begin{itemize}
-  \tightlist
-  \item
-    RF might be more appropriate for microbiome analysis since its more
-    suitable for zero inflated data
-  \item
-    TODO: dig into literature on this
-  \end{itemize}
-\item
-  Within the RF model, the highest AUCs were observed for family (median
-  AUC: 0.687), genus(median AUC: 0.686), and OTU (median AUC: 0.698)
-  level data with no significant difference between the three.
-  \protect\hyperlink{random-forest-model-performance-with-significance}{(Figure)}
-
-  \begin{itemize}
-  \tightlist
-  \item
-    ASV (median AUC: 0.676) performed significantly lower than OTU and
-    genus (p \textless{} 0.05) but not family level P = 0.06).
-  \item
-    TODO: compare dada2 performance
-  \end{itemize}
-\item
-  One hypothesis for the observation that model performance increases
-  from phylum to OTU level then drops slightly at ASV level is that at
-  higher taxonomic levels (e.g.~phylum) there are too few taxa and too
-  much overlap to reliably differentiate between cases and controls.
-
-  \begin{itemize}
-  \tightlist
-  \item
-    As you reach genus/OTU level data there is enough data and variation
-    but at the ASV level, the data is too specific to individuals and
-    doesn't overlap enough.
-  \item
-    Examination of the prevalence of taxa in samples at each level
-    supports this idea. A majority of taxa are present in greater than
-    75\% of samples at the phylum (67\% of taxa) and class (63\% of
-    taxa) levels. The opposite is observed at the OTU and ASV level
-    where 60\% and 53\% of taxa respectively are only present in less
-    than 25\% of samples.
-    \protect\hyperlink{prevalence-of-taxa-in-samples}{(Figure)}
-  \end{itemize}
-\item
-  Of note, the ML pipeline includes a pre-processing step that occurs
-  prior to training and classifying the ML models (methods). As part of
-  this step, features are removed that wont provide useful information
-  to build the model. For example, strongly correlated features provide
-  the same information to build the model and thus can be collapsed.
-  Additionally, features with zero or near-zero variance will not help
-  the model differentiate groups and thus can be removed.
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Interestingly, despite starting with 104106 features at the ASV
-    level, only 478 (0.5\%) remained after pre-processing. At the OTU
-    level, 20079 of the 705 features (3.5\%) remained after
-    preprocessing. \protect\hyperlink{summary-of-features}{(Table)}
-  \item
-    TODO: check why ASVs were removed in preprocessing (nzv?)
-  \item
-    (depending on above can discuss why features were removed -
-    e.g.~only in one or a few samples)
-  \end{itemize}
-\item
-  OTU level data provides an idea balance of overlap and distinction to
-  classify samples.
 \item
   Overall, the fine resolution of ASVs is unnecessary for ML
   classification with microbiome data since the vast majority of the
   ASVs are removed during preprocessing and the model performance is
   diminshed compared to other taxonomic levels.
-\end{itemize}
-
-other items that could be addressed:
-
-\begin{itemize}
-\tightlist
 \item
-  what are important taxa, patterns along levels (e.g fuso always in top
-  )
-\item
-  abundance of important taxa: many of the top important features are
-  low abund
-  \protect\hyperlink{relative-abundance-of-important-features}{(Figure)}
+  since family/genus level is just as good as otu could we use data from
+  different 16S regions?
 \end{itemize}
-
-\hypertarget{conclusions}{%
-\subsection{Conclusions}\label{conclusions}}
 
 \hypertarget{materials-and-methods}{%
 \subsection{Materials and Methods}\label{materials-and-methods}}
 
-\begin{itemize}
-\tightlist
-\item
-  16S rRNA data from 490 subjects \{baxter\}
+\textbf{\emph{Dataset.}} Raw 16S rRNA gene amplicon sequence data
+isolated from human gut samples \{Baxter\} was downloaded from NCBI SRA
+(accession \#). This dataset contains stool samples from 490 subjects.
+Based on the available metadata, samples categorized as normal, high
+risk normal, or adenoma were labeled ``normal'' for this analysis and
+samples categorized as advanced adenoma or carcinoma were labeled as
+``screen relevant neoplasia'' (SRN). This resulted in a total of 261
+``normal'' samples and 229 ``SRN'' samples.
 
-  \begin{itemize}
-  \tightlist
-  \item
-    261 controls
-  \item
-    229 SRNs (describe how SRN defined)
-  \end{itemize}
-\item
-  processed with mothur v1.44.3
+\textbf{\emph{Data processing.}} Sequence data was processed with Mothur
+(1.44.3) using the SILVA reference database (v132) to produce count
+tables for phylum, class, order, family, genus, OTU, and ASV following
+the Schloss Lab MiSeq SOP described on the Mothur website \{\}. ASV
+level data was also produced using DADA2 to ensure consistent results
+with a different pipeline. Data was processed following the DADA2
+pipeline, but setting pool=TRUE to infer ASVs from the whole dataset
+rather than per sample. The resulting ASV table was subsampled for
+consistency with the Mothur data.
 
-  \begin{itemize}
-  \tightlist
-  \item
-    SILVA v132 reference
-  \end{itemize}
-\item
-  ML with mikropml package
+\textbf{\emph{Machine Learning.}} Machine learning models were run with
+the R package mikropml (v0.0.2) \{\} to predict the diagnosis category
+(normal vs SRN) of each sample. Data was preprocessed to normalize
+values (scale/center? range?), remove values with zero or near-zero
+variance, and collapse collinear features using default parameters.
+Initially the models were run with default hyperparameters, but were
+expanded if the peak performance was at the edge of the hyperparameter
+range. Each taxonomic model taxonomic level combination (e.g.~Random
+Forest on genus) was run with 100 different seeds (1-100). Each seed
+split the data into a training (80\%) and testing (20\%) set, and output
+performance of the training and testing as area under the receiver
+operating curve (AUROC).
 
-  \begin{itemize}
-  \tightlist
-  \item
-    preprocessing -normalize values
+To compare performance between taxonomic levels and models, P values
+were calculated as previously described \{begum\}. Another output from
+the mikropml package is the permuted feature importance which is
+quantified by iteratively permuting each feature in the model and
+assessing the change in model performance. Features are presumed to be
+important if the performance of the model, measured by the AUROC,
+decreases when that feature is permuted. Ranking of feature importance
+was determined by ordering the features based on the change in AUROC
+where features with a larger decrease in AUROC are ranked higher in
+importance.
 
-    \begin{itemize}
-    \tightlist
-    \item
-      what is removed and why
+To quantify prevalence of the features, the number of samples with
+non-zero abundance was divided by the total number of samples resulting
+in values ranging from 0 to 1 where 0 indicates the feature is not found
+in any samples, 0.5 indicates the feature is found in half of the
+samples, an 1 indicating the feature is found in all of the samples.
 
-      \begin{itemize}
-      \tightlist
-      \item
-        near zero variance \& zero variance removed
-      \item
-        correlated collapsed
-      \end{itemize}
-    \end{itemize}
-  \item
-    hp tuning
-  \item
-    n seeds
-  \item
-    for more detail see mikropml package\{\}
-  \end{itemize}
-\item
-  pvalues calculated as previously described \{begum\}
-\item
-  prevalence = number of samples with non-zero abundance / total number
-  of samples
-\end{itemize}
+All code is available at: \textbf{TODO: link to code}
 
 \hypertarget{acknowledgements}{%
 \subsection{Acknowledgements}\label{acknowledgements}}
 
+\newpage
+
 \hypertarget{figures}{%
 \subsection{Figures}\label{figures}}
 
-\hypertarget{model-performance-across-taxonomy}{%
-\subsubsection{Model Performance across
-Taxonomy}\label{model-performance-across-taxonomy}}
+\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats_sideways.png}
 
-\includegraphics{../exploratory/figures/all_model_level.png}
+\textbf{Figure 1: Random Forest Model Performance with Significance.}
+Boxplots of AUROC values on the test dataset for 100 seeds predicting
+SRNs using a Random Forest model. Dashed line denotes AUROC of 0.5 which
+is equivalent to random classification. Differences in AUROC values
+between taxonomic levels are significant unless otherwise specified with
+``NS'' (not significant)
 
-\hypertarget{random-forest-model-performance-with-significance}{%
-\subsubsection{Random Forest Model Performance with
-Significance}\label{random-forest-model-performance-with-significance}}
+\newpage
 
-\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats.png}
+\hypertarget{tables}{%
+\subsection{Tables}\label{tables}}
 
-\hypertarget{prevalence-of-taxa-in-samples}{%
-\subsubsection{Prevalence of Taxa in
-Samples}\label{prevalence-of-taxa-in-samples}}
-
-\includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/bin_prevalence.png}
-
-\hypertarget{summary-of-features}{%
-\subsubsection{Summary of Features}\label{summary-of-features}}
-
-\begin{longtable}[]{@{}lrrrr@{}}
+\begin{longtable}[]{@{}lrrc@{}}
 \toprule
-level & n\_samples & n\_features & n\_features\_preproc &
-pct\_kept \\ \addlinespace
+Taxonomic Level & Number of Features &
+\makecell[c]{Number of Features \\ After Preprocessing} &
+\makecell[c]{Percent of Features Kept \\ After Preprocessing} \\ \addlinespace
 \midrule
 \endhead
-phylum & 490 & 19 & 9 & 47.4 \\ \addlinespace
-class & 490 & 36 & 19 & 52.8 \\ \addlinespace
-order & 490 & 65 & 28 & 43.1 \\ \addlinespace
-family & 490 & 124 & 54 & 43.5 \\ \addlinespace
-genus & 490 & 316 & 115 & 36.4 \\ \addlinespace
-otu & 490 & 20079 & 705 & 3.5 \\ \addlinespace
-asv & 490 & 104106 & 478 & 0.5 \\ \addlinespace
+Phylum & 19 & 9 & 47.4 \% \\ \addlinespace
+Class & 36 & 19 & 52.8 \% \\ \addlinespace
+Order & 65 & 28 & 43.1 \% \\ \addlinespace
+Family & 124 & 54 & 43.5 \% \\ \addlinespace
+Genus & 316 & 115 & 36.4 \% \\ \addlinespace
+OTU & 20079 & 705 & 3.5 \% \\ \addlinespace
+ASV & 104106 & 478 & 0.5 \% \\ \addlinespace
 \bottomrule
 \end{longtable}
 
-\hypertarget{relative-abundance-of-important-features}{%
-\subsubsection{Relative Abundance of Important
-Features}\label{relative-abundance-of-important-features}}
+\textbf{Table 1: Summary of Features.} Overview of the number of
+features at each taxonomic level before and after preprocessing as
+described in the methods.
 
-\includegraphics[width=\textwidth,height=0.95\textheight]{../exploratory/figures/relabund_top10.png}
+\newpage
+
+\hypertarget{supplemental-figures}{%
+\subsection{Supplemental Figures}\label{supplemental-figures}}
+
+\includegraphics{../exploratory/figures/all_model_level.png}
+
+\textbf{Supplemental Figure 1: Model Performance across Taxonomy.}
+Boxplot of AUROC values on the test dataset for 100 seeds for each model
+type across all taxonomic levels.
+
+\includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/bin_prevalence.png}\\
+\textbf{Supplemental Figure 2: Prevalence of Taxa in Samples.}
+Distribution of taxa prevalence in samples at each taxonomic level.
 
 \end{document}
