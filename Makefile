@@ -276,7 +276,7 @@ $(CONCAT) : \
 
 ################################################################################
 #
-# Part 7: Quantify statistics
+# Part 7: Quantify statistics make summary tables
 #
 #	Calculate p-values using a permutaiton based method from Begum to compare
 #	difference in mean AUC values between models/taxonomic levels.
@@ -297,6 +297,13 @@ analysis/input_values.csv : code/R/quantify_input_values.R \
 			$(foreach L,$(LEVEL),data/$L/input_data.csv) \
 			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv)
 	Rscript code/R/quantify_input_values.R
+
+# summary of prevalence values
+analysis/prevalence_by_level.csv: \
+			code/R/summarize_prevalence.R
+			$(foreach L,$(LEVEL),data/$L/input_data.csv) \
+			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv)
+	Rscript code/R/summarize_prevalence.R
 
 ################################################################################
 #
