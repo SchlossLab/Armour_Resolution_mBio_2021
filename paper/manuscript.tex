@@ -89,6 +89,26 @@
 \ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \author{}
 \date{\vspace{-2.5em}}
@@ -104,8 +124,8 @@ Cancer}\label{taxonomic-resolution-matters-for-microbiome-based-classification-o
 
 \textbf{Other title options:}\\
 Optimal Taxonomic Resolution for Microbiome-Based Classification of
-Colorectal Cancer ASV level resolution is unnecessary for prediction of
-SRNs from microbiome data \ldots{}
+Colorectal Cancer\\
+\ldots{}
 
 \vspace{10mm}
 
@@ -151,10 +171,10 @@ screening guidelines \{\} prompting a need for low cost, non-invasive
 detection methods. A growing body of research points to the gut
 microbiome as a promising target for non-invasive screening to detect
 screen relevant neoplasias (neoplasms?) (SRNs) consisting of
-pre-cancerous polyps (i.e.~advanced adenomas) and cancer. Efforts to
+pre-cancerous polyps (i.e.~advanced adenomas) and carcinomas. Efforts to
 realize the diagnostic potential of the gut microbiome in detecting SRNs
 have focused on machine learning (ML) methods using abundances from
-operational taxonomic unit (OTU) classifications based on the amplicon
+operational taxonomic unit (OTU) classifications based on amplicon
 sequencing of the 16S rRNA gene \{\}. However, whether this is the
 optimal taxonomic resolution for classifying SRNs from microbiome data
 is unknown. Additionally, recent work has pushed for the use of amplicon
@@ -164,13 +184,13 @@ additional resolution provided by ASVs is useful for ML classification
 is unclear. Since ML classification relies on consistent differences
 between groups, its possible that the resolution at the ASV level is too
 individualized to accurately differentiate groups. Topçuoğlu \emph{et
-al} \{mBio 2020\} recently demonstrated effective application of machine
-learning (ML) to microbiome based classification problems and developed
-a framework for applying ML practices in a more reproducible way
-(mikropml). This analysis utilizes the reproducible framework developed
-by Topçuoğlu \emph{et al} to quantify which ML method and taxonomic
-level produce the best performing classifier for detecting SRNs from
-microbiome data.
+al} (\protect\hyperlink{ref-topuxe7uolu2020}{Topçuoğlu et al. 2020})
+recently demonstrated effective application of machine learning (ML) to
+microbiome based classification problems and developed a framework for
+applying ML practices in a more reproducible way (mikropml). This
+analysis utilizes the reproducible framework developed by Topçuoğlu
+\emph{et al} to quantify which ML method and taxonomic level produce the
+best performing classifier for detecting SRNs from microbiome data.
 
 \hypertarget{results-700-words}{%
 \subsection{Results (\textasciitilde700
@@ -181,22 +201,20 @@ cancer and healthy controls, we generated abundance tables with Mothur
 \{\} annotated to Phylum, Class, Order, Family, Genus, OTU and ASV
 levels. Using the taxonomic abundance data, we quanitfied how accurately
 samples could be classified as ``normal'' or ``SRN'' (i.e.~advanced
-adenoma or cancer) using machine learning (methods). Across the five
-machine learning methods tested, model performance tended to increase
-with taxonomic level usually peaking around genus/OTU level before
-dropping off slightly with ASVs (Supplemental Figure 1). Random forest
-(RF) was consistently the top performer at most taxonomic levels.
-{[}\textbf{TODO}: dig into literature on this: RF might be more
-appropriate for microbiome analysis since its more suitable for zero
-inflated data{]}. Within the RF model, the highest AUROCs were observed
-for family (median AUROC: 0.687), genus (median AUROC: 0.686), and OTU
-(median AUROC: 0.698) level data with no significant difference between
-the three (Figure 1). Performance with ASVs (median AUROC: 0.676) was
-significantly lower than OTU and genus (p \textless{} 0.05) but not
-family level P = 0.06). These results were consistent with ASVs
-generated with DADA2 \{\} (median AUROC: 0.66). These results suggest
-that finer taxonomic resolution is not necessarily better for
-differentiating a persons cancer status from the microbiome.
+adenoma or cancer) using five machine learning methods with the Mikropml
+R package (methods). Across the five machine learning methods tested,
+model performance tended to increase with taxonomic level usually
+peaking around genus/OTU level before dropping off slightly with ASVs
+(Supplemental Figure 1). Random forest (RF) was consistently the top
+performer at most taxonomic levels. Within the RF model, the highest
+AUROCs were observed for family (median AUROC: 0.687), genus (median
+AUROC: 0.686), and OTU (median AUROC: 0.698) level data with no
+significant difference between the three (Figure 1). Performance with
+ASVs (median AUROC: 0.676) was significantly lower than OTU and genus (p
+\textless{} 0.05) but not family level (p = 0.06). These results were
+consistent for ASVs generated with DADA2 \{\} (median AUROC: 0.66).
+These results suggest that finer taxonomic resolution is not necessarily
+better for differentiating a persons cancer status from the microbiome.
 
 One hypothesis for the observation that model performance increases from
 phylum to OTU level then drops slightly at ASV level is that at higher
@@ -209,21 +227,23 @@ supports this idea. A majority of taxa are present in greater than 75\%
 of samples at the phylum (67\% of taxa) and class (63\% of taxa)
 levels). The opposite is observed at the OTU and ASV level where 60\%
 and 53\% of taxa respectively are only present in less than 25\% of
-samples (Supplemental Figure 2). \textbf{SUMMARY SENTANCE}
+samples (Supplemental Figure 2). While the resolution provided by ASVs
+is useful in
 
 ~~\textbf{TODO: what are important taxa, patterns along levels (e.g fuso
 always in top )}
 
-Of note, the ML pipeline includes a pre-processing step that occurs
-prior to training and classifying the ML models (methods). As part of
-this step, features are removed that will not provide useful information
-to build the model. For example, strongly correlated features provide
-the same information to build the model and thus can be collapsed.
-Additionally, features with zero or near-zero variance will not help the
-model differentiate groups and thus can be removed. Interestingly,
-despite starting with 104106 features at the ASV level, only 478 (0.5\%)
-remained after pre-processing. At the OTU level, 20079 of the 705
-features (3.5\%) remained after preprocessing (Table 1).
+\textbf{is this paragraph useful???} \emph{Of note, the ML pipeline
+includes a pre-processing step that occurs prior to training and
+classifying the ML models (methods). As part of this step, features are
+removed that will not provide useful information to build the model. For
+example, strongly correlated features provide the same information to
+build the model and thus can be collapsed. Additionally, features with
+zero or near-zero variance will not help the model differentiate groups
+and thus can be removed. Interestingly, despite starting with 104106
+features at the ASV level, only 478 (0.5\%) remained after
+pre-processing. At the OTU level, 20079 of the 705 features (3.5\%)
+remained after preprocessing (Table 1).}
 
 ~~\textbf{TODO: check why ASVs were removed in preprocessing (nzv?)}\\
 \hspace*{0.333em}\hspace*{0.333em}(depending on answer can discuss why
@@ -279,13 +299,13 @@ consistency with the Mothur data.
 \textbf{\emph{Machine Learning.}} Machine learning models were run with
 the R package mikropml (v0.0.2) \{\} to predict the diagnosis category
 (normal vs SRN) of each sample. Data was preprocessed to normalize
-values (scale/center? range?), remove values with zero or near-zero
-variance, and collapse collinear features using default parameters.
-Initially the models were run with default hyperparameters, but were
-expanded if the peak performance was at the edge of the hyperparameter
-range. Each taxonomic model taxonomic level combination (e.g.~Random
-Forest on genus) was run with 100 different seeds (1-100). Each seed
-split the data into a training (80\%) and testing (20\%) set, and output
+values (scale/center), remove values with zero or near-zero variance,
+and collapse collinear features using default parameters. Initially the
+models were run with default hyperparameters, but were expanded if the
+peak performance was at the edge of the hyperparameter range. Each
+taxonomic model taxonomic level combination (e.g.~Random Forest on
+genus) was run with 100 different seeds (1-100). Each seed split the
+data into a training (80\%) and testing (20\%) set, and output
 performance of the training and testing as area under the receiver
 operating curve (AUROC).
 
@@ -316,14 +336,16 @@ All code is available at: \textbf{TODO: link to code}
 \hypertarget{figures}{%
 \subsection{Figures}\label{figures}}
 
-\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats_sideways.png}
+\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats.png}
 
 \textbf{Figure 1: Random Forest Model Performance with Significance.}
 Boxplots of AUROC values on the test dataset for 100 seeds predicting
 SRNs using a Random Forest model. Dashed line denotes AUROC of 0.5 which
-is equivalent to random classification. Differences in AUROC values
-between taxonomic levels are significant unless otherwise specified with
-``NS'' (not significant)
+is equivalent to random classification. Significance between taxonomic
+levels was quantified by comparing the difference in mean AUROC and is
+denoted by letters A through E on the right side of the plot; taxonomic
+levels with the same letter are in the same significance group and are
+not significantly different from one another.
 
 \newpage
 
@@ -334,16 +356,16 @@ between taxonomic levels are significant unless otherwise specified with
 \toprule
 Taxonomic Level & Number of Features &
 \makecell[c]{Number of Features \\ After Preprocessing} &
-\makecell[c]{Percent of Features Kept \\ After Preprocessing} \\ \addlinespace
+\makecell[c]{Percent of Features Kept \\ After Preprocessing} \\
 \midrule
 \endhead
-Phylum & 19 & 9 & 47.4 \% \\ \addlinespace
-Class & 36 & 19 & 52.8 \% \\ \addlinespace
-Order & 65 & 28 & 43.1 \% \\ \addlinespace
-Family & 124 & 54 & 43.5 \% \\ \addlinespace
-Genus & 316 & 115 & 36.4 \% \\ \addlinespace
-OTU & 20079 & 705 & 3.5 \% \\ \addlinespace
-ASV & 104106 & 478 & 0.5 \% \\ \addlinespace
+Phylum & 19 & 9 & 47.4 \% \\
+Class & 36 & 19 & 52.8 \% \\
+Order & 65 & 28 & 43.1 \% \\
+Family & 124 & 54 & 43.5 \% \\
+Genus & 316 & 115 & 36.4 \% \\
+OTU & 20079 & 705 & 3.5 \% \\
+ASV & 104106 & 478 & 0.5 \% \\
 \bottomrule
 \end{longtable}
 
@@ -365,5 +387,19 @@ type across all taxonomic levels.
 \includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/bin_prevalence.png}\\
 \textbf{Supplemental Figure 2: Prevalence of Taxa in Samples.}
 Distribution of taxa prevalence in samples at each taxonomic level.
+
+\hypertarget{references}{%
+\subsection*{References}\label{references}}
+\addcontentsline{toc}{subsection}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\hypertarget{ref-topuxe7uolu2020}{}%
+Topçuoğlu, Begüm D., Nicholas A. Lesniak, Mack T. Ruffin, Jenna Wiens,
+and Patrick D. Schloss. 2020. {``A Framework for Effective Application
+of Machine Learning to Microbiome-Based Classification Problems.''}
+\emph{mBio} 11 (3). \url{https://doi.org/10.1128/mBio.00434-20}.
+
+\end{CSLReferences}
 
 \end{document}
