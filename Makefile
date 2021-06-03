@@ -300,7 +300,7 @@ analysis/input_values.csv : code/R/quantify_input_values.R \
 
 # summary of prevalence values
 analysis/prevalence_by_level.csv: \
-			code/R/summarize_prevalence.R
+			code/R/summarize_prevalence.R \
 			$(foreach L,$(LEVEL),data/$L/input_data.csv) \
 			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv)
 	Rscript code/R/summarize_prevalence.R
@@ -313,6 +313,8 @@ analysis/prevalence_by_level.csv: \
 #
 ################################################################################
 
+LEVEL=phylum class order family genus otu asv
+METHOD=rpart2 rf glmnet svmRadial xgbTree
 MERGE=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/importance-$(L)-$(M).csv))
 SEED:=$(shell seq 100)
 
@@ -322,7 +324,19 @@ $(MERGE) : \
 			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/importance_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
 	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
-	Rscript code/R/merge_importance.R --level=$(L) --method=$(M)
+	Rscript code/R/merge_importance.R --level=$(L) --method=$(M) --threshold=1
+
+#merge importance for lower threshold (0.90) for Random Forest
+LEVEL=phylum class order family genus otu asv
+MERGE2=$(foreach L,$(LEVEL), data/process/importance90-$(L)-rf.csv))
+SEED:=$(shell seq 100)
+
+.SECONDEXPANSION:
+$(MERGE2) : \
+			code/R/merge_importance.R \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/importance90_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/merge_importance.R --level=$(L) --method=rf --threshold=90
 
 ################################################################################
 #
@@ -331,12 +345,13 @@ $(MERGE) : \
 #	Generate concatenated hyperparameter tables for each level and method
 #
 ################################################################################
-
-MERGE=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/hp-$(L)-$(M).csv))
+LEVEL=phylum class order family genus otu asv
+METHOD=rpart2 rf glmnet svmRadial xgbTree
+MERGEHP=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/hp-$(L)-$(M).csv))
 SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
-$(MERGE) : \
+$(MERGEHP) : \
 			code/R/merge_hyperparameters.R \
 			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/hp_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
 	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))
@@ -350,7 +365,8 @@ $(MERGE) : \
 #	Generate plots of hyperparameter performance for each level and method
 #
 ################################################################################
-
+LEVEL=phylum class order family genus otu asv
+METHOD=rpart2 rf glmnet svmRadial xgbTree
 HPPLOT=$(foreach M,$(METHOD), analysis/hp-$(M).png)
 
 .SECONDEXPANSION:
@@ -429,13 +445,12 @@ data/dada2/input_data_preproc.csv: \
 	Rscript code/R/preprocess_data.R --data=data/dada2/input_data.csv --taxonomy=dada2
 
 #run the models
-LEVEL=dada2
 METHOD=rpart2 rf glmnet svmRadial xgbTree
 SEED:=$(shell seq 100)
-BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/temp/$M.$S.csv)))
+BEST_RESULTS_DADA=$(foreach M,$(METHOD),$(foreach S,$(SEED), data/dada2/temp/$M.$S.csv))
 
 .SECONDEXPANSION:
-$(BEST_RESULTS) : code/R/run_model_dada2.R \
+$(BEST_RESULTS_DADA) : code/R/run_model_dada2.R \
 			data/$$(word 2,$$(subst /, ,$$(dir $$@)))/input_data_preproc.csv
 	$(eval S=$(subst .,,$(suffix $(basename $@))))
 	$(eval M=$(notdir $(basename $(basename $@))))
@@ -444,12 +459,11 @@ $(BEST_RESULTS) : code/R/run_model_dada2.R \
 
 # merge the data
 METHOD=rpart2 rf glmnet svmRadial xgbTree
-LEVEL=dada2
-CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/dada2/process/combined-$(L)-$(M).csv))
+CONCAT_DADA=$(foreach M,$(METHOD), data/dada2/process/combined-dada2-$(M).csv)
 SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
-$(CONCAT) : \
+$(CONCAT_DADA) : \
 			code/concat_pipeline_auc_output_dada2.py \
 			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
 	$(eval M=$(word 3,$(subst -, ,$(notdir $(basename $@)))))

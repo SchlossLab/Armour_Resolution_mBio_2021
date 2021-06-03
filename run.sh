@@ -5,7 +5,7 @@
 #                             #
 ###############################
 # Name
-#SBATCH --job-name=dada2
+#SBATCH --job-name=input
 # Resources
 # For MPI, increase ntasks-per-node
 # For multithreading, increase cpus-per-task
@@ -13,7 +13,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=12
 #SBATCH --mem-per-cpu=10GB
-#SBATCH --time=20:00:00
+#SBATCH --time=200:00:00
 # Account
 #SBATCH --account=pschloss1
 #SBATCH --partition=standard
@@ -38,7 +38,7 @@ source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes 
 #make data/dada2/input_data.csv
 #make data/dada2/input_data_preproc.csv
 
-#source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes cluster
+source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes cluster
 #make data/references/silva.v4.%
 #make data/trainset16_022016.pds.%
 #make data/mothur/crc.fasta
@@ -70,3 +70,4 @@ source /etc/profile.d/http_proxy.sh  # required for internet on the Great Lakes 
 #make data/asv/crc.shared
 #make data/asv/input_data.csv
 #make data/asv/input_data_preproc.csv
+

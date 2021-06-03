@@ -57,23 +57,74 @@ if(args$method %in% c("rf","rpart2","glmnet","svmRadial")){
                             method = args$method,
                             outcome_colname = args$outcome_colname,
                             seed = as.numeric(as.character(args$seed)),
-  			  find_feature_importance=TRUE,
-  			  hyperparameters = new_hp )
+                            find_feature_importance=TRUE,
+                            hyperparameters = new_hp )
 }else {
   model <- mikropml::run_ml(dataset = data_proc,
                             method = args$method,
                             outcome_colname = args$outcome_colname,
                             seed = as.numeric(as.character(args$seed)),
-                            find_feature_importance=TRUE)
+                            find_feature_importance=TRUE
+                            )
 
 }
 
+
+# probabilities/sensitivity/specificity
+if(args$method == "rf"){
+  probs <- predict(model$trained_model,newdata = model$test_data,type="prob")
+
+  probs <- probs %>%
+    mutate(actual=model$test_data %>% pull(dx),
+           seed=args$seed)
+  write_csv(probs,paste0(outdir,"probabilities_",args$method,".",args$seed,".csv"))
+
+  get_senspec <- function(prob,thr){
+    thr_prob <- prob %>%
+      mutate(predicted=case_when(cancer > thr ~ "cancer",
+                                 TRUE ~ "normal"))
+    cm <- confusionMatrix(factor(thr_prob$predicted,levels=c("cancer","normal")),
+                          reference = factor(thr_prob$actual,levels=c("cancer","normal")))
+    sens <- cm$byClass["Sensitivity"]
+    spec <- cm$byClass["Specificity"]
+
+    return(c(sens,spec))
+  }
+
+  senspec_table <- expand_grid(threshold=seq(0,1,0.01)) %>%
+    group_by(threshold) %>%
+    summarize(sensitivity = get_senspec(probs,threshold)["Sensitivity"],
+              specificity = get_senspec(probs,threshold)["Specificity"],
+              .groups="drop") %>%
+    mutate(seed=args$seed)
+    write_csv(senspec_table,paste0(outdir,"senspec_",args$method,".",args$seed,".csv"))
+}
+
+# feature importance
 feature_importance <- model$feature_importance
 write_csv(feature_importance,paste0(outdir,"importance_",args$method,".",args$seed,".csv"))
 
+if(args$method == "rf"){
+  train_data <- model$trained_model$trainingData %>%
+    rename(dx='.outcome')
+  feature_importance_90 <- get_feature_importance(trained_model = model$trained_model,
+                                                  train_data = train_data,
+                                                  test_data = model$test_data,
+                                                  outcome_colname = args$outcome_colname,
+                                                  class_probs = TRUE,
+                                                  perf_metric_function = multiClassSummary,
+                                                  perf_metric_name = "AUC",
+                                                  method = args$method,
+                                                  seed = as.numeric(as.character(args$seed)),
+                                                  corr_thresh = 0.9)
+  write_csv(feature_importance_90,paste0(outdir,"importance90_",args$method,".",args$seed,".csv"))
+}
+
+#hyperparameter performance
 hyperparameters <- get_hp_performance(model$trained_model)$dat
 write_csv(hyperparameters,paste0(outdir,"hp_",args$method,".",args$seed,".csv"))
 
+# auc
 performance <- model$performance
 results <- performance
 
