@@ -305,6 +305,25 @@ analysis/prevalence_by_level.csv: \
 			$(foreach L,$(LEVEL),data/$L/input_data_preproc.csv)
 	Rscript code/R/summarize_prevalence.R
 
+# merge senspec dataset
+SENSPEC_MERGE=$(foreach L,$(LEVEL), data/process/senspec-$(L)-rf.csv)
+
+.SECONDEXPANSION:
+$(SENSPEC_MERGE) : \
+			code/R/merge_senspec.R \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/senspec_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/merge_senspec.R $(L)
+
+#merge probabilities
+PROB_MERGE=$(foreach L,$(LEVEL), data/process/probability-$(L)-rf.csv)
+
+$(PROB_MERGE) : \
+			code/R/merge_probs.R \
+			$(foreach S,$(SEED), data/$$(word 2,$$(subst -, ,$$(notdir $$(basename $$@))))/temp/probabilities_$$(word 3,$$(subst -, ,$$(notdir $$(basename $$@)))).$(S).csv)
+	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
+	Rscript code/R/merge_probs.R $(L)
+
 ################################################################################
 #
 # Part 8: Merge Importance
@@ -327,7 +346,7 @@ $(MERGE) : \
 	Rscript code/R/merge_importance.R --level=$(L) --method=$(M) --threshold=1
 
 #merge importance for lower threshold (0.90) for Random Forest
-LEVEL=phylum class order family genus otu asv
+LEVEL=phylum class order family genus asv otu
 MERGE2=$(foreach L,$(LEVEL), data/process/importance90-$(L)-rf.csv))
 SEED:=$(shell seq 100)
 
@@ -340,9 +359,10 @@ $(MERGE2) : \
 
 ################################################################################
 #
-# Part 9: Merge Hyperparamter Performance
+# Part 9:  Hyperparamter Performance
 #
 #	Generate concatenated hyperparameter tables for each level and method
+# Generate plots of hyperparameter performance for each level and method
 #
 ################################################################################
 LEVEL=phylum class order family genus otu asv
@@ -358,13 +378,7 @@ $(MERGEHP) : \
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
 	Rscript code/R/merge_hyperparameters.R --level=$(L) --method=$(M)
 
-################################################################################
-#
-# Part 10: Plot Hyperparamter Performance
-#
-#	Generate plots of hyperparameter performance for each level and method
-#
-################################################################################
+# HP plots
 LEVEL=phylum class order family genus otu asv
 METHOD=rpart2 rf glmnet svmRadial xgbTree
 HPPLOT=$(foreach M,$(METHOD), analysis/hp-$(M).png)
