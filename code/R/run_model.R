@@ -69,6 +69,22 @@ if(args$method %in% c("rf","rpart2","glmnet","svmRadial")){
 
 }
 
+#save model and train/test data
+if(args$method == "rf"){
+  model_out <- paste0(outdir,"data/")
+  if( !dir.exists(model_out) ){ dir.create(model_out,recursive=T) }
+
+  train_data <- model$trained_model$trainingData %>%
+    rename(dx='.outcome')
+  test_data <- model$test_data
+
+  # save model - can use in later R session with load("<filename")
+  # will load as the variable "model"
+  save(model, file=paste0(model_out,"rf_model.",args$seed,".Rdata"))
+  # save training/test data
+  write_csv(train_data,paste0(model_out,"rf_train.",args$seed,".csv"))
+  write_csv(test_data,paste0(model_out,"rf_test.",args$seed,".csv"))
+}
 
 # probabilities/sensitivity/specificity
 if(args$method == "rf"){
