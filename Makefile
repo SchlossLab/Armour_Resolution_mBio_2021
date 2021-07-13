@@ -6,6 +6,10 @@ FINAL = submission/
 RAW = data/raw
 MOTHUR = data/mothur
 
+LEVEL=phylum class order family genus otu asv
+METHOD=rpart2 rf glmnet svmRadial xgbTree
+SEED:=$(shell seq 100)
+
 # utility function to print various variables. For example, running the
 # following at the command line:
 #
@@ -236,9 +240,6 @@ data/phylum/input_data_preproc.csv : code/R/preprocess_data.R\
 #
 ################################################################################
 
-LEVEL=phylum class order family genus otu asv
-METHOD=rpart2 rf glmnet svmRadial xgbTree
-SEED:=$(shell seq 100)
 BEST_RESULTS=$(foreach L,$(LEVEL),$(foreach M,$(METHOD),$(foreach S,$(SEED), data/$L/temp/$M.$S.csv)))
 
 .SECONDEXPANSION:
@@ -260,10 +261,7 @@ $(BEST_RESULTS) : code/R/run_model.R \
 #
 ################################################################################
 
-METHOD=rpart2 rf glmnet svmRadial xgbTree
-LEVEL=phylum class order family genus otu asv
 CONCAT=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/combined-$(L)-$(M).csv))
-SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
 $(CONCAT) : \
@@ -282,9 +280,6 @@ $(CONCAT) : \
 #	difference in mean AUC values between models/taxonomic levels.
 #
 ################################################################################
-
-METHOD=rpart2 rf glmnet svmRadial xgbTree
-LEVEL=phylum class order family genus otu asv
 
 #produce files of pvalues comparing tax levels within model and between models
 analysis/pvalues_by_level.csv analysis/pvalues_by_model.csv: \
@@ -332,10 +327,7 @@ $(PROB_MERGE) : \
 #
 ################################################################################
 
-LEVEL=phylum class order family genus otu asv
-METHOD=rpart2 rf glmnet svmRadial xgbTree
 MERGE=$(foreach L,$(LEVEL),$(foreach M,$(METHOD), data/process/importance-$(L)-$(M).csv))
-SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
 $(MERGE) : \
@@ -346,9 +338,7 @@ $(MERGE) : \
 	Rscript code/R/merge_importance.R --level=$(L) --method=$(M) --threshold=1
 
 #merge importance for lower threshold (0.90) for Random Forest
-LEVEL=phylum class order family genus asv otu
 MERGE2=$(foreach L,$(LEVEL), data/process/importance90-$(L)-rf.csv))
-SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
 $(MERGE2) : \
@@ -459,8 +449,6 @@ data/dada2/input_data_preproc.csv: \
 	Rscript code/R/preprocess_data.R --data=data/dada2/input_data.csv --taxonomy=dada2
 
 #run the models
-METHOD=rpart2 rf glmnet svmRadial xgbTree
-SEED:=$(shell seq 100)
 BEST_RESULTS_DADA=$(foreach M,$(METHOD),$(foreach S,$(SEED), data/dada2/temp/$M.$S.csv))
 
 .SECONDEXPANSION:
@@ -472,9 +460,7 @@ $(BEST_RESULTS_DADA) : code/R/run_model_dada2.R \
 	Rscript --max-ppsize=500000 code/R/run_model_dada2.R --data=data/$L/input_data_preproc.csv --method=$M --taxonomy=$L --outcome_colname=dx --outcome_value=cancer --seed=$S
 
 # merge the data
-METHOD=rpart2 rf glmnet svmRadial xgbTree
 CONCAT_DADA=$(foreach M,$(METHOD), data/dada2/process/combined-dada2-$(M).csv)
-SEED:=$(shell seq 100)
 
 .SECONDEXPANSION:
 $(CONCAT_DADA) : \
@@ -492,7 +478,6 @@ data/dada2/process/summary_input_values.csv : code/R/quantify_input_values_dada2
 	Rscript code/R/quantify_input_values_dada2.R
 
 # calculate statistics
-METHOD=rpart2 rf glmnet svmRadial xgbTree
 data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues_by_model.csv : \
 			code/R/calculate_pvalues_dada2.R \
 			$(foreach M,$(METHOD),data/process/combined-asv-$M.csv)
