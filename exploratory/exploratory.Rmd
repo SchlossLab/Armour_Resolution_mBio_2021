@@ -17,6 +17,7 @@ library(ggpubr)
 library(nationalparkcolors)
 library(data.table)
 library(cowplot)
+library(pROC)
 
 #given a number, adds correct commas
 set_commas <- function(num){
@@ -25,6 +26,7 @@ set_commas <- function(num){
 ```
 
 ```{r data_setup}
+
 # Variables
 models <- c("rf","glmnet","xgbTree","svmRadial","rpart2")
 levels <- c("phylum","class","order","family","genus","otu","asv")
@@ -115,7 +117,20 @@ p.table.model <- read_csv("../analysis/pvalues_by_model.csv",
 
 -   [Feature Importance](#feature-importance)
 
+-   [Feature Importance - threshold 0.9](#importance90)
+
 -   [Prevalence](#prevalence)
+
+-   [Prevalence VS Difference in Median Abundance](#prev-diff-abund)
+
+-   [Prevalence by Group](#prevalence-by-group)
+
+-   [Median Non-Zero Relative Abundance by Group](#med-relabund-group)
+
+-   [Sensitivity at 90% Specificity](#sens-90spec)
+
+-   [Averaged ROC curves](#avg-roc)  
+
 
 ## Input data overview {#input-data-overview}
 
@@ -127,6 +142,19 @@ input <- read_csv("../analysis/input_values.csv",
                   col_types = c(level = col_character(), .default = col_double()))
 
 kable(input)
+```
+
+## Color Palette
+
+```{r color-pal,include=F}
+#color palette
+#colors <- c("#7E362A","#D04C44","#E6A444","#6C887A","#83BCC3","#5B6B86","#754A60")
+colors <- c("#D04C44","#E7834E","#E6A444","#829E88","#83BCC3","#7989A4","#B29ABA")
+names(colors) <- levels
+
+colors2 <- colors
+names(colors2) <- levels_names
+pie(rep(1,length(colors2)),col=colors2,labels = names(colors2))
 ```
 
 ## Hyperparameter Performance {#hyperparameter-performance}
@@ -168,7 +196,7 @@ The default hyperparameters were retained for decision tree (maxdepth = 1 2 4 8 
 
 ## Model Performance {#model-performance}
 
-```{r plot_by_method, echo=F,message=F,fig.height = 3.5, fig.width = 10, fig.align = "center"}
+```{r plot_by_method,fig.height = 3.5, fig.width = 10, fig.align = "center"}
 
 df_by_method <- full_df %>% 
   select(cv_metric_AUC,AUC,method,level) %>% 
@@ -192,7 +220,7 @@ ggplot(df_by_method,aes(x=factor(level,
 ggsave("./figures/performance_by_method.png")
 ```
 
-```{r plot_by_level, echo=FALSE, message=FALSE,fig.height = 6, fig.width = 10, fig.align = "center"}
+```{r plot_by_level, fig.height = 6, fig.width = 10, fig.align = "center"}
 df_by_level <- full_df %>% 
   select(cv_metric_AUC,AUC,method,level) %>% 
   rename(test_AUC=AUC,cv_AUC=cv_metric_AUC) %>% 
@@ -213,7 +241,7 @@ ggsave("./figures/performance_by_tax.png")
 
 ```
 
-```{r plot_all, echo=F, message=F, out.width="100%",fig.height=4}
+```{r plot_all, out.width="100%",fig.height=4}
 df_all <- full_df %>% 
   select(cv_metric_AUC,AUC,method,level) %>% 
   rename(test_AUC=AUC,cv_AUC=cv_metric_AUC) %>% 
@@ -401,7 +429,7 @@ mod_md_auc_df %>%
 
 ```
 
-```{r dada2_all, echo=F, message=F, out.width="100%",fig.height=3}
+```{r dada2_all, out.width="100%",fig.height=3}
 dada2_auc_df %>% 
   rename(level=type) %>% 
   bind_rows(auc_df) %>% 
@@ -510,7 +538,7 @@ t_table %>%
 :::
 
 ::: {.col-md-6}
-```{r rf_plot,echo=F,message=F}
+```{r rf_plot}
 m <- "Random Forest"
 
 sub_df <- auc_df %>% 
@@ -540,27 +568,26 @@ sub_df <- auc_df %>%
 #   mutate(y.position=seq.int(0.85,1.05,length.out = nrow(sub_stats))) %>% 
 #   rename(group1=level1,group2=level2) 
 
-ggplot(sub_df,aes(x=factor(level,levels=c("ASV", "OTU","Genus","Family","Order","Class", "Phylum")), y=AUC)) + 
-#ggplot(sub_df,aes(x=level, y=AUC)) + 
-  geom_jitter(aes(fill=method,color=method),height = 0, width = 0.2,shape=21) +
+ggplot(sub_df,aes(x=factor(level,levels=c("ASV", "OTU","Genus","Family","Order","Class", "Phylum")),y=AUC)) + 
+  geom_jitter(aes(fill=level,color=level),height = 0, width = 0.2,shape=21,size=2) +
   stat_summary(fun.data = median_hilow,fun.args=0.5, geom="crossbar", width=0.5, color="black") +
-  scale_fill_manual(values = alpha(pal2[m],0.6)) +
-  scale_color_manual(values = pal2[m]) +
+  #scale_fill_manual(values = alpha(pal2[m],0.6)) +
+  #scale_color_manual(values = pal2[m]) +
+  scale_fill_manual(values = alpha(colors2,0.5)) +
+  scale_color_manual(values = colors2) +
   scale_y_continuous(limits=c(0.45,0.87),breaks = seq(0.5,0.8,0.1),expand=c(0,0)) +
   theme_bw() + xlab("") + ylab("AUROC") +
   theme(legend.position ="none",
         #axis.text.x = element_text(angle = 45,hjust = 1),
         panel.grid.major.y = element_blank(),
-        axis.text = element_text(size=14),
-        axis.title = element_text(size=14)) +
+        axis.text = element_text(size=12),
+        axis.title = element_text(size=12)) +
   coord_flip() +
-  geom_hline(yintercept = 0.5,color="grey",lty="dashed") +
-  annotate("text",x=levels_names,y=rep(0.85,length(levels_names)),label=c("A","B","C","D,E","D","D","E"))
-ggsave("./figures/rf_with_stats.png",width = 5,height=4,units="in")
+  annotate("text",x=levels_names,y=rep(0.85,length(levels_names)),label=c("A","B","C","D,E","D,E","D","E")) +
+  geom_hline(yintercept = 0.5,color="grey",lty="dashed") 
+ggsave("./figures/rf_with_stats.png",width = 4.5,height=5,units="in")
 
 ```
-:::
-:::
 
 ```{r rf_wstat_options,include=F}
 
@@ -645,8 +672,8 @@ sub_stats <- p.table.model %>%
   filter(sig=="NS")
 
 sub_stats <- sub_stats %>% 
-  #mutate(y.position=seq.int(0.85,1.05,length.out = nrow(sub_stats))) %>% 
-  mutate(y.position=c(0.85,0.95,0.9,.95)) %>%
+  mutate(y.position=seq.int(0.85,1.05,length.out = nrow(sub_stats))) %>% 
+  #mutate(y.position=c(0.85,0.95,0.9,.95)) %>%
   rename(group1=level1,group2=level2) 
 
 ggplot(sub_df,aes(x=level,y=AUC)) + 
@@ -655,7 +682,7 @@ ggplot(sub_df,aes(x=level,y=AUC)) +
   geom_jitter(aes(fill=method),height = 0, width = 0.2,alpha=0.8,shape=21) +
   stat_summary(fun.data = median_hilow,fun.args=0.5, geom="crossbar", width=0.5, color="black") +
   scale_fill_manual(values = pal2[m]) + 
-  scale_y_continuous(limits=c(0.4,1),breaks = seq(0.4,1,0.1)) +
+  scale_y_continuous(limits=c(0.4,1.05),breaks = seq(0.4,1,0.1)) +
   theme_bw() + xlab("") + ylab("AUROC") +
   theme(legend.position ="none",
         #axis.text.x = element_text(angle = 45,hjust = 1),
@@ -668,8 +695,8 @@ ggplot(sub_df,aes(x=level,y=AUC)) +
 # OPTION 4 ------------
 
 sub_stats <- sub_stats %>% 
-  #mutate(y.position=seq.int(0.85,.95,length.out = nrow(sub_stats)))
-  mutate(y.position=c(0.85,0.95,0.9,.95))
+  mutate(y.position=seq.int(0.85,.95,length.out = nrow(sub_stats)))
+  #mutate(y.position=c(0.85,0.95,0.9,.95))
 
 ggplot(sub_df,aes(x=factor(level,levels=c("ASV", "OTU","Genus","Family","Order","Class", "Phylum")),
                            y=AUC)) + 
@@ -714,39 +741,39 @@ sub_stats <- p.table.model %>%
                                p_value < 0.01 ~ round(p_value,digits=3),
                                TRUE ~ round(p_value,digits=2)))
 
-sub_stats <- sub_stats %>% 
-  #mutate(y.position=seq.int(0.85,1.05,length.out = nrow(sub_stats))) %>% 
-  mutate(y.position=c(1,1,1,1,1,
-                      0.9,
-                      0.95,0.95,0.95,0.95,
-                      0.85,
-                      1.05,1.05,1.05,1.05,1.05,1.05)) %>% 
-  #mutate(y.position=c(0.85,0.95,0.9,.95)) %>%
-  rename(group1=level1,group2=level2) 
+# sub_stats <- sub_stats %>% 
+#   #mutate(y.position=seq.int(0.85,1.05,length.out = nrow(sub_stats))) %>% 
+#   mutate(y.position=c(1,1,1,1,1,
+#                       0.9,
+#                       0.95,0.95,0.95,0.95,
+#                       0.85,
+#                       1.05,1.05,1.05,1.05,1.05,1.05)) %>% 
+#   #mutate(y.position=c(0.85,0.95,0.9,.95)) %>%
+#   rename(group1=level1,group2=level2) 
 
-ggplot(sub_df,aes(x=level,y=AUC)) + 
-  geom_hline(yintercept = 0.5,color="grey",lty="dashed") +
-  #geom_boxplot(aes(fill=method)) +
-  geom_jitter(aes(fill=method),height = 0, width = 0.2,alpha=0.8,shape=21) +
-  stat_summary(fun.data = median_hilow,fun.args=0.5, geom="crossbar", width=0.5, color="black") +
-  scale_fill_manual(values = pal2[m]) + 
-  scale_y_continuous(limits=c(0.4,1.05),breaks = seq(0.4,1.05,0.1)) +
-  theme_bw() + xlab("") + ylab("AUROC") +
-  theme(legend.position ="none",
-        #axis.text.x = element_text(angle = 45,hjust = 1),
-        panel.grid.major.x = element_blank(),
-        axis.text = element_text(size=14)) +
-  #ggtitle(m) +
-  #stat_summary(fun = mean, color="white",geom = "point", shape = 18, size = 3,show.legend = FALSE) +
-  #stat_pvalue_manual(sub_stats,label="p_value_mod") 
-  stat_pvalue_manual(sub_stats,label="sig")
+# ggplot(sub_df,aes(x=level,y=AUC)) + 
+#   geom_hline(yintercept = 0.5,color="grey",lty="dashed") +
+#   #geom_boxplot(aes(fill=method)) +
+#   geom_jitter(aes(fill=method),height = 0, width = 0.2,alpha=0.8,shape=21) +
+#   stat_summary(fun.data = median_hilow,fun.args=0.5, geom="crossbar", width=0.5, color="black") +
+#   scale_fill_manual(values = pal2[m]) + 
+#   scale_y_continuous(limits=c(0.4,1.05),breaks = seq(0.4,1.05,0.1)) +
+#   theme_bw() + xlab("") + ylab("AUROC") +
+#   theme(legend.position ="none",
+#         #axis.text.x = element_text(angle = 45,hjust = 1),
+#         panel.grid.major.x = element_blank(),
+#         axis.text = element_text(size=14)) +
+#   #ggtitle(m) +
+#   #stat_summary(fun = mean, color="white",geom = "point", shape = 18, size = 3,show.legend = FALSE) +
+#   #stat_pvalue_manual(sub_stats,label="p_value_mod") 
+#   stat_pvalue_manual(sub_stats,label="sig")
 ```
 
 ### Logistic Regression Model Performance with Significance
 
 ::: {.row}
 ::: {.col-md-6}
-```{r glmnet_table,echo=FALSE}
+```{r glmnet_table}
 t_table %>%
   select(level,glmnet) %>% 
   mutate(glmnet=round(glmnet,digits = 3)) %>% 
@@ -757,7 +784,7 @@ t_table %>%
 :::
 
 ::: {.col-md-6}
-```{r glmnet_plot,echo=F,message=F}
+```{r glmnet_plot}
 ## glmnet Model Performance
 m <- "Logistic Regression"
 
@@ -1093,7 +1120,7 @@ for(l in levels){
 
 ```
 
-```{r rf_importance_plots,echo=F,message=F,fig.show="hold",out.width="50%"}
+```{r rf_importance_plots,echo=F,message=F,fig.show="hold",out.width="50%",include=FALSE}
 imp_plots[["rf-phylum-1"]]
 imp_plots[["rf-phylum-2"]]
 
@@ -1113,7 +1140,7 @@ imp_plots[["rf-genus-2"]]
 
 ### Top 10 Important features
 
-```{r importance_rank, message=F,echo=F}
+```{r importance_rank}
 
 rf_imp <- read_csv("../data/process/importance-phylum-rf.csv",
                    col_types = c(perf_metric = col_double(),
@@ -1192,11 +1219,11 @@ rf_imp_tax <- rf_imp %>%
   rename(AUC=perf_metric,OTU=names,AUC_diff=perf_metric_diff) %>%
   inner_join(rf_tax,by=c("level","OTU"))
 
-rank_top_tax <- function(data,tax){
+rank_tax <- function(data,tax){
   sub_data <- data %>%
     filter(level==tax) %>%
     group_by(level,Taxonomy,OTU) %>% 
-    summarise(mean_AUC_diff = mean(AUC_diff)) %>% 
+    summarise(mean_AUC_diff = median(AUC_diff)) %>% 
     ungroup() %>% 
     arrange(desc(mean_AUC_diff)) %>% 
     mutate(rank=seq(1,nrow(.)))
@@ -1204,15 +1231,18 @@ rank_top_tax <- function(data,tax){
   return(sub_data)
 }
 
-ranked_tax <- bind_rows(rank_top_tax(rf_imp_tax,"phylum"),
-                        rank_top_tax(rf_imp_tax,"class"),
-                        rank_top_tax(rf_imp_tax,"order"),
-                        rank_top_tax(rf_imp_tax,"family"),
-                        rank_top_tax(rf_imp_tax,"genus"),
-                        rank_top_tax(rf_imp_tax,"otu"),
-                        rank_top_tax(rf_imp_tax,"asv"))
+ranked_tax <- bind_rows(rank_tax(rf_imp_tax,"phylum"),
+                        rank_tax(rf_imp_tax,"class"),
+                        rank_tax(rf_imp_tax,"order"),
+                        rank_tax(rf_imp_tax,"family"),
+                        rank_tax(rf_imp_tax,"genus"),
+                        rank_tax(rf_imp_tax,"otu"),
+                        rank_tax(rf_imp_tax,"asv"))
 
 top_10_tax <- ranked_tax %>% 
+  filter(rank <= 10)
+
+top_10_tax_table <- ranked_tax %>% 
   filter(rank <= 10) %>% 
   mutate(Taxonomy=case_when(level=="otu" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
                             level=="asv" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
@@ -1221,17 +1251,17 @@ top_10_tax <- ranked_tax %>%
   mutate(Taxonomy=paste0(Taxonomy," (",OTU,")"))  %>% 
   select(level,Taxonomy,rank) %>% 
   pivot_wider(names_from = level,values_from = Taxonomy) 
-colnames(top_10_tax) <- c("Rank","Phylum","Class","Order","Family","Genus","OTU","ASV")
+colnames(top_10_tax_table) <- c("Rank","Phylum","Class","Order","Family","Genus","OTU","ASV")
   
-ranked_tax %>% 
-  filter(rank <= 10) %>% 
-  mutate(Taxonomy=case_when(level=="otu" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
-                            level=="asv" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
-                            TRUE ~ Taxonomy)) %>% 
-  mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1)) %>% 
-  mutate(Taxonomy=paste0(Taxonomy," (",OTU,")"))
+# ranked_tax %>% 
+#   filter(rank <= 10) %>% 
+#   mutate(Taxonomy=case_when(level=="otu" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+#                             level=="asv" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+#                             TRUE ~ Taxonomy)) %>% 
+#   mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1)) %>% 
+#   mutate(Taxonomy=paste0(Taxonomy," (",OTU,")"))
   
-kable(top_10_tax,format="html",booktabs=T,align="clllllll",
+kable(top_10_tax_table,format="html",booktabs=T,align="clllllll",
       col.names = c("Rank",levels_names)) %>% 
    kable_material(c("hover","condensed"))
 
@@ -1240,19 +1270,179 @@ kable(top_10_tax,format="html",booktabs=T,align="clllllll",
 library(glue)
 library(ggtext)
 
-data <- tibble(bactname = c("Staphylococcaceae", "Moraxella", "Streptococcus", "Acinetobacter"),
-               OTUname = c("OTU 1", "OTU 2", "OTU 3", "OTU 4"),
-               value = c(-0.5, 0.5, 2, 3))
+# data <- tibble(bactname = c("Staphylococcaceae", "Moraxella", "Streptococcus", "Acinetobacter"),
+#                OTUname = c("OTU 1", "OTU 2", "OTU 3", "OTU 4"),
+#                value = c(-0.5, 0.5, 2, 3))
+# ranked_tax %>% 
+#   filter(rank <= 10) %>% 
+#   mutate(Taxonomy=case_when(level=="otu" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+#                             level=="asv" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+#                             TRUE ~ Taxonomy)) %>% 
+#   mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1)) %>% 
+#   mutate(name = glue("<i>{Taxonomy}</i> ({OTU})")) %>% 
+#   ggplot(aes(mean_AUC_diff,name)) +
+#     geom_col(alpha = 0.5) + 
+#     scale_fill_identity() +
+#     theme(
+#       axis.text.y = element_markdown(),
+#       plot.caption = element_markdown(lineheight = 1.2))
+# 
+# data %>% mutate(
+#   name = glue("<i>{bactname}</i> ({OTUname})"),
+#   name = fct_reorder(name, value))  %>%
+#   ggplot(aes(value, name)) + 
+#     geom_col(alpha = 0.5) + 
+#     scale_fill_identity() +
+#     theme(
+#       axis.text.y = element_markdown(),
+#       plot.caption = element_markdown(lineheight = 1.2))
+# 
+# 
+# ggplot(data = diamonds) + stat_summary(
+#   mapping = aes(x = depth, y = cut),
+#   fun.min = function(z) { quantile(z,0.25) },
+#   fun.max = function(z) { quantile(z,0.75) },
+#   fun = median)
 
-data %>% mutate(
-  name = glue("<i>{bactname}</i> ({OTUname})"),
-  name = fct_reorder(name, value))  %>%
-  ggplot(aes(value, name)) + 
-    geom_col(alpha = 0.5) + 
-    scale_fill_identity() +
-    theme(
-      axis.text.y = element_markdown(),
-      plot.caption = element_markdown(lineheight = 1.2))
+top_10_data <- inner_join(rf_imp_tax,top_10_tax,by=c("level","OTU","Taxonomy")) %>% 
+  mutate(level = factor(level,levels=levels,labels=levels_names)) %>% 
+  select(level,seed,OTU,Taxonomy,AUC_diff,rank) %>% 
+  mutate(Taxonomy=case_when(level=="OTU" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+                            level=="ASV" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
+                            TRUE ~ Taxonomy)) %>% 
+  mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1)) %>% 
+  mutate(Taxonomy=gsub("_"," ",Taxonomy)) %>% 
+  mutate(Taxonomy=gsub("unclassified","unclass.",Taxonomy)) %>% 
+  mutate(name = glue("<i>{Taxonomy}</i> ({OTU})")) 
+
+plot_top_imp <- function(top_data,tax_level){
+  top_data %>% 
+    filter(level == tax_level) %>% 
+    arrange(rank) %>% 
+    ggplot(aes(x=AUC_diff,y=reorder(name,desc(rank)))) +
+      #geom_jitter(color=colors2[tax_level],fill=alpha(colors2[tax_level],0.6)) +
+      stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color=colors2[tax_level]) +
+      theme_bw() +
+      theme(axis.title.y = element_blank(),
+        axis.text.y = element_markdown(),
+        plot.caption = element_markdown(lineheight = 1.2)) +
+      ggtitle(tax_level) +
+      xlab("Decrease in AUC")
+}
+
+plotlist <- list()
+plotlist[[1]] <- plot_top_imp(top_10_data,"Phylum")
+plotlist[[2]] <- plot_top_imp(top_10_data,"Class")
+plotlist[[3]] <- plot_top_imp(top_10_data,"Order")
+plotlist[[4]] <- plot_top_imp(top_10_data,"Family")
+plotlist[[5]] <- plot_top_imp(top_10_data,"Genus")
+plotlist[[6]] <- plot_top_imp(top_10_data,"OTU")
+plotlist[[7]] <- plot_top_imp(top_10_data,"ASV")
+
+plot_grid(plotlist = plotlist,ncol = 2,align = "v")
+ggsave("./figures/top10_imp.png",height = 10)
+
+
+# gp1<- ggplot_gtable(ggplot_build(plotlist[[1]]))
+# gp2<- ggplot_gtable(ggplot_build(plotlist[[2]]))
+# gp3<- ggplot_gtable(ggplot_build(plotlist[[3]]))
+# gp4<- ggplot_gtable(ggplot_build(plotlist[[4]]))
+# gp5<- ggplot_gtable(ggplot_build(plotlist[[5]]))
+# gp6<- ggplot_gtable(ggplot_build(plotlist[[6]]))
+# gp7<- ggplot_gtable(ggplot_build(plotlist[[7]]))
+# 
+# maxWidth = unit.pmax(gp1$widths[2:3], 
+#                      gp2$widths[2:3],
+#                      gp3$widths[2:3],
+#                      gp4$widths[2:3],
+#                      gp5$widths[2:3],
+#                      gp6$widths[2:3],
+#                      gp7$widths[2:3])
+# 
+# gp1$widths[2:3] <- maxWidth
+# gp2$widths[2:3] <- maxWidth
+# gp3$widths[2:3] <- maxWidth
+# gp4$widths[2:3] <- maxWidth
+# gp5$widths[2:3] <- maxWidth
+# gp6$widths[2:3] <- maxWidth
+# gp7$widths[2:3] <- maxWidth
+# 
+# grid.arrange(gp1,gp2,gp3,gp4,gp5,gp6,gp7)
+# ggsave("./figures/top10_imp.png")
+# 
+# ggarrange(plotlist = plotlist,ncol=2)
+
+# grid.arrange(plotlist[[1]],
+#              plotlist[[2]],
+#              plotlist[[3]],
+#              plotlist[[4]],
+#              plotlist[[5]],
+#              plotlist[[6]],
+#              plotlist[[7]])
+
+```
+## Correlated Features
+Highly correlated model features should be collapsed (i.e. permuted together) when quantifying permutation importance.
+First checking if any features are correlated in this dataset.
+
+```{r corr_feats}
+
+
+get_annotated_corr <- function(tax_level){
+  l_cor <- read_csv(paste0("../analysis/taxa_correlations_",tax_level,".csv"),
+                    col_types = cols(.default = col_character(),
+                                     corr = col_double(), 
+                                     proc_corr = col_double())) 
+  l_tax <- read_tsv(paste0("../data/",tax_level,"/crc.taxonomy"),
+                     col_types = c(Size = col_double(),
+                                   .default = col_character())) %>%
+    select(-Size)
+  
+  merge <- inner_join(l_cor,l_tax,by=c("taxa1"="OTU")) %>% 
+    rename(taxa1_name=Taxonomy) %>% 
+    inner_join(.,l_tax,by=c("taxa2"="OTU")) %>% 
+    rename(taxa2_name=Taxonomy) %>% 
+    select(level,taxa1,taxa2,taxa1_name,taxa2_name,proc_corr) %>% 
+    rename(corr=proc_corr)
+  
+  return(merge)
+}
+
+annotated_feature_correlations <- get_annotated_corr("phylum") %>% 
+  bind_rows(get_annotated_corr("class")) %>% 
+  bind_rows(get_annotated_corr("order")) %>% 
+  bind_rows(get_annotated_corr("family")) %>% 
+  bind_rows(get_annotated_corr("genus")) %>% 
+  bind_rows(get_annotated_corr("otu")) %>% 
+  bind_rows(get_annotated_corr("asv"))
+  
+
+maxmin_corr <- annotated_feature_correlations %>% 
+  mutate(level=factor(level,levels=levels)) %>% 
+  group_by(level) %>% 
+  summarise(max_corr = max(corr),
+            min_corr = min(corr))
+
+corr90 <- annotated_feature_correlations %>% 
+  filter(abs(corr) > 0.9) 
+
+annotated_feature_correlations %>% 
+  filter(level == "genus") %>% 
+  filter(abs(corr) > 0.85)
+  
+# View(annotated_feature_correlations %>% 
+#        filter(level == "otu") %>%
+#        filter(abs(corr) < 0.9) %>% 
+#        filter(abs(corr) > 0.8))
+
+#c("Otu00229","Otu00328","Otu00331", "Otu00361", "Otu00413", "Otu00449")
+```
+
+## Importance - threshold 0.9 {#importance90}
+
+```{r importance90,echo=F}
+
+
 
 ```
 
@@ -1276,7 +1466,7 @@ level_nOTU <- NULL
 for(l in levels){
   sub_data <- prevalence %>% 
     filter(level==l,kept==1)
-  hist <- hist(sub_data$prevalence,breaks = seq(0,1,0.25),plot=FALSE)
+  hist <- hist(sub_data$total_prevalence,breaks = seq(0,1,0.1),plot=FALSE)
 
   nOTU <- sub_data %>%
     select(name) %>% 
@@ -1295,19 +1485,819 @@ for(l in levels){
 level_nOTU <- level_nOTU %>% 
   mutate(level_name = levels_names) 
 labs <- paste0(level_nOTU$level_name," (",level_nOTU$nOTU,")")
+pal <- colors2
+names(pal) <- labs
+  
 pct_bins %>%
   mutate(level=factor(level,levels=levels,labels=labs)) %>% 
   ggplot(aes(x=prev,y=pct,fill=level)) +
     geom_bar(stat = "identity") +
-    facet_wrap(~level) +
+    facet_wrap(~level,ncol=2) +
     scale_y_continuous(expand=c(0,0),limits=c(0,0.8),labels = scales::percent_format()) +
-    scale_x_continuous(expand=c(0,0),breaks = c(0,.25,0.50,.75,1)) +
+    scale_x_continuous(expand=c(0,0),breaks = seq(0,1,0.1)) +
     xlab("Prevalence in Samples") +
     ylab("Percent of Taxa") +
     theme_bw() +
     theme(legend.position = "none",
           axis.text = element_text(size=12),
-          axis.title = element_text(size=14)) +
-  geom_text(aes(label = paste0((round(pct,digits=2)*100),"%")),nudge_y=0.05)
+          axis.title = element_text(size=14),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank()) +
+  geom_text(aes(label = paste0((round(pct,digits=2)*100),"%")),nudge_y=0.08) +
+  scale_fill_manual(values=pal)
 ggsave("./figures/bin_prevalence.png")
 ```
+
+## Prevalence VS Difference in Median Abundance {#prev-diff-abund}
+
+Taxa prevalence across all samples compared to the difference in median relative abundance between cancer and normal samples. Top 10 taxa based on importance rank are red, rank 11-20 are blue, and the rest are grey.
+
+```{r prev_abund,echo=F}
+
+library(plotly)
+
+metadata <- read_csv("../data/metadata/metadata.csv",
+                     col_types = cols(.default = col_double(),
+                                      sample = col_character(),
+                                      Dx_Bin = col_character(),
+                                      dx = col_character(),
+                                      Height = col_character(),
+                                      Gender = col_character(),
+                                      Weight = col_character(),
+                                      BMI = col_character()))
+
+get_abund_prev <- function(tax_level,file,metadata,prev){
+  sub_meta <- metadata %>%
+    mutate(dx=case_when(Dx_Bin =="Adenoma" ~ "normal",
+                        Dx_Bin== "Normal" ~ "normal",
+                        Dx_Bin== "High Risk Normal" ~ "normal",
+                        Dx_Bin== "adv Adenoma" ~ "cancer",
+                        Dx_Bin== "Cancer" ~ "cancer")) %>% 
+    select(sample,dx) %>% 
+    drop_na() %>% 
+    rename(Group=sample)
+  sub_prev <- prev %>% 
+    filter(level == tax_level & kept == 1) %>% 
+    select(name,total_prevalence)
+  abund <- as.data.frame(fread(file)) %>% 
+    mutate(Group=as.character(Group)) %>% 
+    select(-label,-numOtus)
+    
+  abund_prev <- inner_join(abund,sub_meta,by="Group") %>% 
+    select(Group,dx,everything()) %>% 
+    pivot_longer(cols=starts_with("Otu"),names_to = "name",values_to = "relabun") %>% 
+    group_by(name,dx) %>% 
+    summarize(median_relabund = median(relabun)) %>% 
+    ungroup() %>% 
+    pivot_wider(id_cols = "name",names_from="dx",values_from = "median_relabund") %>% 
+    mutate(median_diff = normal - cancer) %>% 
+    inner_join(.,sub_prev,by="name")
+  
+  return(abund_prev)
+  
+}
+
+plot_abund_prev <- function(abund_prev,ranked_tax,tax_level){
+  level_ranked_tax <- ranked_tax %>% 
+    filter(level == tax_level) %>% 
+    rename(name=OTU) %>% 
+    select(-level,-mean_AUC_diff)
+  
+  ##non-interactive plot
+  
+  # plot <- abund_prev %>% 
+  #   inner_join(.,level_ranked_tax,by="name") %>% 
+  #   mutate(rank_category = case_when(rank <= 10 ~ "top10",
+  #                                    rank <= 20 ~ "top20",
+  #                                    TRUE ~ "other")) %>% 
+  #   ggplot(aes(x=prevalence,y=median_diff,color=rank_category)) +
+  #     geom_point(alpha=0.3,size=3) +
+  #     theme_bw() +
+  #     #theme(legend.position = "none") +
+  #     xlab("Prevalence") +
+  #     scale_color_manual(name="Rank",
+  #                        values=c("red","cornflowerblue","grey"),
+  #                        breaks=c("top10","top20","other")) +
+  #     ylab("Difference in median relative abundance (cancer-normal)") +
+  #     ggtitle(tax_level)
+  
+
+  # interactive plot
+  
+  data <- abund_prev %>% 
+    inner_join(.,level_ranked_tax,by="name") %>% 
+    mutate(rank_category = case_when(rank <= 10 ~ "top10",
+                                     rank <= 20 ~ "top20",
+                                     TRUE ~ "other"))
+
+  if(tax_level %in% c("otu","asv")){
+    data <- data %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"();"), `[`, 6)) %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1))
+  }
+  # plot <- ggplot(data,aes(x=prevalence,y=median_diff,color=rank_category)) +
+  #   geom_point(alpha=0.3,size=3) +
+  #   theme_bw() +
+  #   #theme(legend.position = "none") +
+  #   xlab("Prevalence") +
+  #   scale_color_manual(name="Rank",
+  #                      values=c("red","cornflowerblue","grey"),
+  #                      breaks=c("top10","top20","other")) +
+  #   ylab("Difference in median relative abundance (cancer-normal)") +
+  #   ggtitle(tax_level)
+  # ggplotly(plot) %>% 
+  #   style(hoverinfo = "name")
+  # return(plot)
+  
+  plotly <- plot_ly(data) %>% 
+    add_trace(type="scatter",
+              mode="markers",
+              x= ~total_prevalence,
+              y = ~median_diff, 
+              color= ~factor(rank_category,levels=c("top10","top20","other")),
+              hoverinfo="text",
+              text = ~paste("</br>",Taxonomy,"(",name,")",
+                            "</br> Prevalence: ",round(total_prevalence,digits=2),
+                            "</br> Diff median relabund: ",round(median_diff,digits=5)),
+              colors=c("red","cornflowerblue","grey"),
+              opacity=0.3,
+              marker = list(size = 10))
+  final_plotly <- plotly %>% layout(title=tax_level,
+                                    xaxis = list(title = "Overall Prevalence",autorange=TRUE,showline=TRUE), 
+                                    yaxis = list(title = "Differene in median relative abundance (cancer - normal)",
+                                                 autorange=TRUE,showline=TRUE,zerolinecolor = toRGB("grey70")))
+  return(final_plotly)
+}
+
+phylum_abund_prev <- get_abund_prev("phylum","../data/phylum/crc.relabund",metadata,prevalence)
+plot_abund_prev(phylum_abund_prev,ranked_tax,"phylum")
+
+class_abund_prev <- get_abund_prev("class","../data/class/crc.relabund",metadata,prevalence)
+plot_abund_prev(class_abund_prev,ranked_tax,"class")
+
+order_abund_prev <- get_abund_prev("order","../data/order/crc.relabund",metadata,prevalence)
+plot_abund_prev(order_abund_prev,ranked_tax,"order")
+
+family_abund_prev <- get_abund_prev("family","../data/family/crc.relabund",metadata,prevalence)
+plot_abund_prev(family_abund_prev,ranked_tax,"family")
+
+genus_abund_prev <- get_abund_prev("genus","../data/genus/crc.relabund",metadata,prevalence)
+plot_abund_prev(genus_abund_prev,ranked_tax,"genus")
+
+otu_abund_prev <- get_abund_prev("otu","../data/otu/crc.relabund",metadata,prevalence)
+plot_abund_prev(otu_abund_prev,ranked_tax,"otu")
+
+asv_abund_prev <- get_abund_prev("asv","../data/asv/crc.relabund",metadata,prevalence)
+plot_abund_prev(asv_abund_prev,ranked_tax,"asv")
+
+```
+
+
+## Prevalence by Group {#prevalence-by-group}
+```{r prev_group,echo=F}
+plot_prev <- function(prevalence,ranked_tax,tax_level){
+  level_ranked_tax <- ranked_tax %>% 
+    filter(level == tax_level) %>% 
+    rename(name=OTU) %>% 
+    select(-level,-mean_AUC_diff)
+  
+  data <- prevalence %>% 
+    filter(level == tax_level) %>% 
+    inner_join(.,level_ranked_tax,by="name") %>% 
+    mutate(rank_category = case_when(rank <= 10 ~ "top10",
+                                     rank <= 20 ~ "top20",
+                                     TRUE ~ "other"))
+
+  if(tax_level %in% c("otu","asv")){
+    data <- data %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"();"), `[`, 6)) %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1))
+  }
+ 
+  d <- data.frame(x=seq(0,1,0.1),y=seq(0,1,0.1))
+  
+  plotly <- plot_ly(data) %>% 
+    add_trace(type="scatter",
+              mode="markers",
+              x= ~normal_prevalence,
+              y = ~srn_prevalence, 
+              color= ~factor(rank_category,levels=c("top10","top20","other")),
+              hoverinfo="text",
+              text = ~paste("</br>",Taxonomy,"(",name,")",
+                            "</br> SRN Prevalence: ",round(srn_prevalence,digits=2),
+                            "</br> Normal Prevalence: ",round(normal_prevalence,digits=2)),
+              colors=c("red","cornflowerblue","grey"),
+              opacity=0.3,
+              marker = list(size = 10))
+  final_plotly <- plotly %>% layout(title=tax_level,
+                                    xaxis = list(title = "Prevalence in Normal Samples",range=c(0,1.05),showline=TRUE,
+                                                 zerolinecolor = toRGB("grey70")), 
+                                    yaxis = list(title = "Prevalence in SRN Samples",range=c(0,1.05),showline=TRUE,
+                                                 zerolinecolor = toRGB("grey70"))) %>% 
+        add_trace(data=d,x=~x,y=~y,type="scatter",mode="lines",color=I('grey'),name="y=x line")
+  return(final_plotly)
+}
+
+
+
+
+plot_prev(prevalence,ranked_tax,"phylum")
+plot_prev(prevalence,ranked_tax,"class")
+plot_prev(prevalence,ranked_tax,"order")
+plot_prev(prevalence,ranked_tax,"family")
+plot_prev(prevalence,ranked_tax,"genus")
+plot_prev(prevalence,ranked_tax,"otu")
+plot_prev(prevalence,ranked_tax,"asv")
+  
+```
+
+## Median Non-Zero Relative Abundance by Group {#med-relabund-group}
+```{r relabund,echo=F}
+metadata <- read_csv("../data/metadata/metadata.csv",
+                     col_types = cols(.default = col_double(),
+                                      sample = col_character(),
+                                      Dx_Bin = col_character(),
+                                      dx = col_character(),
+                                      Gender = col_character(),
+                                      Height = col_character(),
+                                      Weight = col_character(),
+                                      BMI = col_character()))
+
+get_abund <- function(tax_level,file,metadata){
+  sub_meta <- metadata %>%
+    mutate(dx=case_when(Dx_Bin =="Adenoma" ~ "normal",
+                        Dx_Bin== "Normal" ~ "normal",
+                        Dx_Bin== "High Risk Normal" ~ "normal",
+                        Dx_Bin== "adv Adenoma" ~ "cancer",
+                        Dx_Bin== "Cancer" ~ "cancer")) %>% 
+    select(sample,dx) %>% 
+    drop_na() %>% 
+    rename(Group=sample)
+  abund <- as.data.frame(fread(file)) %>% 
+    mutate(Group=as.character(Group)) %>% 
+    select(-label,-numOtus)
+    
+  data <- inner_join(abund,sub_meta,by="Group") %>% 
+    select(Group,dx,everything()) %>% 
+    pivot_longer(cols=starts_with("Otu"),names_to = "name",values_to = "relabun") %>% 
+    filter(relabun > 0) %>% 
+    group_by(name,dx) %>% 
+    summarize(median_relabund = median(relabun)) %>% 
+    ungroup() %>% 
+    pivot_wider(id_cols = "name",names_from="dx",values_from = "median_relabund",values_fill = 0) 
+  return(data)
+}
+
+plot_abund <- function(data,tax_level,ranked_tax){
+  plot_data <- ranked_tax %>% 
+    filter(level == tax_level) %>% 
+    select(-mean_AUC_diff) %>% 
+    rename(name=OTU) %>% 
+    inner_join(.,data,by="name") %>% 
+    mutate(rank_category = case_when(rank <= 10 ~ "top10",
+                                     rank <= 20 ~ "top20",
+                                     TRUE ~ "other"))
+
+  if(tax_level %in% c("otu","asv")){
+    plot_data <- plot_data %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"();"), `[`, 6)) %>% 
+      mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1))
+  }
+  
+  d <- data.frame(x=seq(0,1,0.1),y=seq(0,1,0.1))
+  
+  max_relabun <- max(max(plot_data$cancer),max(plot_data$normal))
+  #axis_max <- round(max_relabun + 0.05,digits=1)
+  axis_max <- max_relabun + 0.01
+  
+  plotly <- plot_ly(plot_data) %>% 
+    add_trace(type="scatter",
+              mode="markers",
+              x= ~normal,
+              y = ~cancer, 
+              color= ~factor(rank_category,levels=c("top10","top20","other")),
+              hoverinfo="text",
+              text = ~paste("</br>",Taxonomy,"(",name,")",
+                            "</br> SRN RelAbund: ",round(cancer,digits=2),
+                            "</br> Normal RelAbund: ",round(normal,digits=2)),
+              colors=c("red","cornflowerblue","grey"),
+              opacity=0.3,
+              marker = list(size = 10))
+  final_plotly <- plotly %>% layout(title=tax_level,
+                                    xaxis = list(title = "Median Non-Zero Relative Abundance in Normal Samples",range=c(0,axis_max),showline=TRUE,
+                                                 zerolinecolor = toRGB("grey70")), 
+                                    yaxis = list(title = "Median Non-Zero Relative Abundance in SRN Samples",range=c(0,axis_max),showline=TRUE,
+                                                 zerolinecolor = toRGB("grey70"))) %>% 
+        add_trace(data=d,x=~x,y=~y,type="scatter",mode="lines",color=I('grey'),name="y=x line")
+  return(final_plotly)
+}
+
+phylum_abund <- get_abund("phylum","../data/phylum/crc.relabund",metadata)
+plot_abund(phylum_abund,"phylum",ranked_tax)
+
+class_abund <- get_abund("class","../data/class/crc.relabund",metadata)
+plot_abund(class_abund,"class",ranked_tax)
+
+order_abund <- get_abund("order","../data/order/crc.relabund",metadata)
+plot_abund(order_abund,"order",ranked_tax)
+
+family_abund <- get_abund("family","../data/family/crc.relabund",metadata)
+plot_abund(family_abund,"family",ranked_tax)
+
+genus_abund <- get_abund("genus","../data/genus/crc.relabund",metadata)
+plot_abund(genus_abund,"genus",ranked_tax)
+
+otu_abund <- get_abund("otu","../data/otu/crc.relabund",metadata)
+plot_abund(otu_abund,"otu",ranked_tax)
+
+asv_abund <- get_abund("asv","../data/asv/crc.relabund",metadata)
+plot_abund(asv_abund,"asv",ranked_tax)
+```
+
+## Sensitivity at 90% Specificity {#sens-90spec}
+
+```{r senspec,echo=F}
+
+# tax_level <- "phylum"
+# senspec <- read_csv(paste0("../data/process/senspec-",tax_level,"-rf.csv"),
+#                     col_types = cols(level = col_character(),.default = col_double()))
+# 
+# # senspec %>% 
+# #   ggplot(aes(x=threshold,y=sensitivity)) +
+# #     stat_summary(fun.y=mean,
+# #                  fun.ymin=function(x) mean(x) - sd(x),
+# #                  fun.ymax=function(x) mean(x) + sd(x),
+# #                  geom="pointrange")
+# # senspec %>% 
+# #   ggplot(aes(x=threshold)) +
+# #     stat_summary(aes(y=sensitivity),
+# #                  fun.data=median_hilow,
+# #                  geom="pointrange",size=0.2,color="blue") +
+# #     stat_summary(aes(y=specificity),
+# #                  fun.data=median_hilow,
+# #                  geom="pointrange",size=0.2,color="red")
+# #     theme_bw()
+#     
+# get_sens_vals <- function(tax_level,spec){
+#   data <-  read_csv(paste0("../data/process/senspec-",tax_level,"-rf.csv"),
+#                     col_types = cols(level = col_character(),.default = col_double()))
+#   filtered_data <- NULL
+#   for(i in 1:100){
+#     idata <- data %>% 
+#       filter(seed == i) %>% 
+#       mutate(specificity=round(specificity,digits=2)) %>% 
+#       filter(specificity >= spec) 
+#     filtered_data <- bind_rows(filtered_data,idata[1,])
+#   }
+#   if(nrow(filtered_data) < 100){
+#     stop("missing data")
+#   }
+#   return(filtered_data)
+# }
+# 
+# sens_vals <- get_sens_vals("phylum",0.9) %>% 
+#   bind_rows(.,get_sens_vals("class",0.9)) %>% 
+#   bind_rows(.,get_sens_vals("order",0.9)) %>% 
+#   bind_rows(.,get_sens_vals("family",0.9)) %>% 
+#   bind_rows(.,get_sens_vals("genus",0.9)) %>% 
+#   bind_rows(.,get_sens_vals("otu",0.9)) %>% 
+#   bind_rows(.,get_sens_vals("asv",0.9)) %>% 
+#   mutate(level=factor(level,levels = levels,labels=levels_names))
+# 
+# 
+# ggplot(sens_vals,aes(x=level,y=sensitivity,color=level)) +
+#   geom_jitter(width=0.2,alpha=0.5) +
+#   stat_summary(fun.data=median_hilow, fun.args=0.5, geom="crossbar", width=0.5, color="black") +
+#   theme_bw() +
+#   xlab("") + ylab("Sensitivity") +
+#   theme(axis.text = element_text(size=14),
+#         axis.title = element_text(size=14),
+#         legend.position = "none",
+#         panel.grid.major.x = element_blank()) +
+#   scale_y_continuous(breaks=seq(0,1,0.1),labels = scales::percent_format(accuracy = 1)) +
+#   ggtitle("Sensitivity at 90% Specificity")
+# 
+# ggplot(sens_vals,aes(x=level,y=sensitivity,color=level)) +
+#   geom_jitter(width=0.2,alpha=0.5) +
+#   stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color="black") +
+#   theme_bw() +
+#   xlab("") + ylab("Sensitivity") +
+#   theme(axis.text = element_text(size=14),
+#         axis.title = element_text(size=14),
+#         legend.position = "none",
+#         panel.grid.major.x = element_blank()) +
+#   scale_y_continuous(breaks=seq(0,1,0.1),labels = scales::percent_format(accuracy = 1)) +
+#   ggtitle("Sensitivity at 90% Specificity")
+
+# all_senspec <- read_csv(paste0("../data/process/senspec-phylum-rf.csv"),
+#                         col_types = cols(level = col_character(),.default = col_double())) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-class-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double()))) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-order-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double()))) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-family-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double()))) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-genus-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double()))) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-otu-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double()))) %>% 
+#   bind_rows(read_csv(paste0("../data/process/senspec-asv-rf.csv"),
+#                      col_types = cols(level = col_character(),.default = col_double())))
+# all_senspec %>% 
+#   group_by(threshold,level) %>% 
+#   summarise(mean_sensitivity=mean(sensitivity),
+#             sd_sensitivity=sd(sensitivity),
+#             mean_specificity=mean(specificity),
+#             sd_specificty=sd(specificity))
+#   ggplot(aes(x=1-specificity,y=sensitivity,color=level)) +
+#     geom_path()
+  
+get_level_senspec <- function(tax_level,spec_val){
+  l_probs <- read_csv(paste0("../data/process/probability-",tax_level,"-rf.csv"),
+                    col_types = cols( actual = col_character(),
+                                      level = col_character(),
+                                      .default = col_double()))
+
+  l_info <- NULL
+  aucs <- NULL
+  for(i in 1:100){
+    seed_probs <- l_probs %>% 
+      filter(seed == i)
+    
+    response <- seed_probs$actual
+    predictor <- seed_probs$cancer
+    
+    # make roc curve to get sensitivity/specificities
+    seed_roc <- roc(response,predictor,levels=c("normal","cancer"),direction="<")
+    #plot(seed_roc)
+    
+    # record sensitivity/specificity values
+    # round specificities so we can find desired spec val
+    seed_spec <- round(seed_roc$specificities,digits=2)
+    seed_sens <- seed_roc$sensitivities
+    
+    # make a table of all values
+    seed_info <- tibble(seed=i,
+                        sensitivity=seed_sens,
+                        specificity=seed_spec)
+    
+    # get just sensitivity at desired specificity
+    spec_info <- seed_info %>%
+      filter(specificity == spec_val)
+
+    #check if there are no values at the cutoff
+    if(nrow(spec_info) == 0){
+      above <- seed_info %>%
+        filter(specificity > spec_val) %>%
+        top_n(-1,wt=specificity) %>%
+        top_n(1,wt=sensitivity)
+
+      below <- seed_info %>%
+        filter(specificity < spec_val) %>%
+        top_n(1,wt=specificity) %>%
+        top_n(-1,wt=sensitivity)
+      
+      if(above$sensitivity == below$sensitivity){
+        # since the sensitivity above and below the target are the same,
+        # then assign the same sensitivity value to the target
+        spec_info <- tibble(seed=i,
+                            sensitivity=above$sensitivity,
+                            specificity=spec_val)
+
+      }else{
+        #find the slope of the line between the two points and the y-intercept
+        slope = ((above$sensitivity-below$sensitivity)/(above$specificity-below$specificity))
+        y_int = below$sensitivity - slope*below$specificity
+
+        # calculate the sensitivity for the target between the points 
+        # based on the calculated slope and intercept
+        sens_val = slope*spec_val + y_int
+
+        spec_info <- tibble(seed=i,
+                            sensitivity=sens_val,
+                            specificity=spec_val)
+      }
+    }else{
+      # get max sensitivity value for the cutoff
+      sub_info <- spec_info %>% 
+        top_n(n=1,wt=sensitivity)
+    }
+    
+    l_info <- bind_rows(l_info,sub_info) %>% 
+      mutate(level = tax_level)
+    
+  }
+  
+  return(l_info)
+  
+}
+
+library(mosaic)
+perm_p_value_senspec <- function(data, level1, level2){
+  # subset results to select AUC and condition columns and
+  # filter to only the two conditions of interest
+  test_subsample <- data %>%
+    mutate(level = as.character(level)) %>% 
+    select(level,sensitivity) %>%
+    filter((level == level1 | level == level2))
+  # quantify the absolute value of the difference in mean AUC between the two conditions (observed difference)
+  obs <- abs(diff(mosaic::mean(sensitivity ~ level, data = test_subsample)))
+  # use mosaic to shuffle condition labels and calculate difference in mean AUC - repeat 10,000 times
+  null <- do(10000) * diff(mosaic::mean(sensitivity ~ shuffle(level), data = test_subsample))
+  n <- length(null[,1]) #number of shuffled calculations
+  # r = #replications at least as extreme as observed effect
+  r <- sum(abs(null[,1]) >= obs) #count number of shuffled differences as big or bigger than observed difference
+  # compute Monte Carlo p-value with correction (Davison & Hinkley, 1997)
+  p.value=(r+1)/(n+1)
+  return(p.value)
+}
+
+
+all_sensspec90<- get_level_senspec("phylum",0.9) %>% 
+  bind_rows(get_level_senspec("class",0.9)) %>% 
+  bind_rows(get_level_senspec("order",0.9)) %>% 
+  bind_rows(get_level_senspec("family",0.9)) %>% 
+  bind_rows(get_level_senspec("genus",0.9)) %>% 
+  bind_rows(get_level_senspec("otu",0.9)) %>% 
+  bind_rows(get_level_senspec("asv",0.9)) %>% 
+  mutate(level = factor(level,levels=rev(levels),labels=rev(levels_names)))
+
+senspec_pvals <- expand_grid(x=1:length(levels_names),
+                                 y=1:length(levels_names),
+                                 ) %>%
+  filter(x < y) %>%
+  mutate(level1 = levels_names[x], 
+         level2 = levels_names[y]) %>%
+  select(-x, -y) %>%
+  group_by(level1, level2) %>%
+  summarize(p_value = perm_p_value_senspec(all_sensspec90,level1,level2),
+            .groups="drop")
+detach("package:mosaic", unload=TRUE)
+
+#testing
+# spec_val = 0.9
+# vals <- tibble(y=rev(c(0.1,0.15,0.2,0.25,0.3)),
+#                x=c(0.84,0.88,0.88,0.92,0.94))
+# vals %>% 
+#   mutate(closeness=abs(spec_val - x)) %>% 
+#   filter(closeness == min(closeness))
+# 
+# 
+# above <- vals %>%
+#   filter(x > spec_val) %>%
+#   top_n(-1,wt=x) %>%
+#   top_n(1,wt=y)
+# 
+# below <- vals %>%
+#   filter(x < spec_val) %>%
+#   top_n(1,wt=x) %>%
+#   top_n(-1,wt=y)
+#       
+# slope = ((above$y-below$y)/(above$x-below$x))
+# y_int = below$y - slope*below$x
+# 
+# slope*spec_val + y_int
+
+#interesting examples
+#tax_level="class"
+#i=13
+#tax_level="family"
+#i=89
+
+#visuals
+# plot(seed_roc)
+# abline(v=below$specificity,col="grey")
+# abline(v=above$specificity,col="grey")
+# abline(v=spec_val,col="red")
+# abline(h=sens_val,col="blue")
+
+
+# ggplot(all_sensspec90,aes(x=level,y=sensitivity,color=level)) +
+#   geom_jitter(width=0.2,alpha=0.5) +
+#   stat_summary(fun.data=median_hilow, fun.args=0.5, geom="crossbar", width=0.5, color="black") +
+#   theme_bw() +
+#   xlab("") + ylab("Sensitivity") +
+#   theme(axis.text = element_text(size=14),
+#         axis.title = element_text(size=14),
+#         legend.position = "none",
+#         panel.grid.major.x = element_blank()) +
+#   scale_y_continuous(breaks=seq(0,1,0.1),labels = scales::percent_format(accuracy = 1)) +
+#   ggtitle("Sensitivity at 90% Specificity")
+
+ggplot(all_sensspec90,aes(x=level,y=sensitivity,color=level)) +
+  geom_jitter(width=0.2,alpha=0.5,size=2,height = 0) +
+  stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color="black") +
+  theme_bw() +
+  xlab("") + ylab("Sensitivity") +
+  theme(axis.text = element_text(size=12),
+        axis.title = element_text(size=12),
+        legend.position = "none",
+        panel.grid.major.y = element_blank()) +
+        #panel.grid.major.x = element_blank()) +
+  coord_flip() +
+  scale_y_continuous(breaks=seq(0,1,0.1),labels = scales::percent_format(accuracy = 1)) +
+  #ggtitle("Sensitivity at 90% Specificity")
+  scale_color_manual(values=rev(colors2)) + 
+  annotate("text",x=levels_names,y=rep((max(all_sensspec90$sensitivity)+0.05),length(levels_names)),label=c("W","W","X","Y","Y","Y","Z")) 
+ggsave("./figures/sens_90spec.png",width = 4.5,height=5,units="in")
+
+
+
+```
+  
+
+## Averaged ROC Curve {#avg-roc}
+
+```{r avg_roc}
+
+# args <- data.frame(data="./data/otu/input_data_preproc.csv",
+#           method="rf",
+#           seed=1,
+#           taxonomy="otu",
+#           outcome_colname="dx",
+#           outcome_value="cancer",
+#           hyperparams="./data/hyperparameters/rf_hyperparameters.csv")
+
+# for each seed, over a range of specified specificities, 
+# find the sensitivities
+# us ROC curve to calculate values. 
+get_level_senspec_avg <- function(tax_level){
+  l_probs <- read_csv(paste0("../data/process/probability-",tax_level,"-rf.csv"),
+                    col_types = cols( actual = col_character(),
+                                      level = col_character(),
+                                      .default = col_double()))
+
+  l_info <- NULL
+  aucs <- NULL
+  for(i in 1:100){
+    seed_probs <- l_probs %>% 
+      filter(seed == i)
+      
+    response <- seed_probs$actual
+    predictor <- seed_probs$cancer
+    
+    seed_roc <- roc(response,predictor,levels=c("normal","cancer"),direction="<")
+    
+    seed_spec <- round(seed_roc$specificities,digits=2)
+    seed_sens <- seed_roc$sensitivities
+    
+    #plot(seed_roc)
+    
+    seed_info <- tibble(seed=i,
+                        sensitivity=seed_sens,
+                        specificity=seed_spec)
+    
+    seed_auc <- tibble(seed=i,
+                       auc=as.numeric(auc(seed_roc)))
+    
+    l_info <- bind_rows(l_info,seed_info)
+    
+    aucs <- bind_rows(aucs,seed_auc)
+  }
+  
+  l_info <- l_info %>% 
+    group_by(specificity) %>%
+    summarise(mean_sensitivity = mean(sensitivity),
+              sd_sensitivity = sd(sensitivity)) %>%
+    mutate(upper_sens = mean_sensitivity + sd_sensitivity,
+           lower_sens = mean_sensitivity - sd_sensitivity) %>% 
+    mutate(level = tax_level,
+           avg_auc = mean(aucs$auc))
+  
+  
+  return(l_info)
+  
+}
+
+all_info <- get_level_senspec_avg("phylum") %>% 
+  bind_rows(get_level_senspec_avg("class")) %>% 
+  bind_rows(get_level_senspec_avg("order")) %>% 
+  bind_rows(get_level_senspec_avg("family")) %>% 
+  bind_rows(get_level_senspec_avg("genus")) %>% 
+  bind_rows(get_level_senspec_avg("otu")) %>% 
+  bind_rows(get_level_senspec_avg("asv")) %>% 
+  mutate(level=factor(level,levels=levels,labels=levels_names)) %>% 
+  mutate(upper_sens = case_when(upper_sens > 1 ~ 1,
+                                TRUE ~ upper_sens),
+         lower_sens = case_when(upper_sens < 0 ~ 0,
+                                TRUE ~ lower_sens))
+
+all_info %>% 
+  ggplot(aes(x=specificity,y=mean_sensitivity,
+             ymin=lower_sens,ymax=upper_sens)) +
+    geom_line(aes(color=level),alpha=0.7) +
+    geom_ribbon(aes(fill=level),alpha=0.2) +
+    coord_equal() +
+    geom_abline(intercept = 1,lty="dashed",color="grey50") +
+    #scale_x_continuous(expand = c(0,0),labels = scales::percent_format(accuracy = 1)) +
+    scale_y_continuous(expand = c(0,0),labels = scales::percent_format(accuracy = 1)) +
+    xlab("Specificity") +
+    ylab("Average Sensitivity") +
+    #facet_wrap(~level,ncol=3) +  
+    scale_x_reverse(expand = c(0,0),labels = scales::percent_format(accuracy = 1)) +
+    theme_bw() +
+    theme(legend.position = "top",
+          axis.text = element_text(size=11),
+          axis.title = element_text(size=12),
+          axis.text.x = element_text(vjust = -0.5),
+          axis.title.x = element_text(vjust= -0.5)) +
+    guides(color = guide_legend(nrow = 1,title=""),
+           fill = guide_legend(nrow = 1,title="")) +
+    scale_fill_manual(values=colors2) +
+    scale_color_manual(values=colors2)
+#ggsave("./figures/roc_all.png",width=6)
+
+ggplot(all_info,aes(x=specificity*100,y=mean_sensitivity*100,
+                    ymin=lower_sens*100,ymax=upper_sens*100)) +
+    geom_line(aes(color=level),alpha=0.8,lwd=1) +
+    geom_ribbon(aes(fill=level),alpha=0.2) +
+    coord_equal() +
+    geom_abline(intercept = 1,lty="dashed",color="grey50") +
+    #scale_x_continuous(expand = c(0,0)) +
+    scale_y_continuous(expand = c(0,0)) + #,labels = scales::percent_format(accuracy = 1)) +
+    xlab("Specificity (%)") +
+    ylab("Average Sensitivity (%)") +
+    facet_wrap(~level,nrow=2) +  
+    scale_x_reverse(expand = c(0,0)) + #,labels = scales::percent_format(accuracy = 1)) +  
+    theme_bw() +
+    theme(legend.position = "top",
+          axis.text.x = element_text(angle = -45,vjust=0.5,hjust=0),
+          axis.text = element_text(size=9),
+          axis.title = element_text(size=12)) +
+    guides(color = guide_legend(nrow = 1,title=""),
+           fill = guide_legend(nrow = 1,title="")) +
+    geom_text(aes(x = 25, y = 25, label = paste0("mean AUC\n",round(avg_auc,digits=3)))) + 
+    scale_fill_manual(values=colors2) +
+    scale_color_manual(values=colors2)
+ggsave("./figures/roc_by_level.png",width=7,height=5)
+    
+```
+
+```{r misc_roc, include=F}
+# get_avg_senspec <- function(tax_level){
+#   l_senspec <- read_csv(paste0("../data/process/senspec-",tax_level,"-rf.csv"),
+#                       col_types = cols(level = col_character(),.default = col_double()))
+#   
+#   l_avg_senspec <- l_senspec %>% 
+#     group_by(threshold) %>% 
+#     summarise(mean_sensitivity = mean(sensitivity),
+#               sd_sensitivity = sd(sensitivity),
+#               mean_specificity = mean(specificity),
+#               sd_specificity = sd(specificity))  %>% 
+#     mutate(level = tax_level,
+#            sens_upper = mean_sensitivity + sd_sensitivity,
+#            sens_lower = mean_sensitivity - sd_sensitivity) 
+#   return(l_avg_senspec)
+# }
+#  
+# all_avg_senspec <- get_avg_senspec("phylum") %>% 
+#   bind_rows(get_avg_senspec("class")) %>% 
+#   bind_rows(get_avg_senspec("order")) %>% 
+#   bind_rows(get_avg_senspec("family")) %>% 
+#   bind_rows(get_avg_senspec("genus")) %>%
+#   bind_rows(get_avg_senspec("otu")) %>%
+#   bind_rows(get_avg_senspec("asv")) %>% 
+#   mutate(level=factor(level,levels=levels,labels=levels_names))
+# 
+# all_avg_senspec %>% 
+#   ggplot(aes(x=1-mean_specificity,y=mean_sensitivity,
+#              ymin=sens_lower,ymax=sens_upper)) +
+#     geom_line(aes(color=level),alpha=0.7) +
+#     geom_ribbon(aes(fill=level),alpha=0.2) +
+#     coord_equal() +
+#     geom_abline(slope=1,intercept = 0,lty="dashed",color="grey50") +
+#     scale_x_continuous(expand = c(0,0)) +
+#     scale_y_continuous(expand = c(0,0)) +
+#     xlab("1 - Averaged Specificity") +
+#     ylab("Averaged Sensitivity") +
+#     #facet_wrap(~level,ncol=3) +
+#     theme_bw() 
+# 
+# all_avg_senspec %>% 
+#   #filter(level %in% c("Family","Genus","OTU","ASV")) %>% 
+#   ggplot(aes(x=1-mean_specificity,y=mean_sensitivity,
+#              ymin=sens_lower,ymax=sens_upper)) +
+#     geom_line(aes(color=level),alpha=0.7) +
+#     geom_ribbon(aes(fill=level),alpha=0.2) +
+#     coord_equal() +
+#     geom_abline(slope=1,intercept = 0,lty="dashed",color="grey50") +
+#     scale_x_continuous(expand = c(0,0)) +
+#     scale_y_continuous(expand = c(0,0)) +
+#     xlab("1 - Averaged Specificity") +
+#     ylab("Averaged Sensitivity") +
+#     #facet_wrap(~level,ncol=3) +
+#     theme_bw() 
+
+# all_avg_senspec %>% 
+#   ggplot(aes(x=1-mean_specificity,y=mean_sensitivity)) +
+#     geom_line(aes(color=level),lwd=1.2,alpha=0.7) +
+#     coord_equal() +
+#     geom_abline(slope=1,intercept = 0,lty="dashed",color="grey50") +
+#     scale_x_continuous(expand = c(0,0)) +
+#     scale_y_continuous(expand = c(0,0)) +
+#     xlab("1 - Averaged Specificity") +
+#     ylab("Averaged Sensitivity") +
+#     theme_bw()
+
+```
+
