@@ -73,6 +73,7 @@
 \doublespacing
 \usepackage[left]{lineno}
 \linenumbers
+\usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -86,6 +87,7 @@
 \usepackage{threeparttablex}
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
+\usepackage{xcolor}
 \ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -157,36 +159,36 @@ words)}\label{introduction-250-words}}
 
 Colorectal cancer is one of the most common cancers in men and women and
 a leading cause of cancer related deaths in the United States
-(\protect\hyperlink{ref-siegel2020}{Siegel et al. 2020}). Early
-detection and treatment are essential to increase survival rates, but
-for a variety of reasons including the invasiveness and high cost of
-screening (i.e.~colonoscopy), many people do not comply with recommended
-screening guidelines (\protect\hyperlink{ref-garcuxeda2011a}{García and
-Z 2011}) prompting a need for low cost, non-invasive detection methods.
-A growing body of research points to the gut microbiome as a promising
-target for non-invasive screening to detect screen relevant neoplasias
-(neoplasms?) (SRNs) consisting of pre-cancerous polyps (i.e.~advanced
-adenomas) and carcinomas. Efforts to realize the diagnostic potential of
-the gut microbiome in detecting SRNs have focused on machine learning
-(ML) methods using abundances from operational taxonomic unit (OTU)
+(\protect\hyperlink{ref-siegel2020}{1}). Early detection and treatment
+are essential to increase survival rates, but for a variety of reasons
+including the invasiveness and high cost of screening
+(i.e.~colonoscopy), many people do not comply with recommended screening
+guidelines (\protect\hyperlink{ref-garcuxeda2011a}{2}) prompting a need
+for low cost, non-invasive detection methods. A growing body of research
+points to the gut microbiome as a promising target for non-invasive
+screening to detect screen relevant neoplasias (neoplasms?) (SRNs)
+consisting of pre-cancerous polyps (i.e.~advanced adenomas) and
+carcinomas. Efforts to realize the diagnostic potential of the gut
+microbiome in detecting SRNs have focused on machine learning (ML)
+methods using abundances from operational taxonomic unit (OTU)
 classifications based on amplicon sequencing of the 16S rRNA gene \{\}.
 However, whether this is the optimal taxonomic resolution for
 classifying SRNs from microbiome data is unknown. Additionally, recent
 work has pushed for the use of amplicon sequence variants (ASVs) to
 replace OTUs for marker-gene analysis because of the improved resolution
-with ASVs (\protect\hyperlink{ref-callahan2017}{Callahan, McMurdie, and
-Holmes 2017}). However, whether the additional resolution provided by
-ASVs is useful for ML classification is unclear \{pat preprint?\}. Since
-ML classification relies on consistent differences between groups, its
-possible that the resolution at the ASV level is too individualized to
-accurately differentiate groups. Topçuoğlu \emph{et al}
-(\protect\hyperlink{ref-topuxe7uolu2020}{Topçuoğlu et al. 2020})
-recently demonstrated effective application of machine learning (ML) to
-microbiome based classification problems and developed a framework for
-applying ML practices in a more reproducible way (mikropml). This
-analysis utilizes the reproducible framework developed by Topçuoğlu
-\emph{et al} to quantify which ML method and taxonomic level produce the
-best performing classifier for detecting SRNs from microbiome data.
+with ASVs (\protect\hyperlink{ref-callahan2017}{3}). However, whether
+the additional resolution provided by ASVs is useful for ML
+classification is unclear \{pat preprint?\}. Since ML classification
+relies on consistent differences between groups, its possible that the
+resolution at the ASV level is too individualized to accurately
+differentiate groups. Topçuoğlu \emph{et al}
+(\protect\hyperlink{ref-topuxe7uolu2020}{4}) recently demonstrated
+effective application of machine learning (ML) to microbiome based
+classification problems and developed a framework for applying ML
+practices in a more reproducible way (mikropml). This analysis utilizes
+the reproducible framework developed by Topçuoğlu \emph{et al} to
+quantify which ML method and taxonomic level produce the best performing
+classifier for detecting SRNs from microbiome data.
 
 \hypertarget{results-700-words}{%
 \subsection{Results (\textasciitilde700
@@ -207,11 +209,26 @@ model, the highest AUROCs were observed for family (median AUROC:
 0.687), genus (median AUROC: 0.686), and OTU (median AUROC: 0.698) level
 data with no significant difference between the three (Figure 1).
 Performance with ASVs (median AUROC: 0.676) was significantly lower than
-OTU and genus (p \textless{} 0.05) but not family level (p = 0.06).
-These results were consistent for ASVs generated with DADA2 \{\} (median
+OTU (p \textless{} 0.01), but borderline equivalent to family (p = 0.06)
+and genus (p = 0.05) levels. These results were consistent for ASVs
+generated with DADA2 (\protect\hyperlink{ref-callahan2016}{5}) (median
 AUROC: 0.66). These results suggest that finer taxonomic resolution is
 not necessarily better for differentiating a persons cancer status from
 the microbiome.
+
+While AUROC values between models is a useful way to compare the overall
+model performance across all thresholds, they can be misleading
+(\protect\hyperlink{ref-lobo2008}{6}). Depending on the intended
+implementation of the model, one may want to optimize the true-positive
+rate(or sensitivity) over the false-postivite rate (or specificity). To
+further compare the model performance across taxonomic levels we
+compared the sensitivity of the models
+
+\begin{itemize}
+\tightlist
+\item
+  on average, how many positives are missed with ASV?
+\end{itemize}
 
 One hypothesis for the observation that model performance increases from
 phylum to OTU level then drops slightly at ASV level is that at higher
@@ -221,11 +238,11 @@ level of genus/OTU data there is enough data and variation but at the
 ASV level, the data is too specific to individuals and doesn't overlap
 enough. Examination of the prevalence of taxa in samples at each level
 supports this idea. A majority of taxa are present in greater than 75\%
-of samples at the phylum (67\% of taxa) and class (63\% of taxa)
-levels). The opposite is observed at the OTU and ASV level where 60\%
-and 53\% of taxa respectively are only present in less than 25\% of
-samples (Supplemental Figure 2). While the resolution provided by ASVs
-is useful in
+of samples at the phylum (67\% of taxa) and class (63\% of taxa) levels.
+The opposite is observed at the OTU and ASV level where 60\% and 53\% of
+taxa respectively are only present in less than 25\% of samples
+(Supplemental Figure 3). While the resolution provided by ASVs is useful
+in
 
 ~~\textbf{TODO: what are important taxa, patterns along levels (e.g fuso
 always in top )}
@@ -245,6 +262,8 @@ features (3.5\%) remained after preprocessing (Table 1).
 \hspace*{0.333em}\hspace*{0.333em}(depending on answer can discuss why
 features were removed - e.g.~only in one or a few samples)
 
+Mikropml\{\}
+
 \hypertarget{discussionconclusions-250-words}{%
 \subsection{Discussion/Conclusions (\textasciitilde250
 words)}\label{discussionconclusions-250-words}}
@@ -252,8 +271,8 @@ words)}\label{discussionconclusions-250-words}}
 These results demonstrate that consideration of the appropriate
 taxonomic resolution for utilizing the microbiome as a predictive tool.
 In general, we found that finer resolution (e.g.~ASVs) does not add
-additional sensitivity to model predicition and at the ASV level
-actually impedes model performance due to the sparsity of shared taxa.
+additional sensitivity to model prediction and at the ASV level actually
+impedes model performance due to the sparsity of shared taxa.
 
 \begin{itemize}
 \tightlist
@@ -329,16 +348,20 @@ All code is available at: \textbf{TODO: link to code}
 \hypertarget{figures}{%
 \subsection{Figures}\label{figures}}
 
-\includegraphics[width=0.75\textwidth,height=\textheight]{../exploratory/figures/rf_with_stats.png}
+\includegraphics{manuscript_files/figure-latex/fig1-1.pdf}
 
-\textbf{Figure 1: Random Forest Model Performance with Significance.}
-Boxplots of AUROC values on the test dataset for 100 seeds predicting
-SRNs using a Random Forest model. Dashed line denotes AUROC of 0.5 which
-is equivalent to random classification. Significance between taxonomic
+\textbf{Figure 1: Random Forest Model Performance.} \textbf{A)} Boxplots
+with points of area under the receiver operating characteristic curve
+(AUROC) values on the test dataset for 100 seeds predicting SRNs using a
+Random Forest model. Dashed line denotes AUROC of 0.5 which is
+equivalent to random classification. Significance between taxonomic
 levels was quantified by comparing the difference in mean AUROC and is
 denoted by letters A through E on the right side of the plot; taxonomic
 levels with the same letter are in the same significance group and are
-not significantly different from one another.
+not significantly different from one another. \textbf{B)} Strip plot of
+the sensitivity at a specificity of 90\% across the 100 model
+iterations. Black points denote the median and the lines denote the IQR.
+The letters W through Z denote the significance groups.
 
 \newpage
 
@@ -349,16 +372,16 @@ not significantly different from one another.
 \toprule
 Taxonomic Level & Number of Features &
 \makecell[c]{Number of Features \\ After Preprocessing} &
-\makecell[c]{Percent of Features Kept \\ After Preprocessing} \\
+\makecell[c]{Percent of Features Kept \\ After Preprocessing} \\ \addlinespace
 \midrule
 \endhead
-Phylum & 19 & 9 & 47.4 \% \\
-Class & 36 & 19 & 52.8 \% \\
-Order & 65 & 28 & 43.1 \% \\
-Family & 124 & 54 & 43.5 \% \\
-Genus & 316 & 115 & 36.4 \% \\
-OTU & 20079 & 705 & 3.5 \% \\
-ASV & 104106 & 478 & 0.5 \% \\
+Phylum & 19 & 9 & 47.4 \% \\ \addlinespace
+Class & 36 & 19 & 52.8 \% \\ \addlinespace
+Order & 65 & 28 & 43.1 \% \\ \addlinespace
+Family & 124 & 54 & 43.5 \% \\ \addlinespace
+Genus & 316 & 115 & 36.4 \% \\ \addlinespace
+OTU & 20079 & 705 & 3.5 \% \\ \addlinespace
+ASV & 104106 & 478 & 0.5 \% \\ \addlinespace
 \bottomrule
 \end{longtable}
 
@@ -377,40 +400,78 @@ described in the methods.
 Boxplot of AUROC values on the test dataset for 100 seeds for each model
 type across all taxonomic levels.
 
-\includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/bin_prevalence.png}\\
-\textbf{Supplemental Figure 2: Prevalence of Taxa in Samples.}
+\includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/roc_by_level.png}
+
+\textbf{Supplemental Figure 2: Averaged ROC curves} ROC curves averaged
+across the 100 iterations of the model. The shaded region represents the
+standard deviation form the mean.
+
+\includegraphics[width=\textwidth,height=0.45\textheight]{../exploratory/figures/bin_prevalence.png}\\
+\textbf{Supplemental Figure 3: Prevalence of Taxa in Samples.}
 Distribution of taxa prevalence in samples at each taxonomic level.
+
+\newpage
+
+\includegraphics[width=\textwidth,height=0.85\textheight]{../exploratory/figures/top10_imp.png}\\
+\textbf{Supplemental Figure 4: Top 10 important taxa at each taxonomic
+level.} Summary of the 10 most important taxa for the random forest
+models at each taxonomic level based on the average decrease in AUC when
+the feature is permuted.
+
+\newpage
 
 \hypertarget{references}{%
 \subsection*{References}\label{references}}
 \addcontentsline{toc}{subsection}{References}
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
-\leavevmode\hypertarget{ref-callahan2017}{}%
-Callahan, Benjamin J., Paul J. McMurdie, and Susan P. Holmes. 2017.
-{``Exact Sequence Variants Should Replace Operational Taxonomic Units in
-Marker-Gene Data Analysis.''} \emph{The ISME Journal} 11 (12): 2639--43.
-\url{https://doi.org/10.1038/ismej.2017.119}.
+\begin{CSLReferences}{0}{1}
+\leavevmode\hypertarget{ref-siegel2020}{}%
+\CSLLeftMargin{1. }
+\CSLRightInline{\textbf{Siegel RL}, \textbf{Miller KD}, \textbf{Sauer
+AG}, \textbf{Fedewa SA}, \textbf{Butterly LF}, \textbf{Anderson JC},
+\textbf{Cercek A}, \textbf{Smith RA}, \textbf{Jemal A}. 2020. Colorectal
+cancer statistics, 2020. CA: A Cancer Journal for Clinicians
+\textbf{70}:145--164. doi:\url{https://doi.org/10.3322/caac.21601}.}
 
 \leavevmode\hypertarget{ref-garcuxeda2011a}{}%
-García, Gimeno, and Antonio Z. 2011. {``Factors Influencing Colorectal
-Cancer Screening Participation.''} \emph{Gastroenterology Research and
-Practice} 2012 (December): e483417.
-\url{https://doi.org/10.1155/2012/483417}.
+\CSLLeftMargin{2. }
+\CSLRightInline{\textbf{García G}, \textbf{Z A}. 2011. Factors
+Influencing Colorectal Cancer Screening Participation. Gastroenterology
+Research and Practice \textbf{2012}:e483417.
+doi:\href{https://doi.org/10.1155/2012/483417}{10.1155/2012/483417}.}
 
-\leavevmode\hypertarget{ref-siegel2020}{}%
-Siegel, Rebecca L., Kimberly D. Miller, Ann Goding Sauer, Stacey A.
-Fedewa, Lynn F. Butterly, Joseph C. Anderson, Andrea Cercek, Robert A.
-Smith, and Ahmedin Jemal. 2020. {``Colorectal Cancer Statistics,
-2020.''} \emph{CA: A Cancer Journal for Clinicians} 70 (3): 145--64.
-https://doi.org/\url{https://doi.org/10.3322/caac.21601}.
+\leavevmode\hypertarget{ref-callahan2017}{}%
+\CSLLeftMargin{3. }
+\CSLRightInline{\textbf{Callahan BJ}, \textbf{McMurdie PJ},
+\textbf{Holmes SP}. 2017. Exact sequence variants should replace
+operational taxonomic units in marker-gene data analysis. The ISME
+Journal \textbf{11}:2639--2643.
+doi:\href{https://doi.org/10.1038/ismej.2017.119}{10.1038/ismej.2017.119}.}
 
 \leavevmode\hypertarget{ref-topuxe7uolu2020}{}%
-Topçuoğlu, Begüm D., Nicholas A. Lesniak, Mack T. Ruffin, Jenna Wiens,
-and Patrick D. Schloss. 2020. {``A Framework for Effective Application
-of Machine Learning to Microbiome-Based Classification Problems.''}
-\emph{mBio} 11 (3). \url{https://doi.org/10.1128/mBio.00434-20}.
+\CSLLeftMargin{4. }
+\CSLRightInline{\textbf{Topçuoğlu BD}, \textbf{Lesniak NA},
+\textbf{Ruffin MT}, \textbf{Wiens J}, \textbf{Schloss PD}. 2020. A
+Framework for Effective Application of Machine Learning to
+Microbiome-Based Classification Problems. mBio \textbf{11}.
+doi:\href{https://doi.org/10.1128/mBio.00434-20}{10.1128/mBio.00434-20}.}
+
+\leavevmode\hypertarget{ref-callahan2016}{}%
+\CSLLeftMargin{5. }
+\CSLRightInline{\textbf{Callahan BJ}, \textbf{McMurdie PJ},
+\textbf{Rosen MJ}, \textbf{Han AW}, \textbf{Johnson AJA}, \textbf{Holmes
+SP}. 2016. DADA2: High-resolution sample inference from Illumina
+amplicon data. Nature Methods \textbf{13}:581--583.
+doi:\href{https://doi.org/10.1038/nmeth.3869}{10.1038/nmeth.3869}.}
+
+\leavevmode\hypertarget{ref-lobo2008}{}%
+\CSLLeftMargin{6. }
+\CSLRightInline{\textbf{Lobo JM}, \textbf{Jiménez-Valverde A},
+\textbf{Real R}. 2008. AUC: a misleading measure of the performance of
+predictive distribution models. Global Ecology and Biogeography
+\textbf{17}:145--151.
+doi:\href{https://doi.org/10.1111/j.1466-8238.2007.00358.x}{10.1111/j.1466-8238.2007.00358.x}.}
 
 \end{CSLReferences}
 
