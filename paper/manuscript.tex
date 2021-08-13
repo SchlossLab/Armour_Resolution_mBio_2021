@@ -153,10 +153,6 @@ Ann Arbor, MI 48109
 
 \newpage
 
-\hypertarget{introduction-250-words}{%
-\subsection{Introduction (\textasciitilde250
-words)}\label{introduction-250-words}}
-
 Colorectal cancer is one of the most common cancers in men and women and
 a leading cause of cancer related deaths in the United States
 (\protect\hyperlink{ref-siegel2020}{1}). Early detection and treatment
@@ -178,10 +174,10 @@ work has pushed for the use of amplicon sequence variants (ASVs) to
 replace OTUs for marker-gene analysis because of the improved resolution
 with ASVs (\protect\hyperlink{ref-callahan2017}{3}). However, whether
 the additional resolution provided by ASVs is useful for ML
-classification is unclear \{pat preprint?\}. Since ML classification
-relies on consistent differences between groups, its possible that the
-resolution at the ASV level is too individualized to accurately
-differentiate groups. Topçuoğlu \emph{et al}
+classification is unclear \{\}. Since ML classification relies on
+consistent differences between groups, its possible that the resolution
+at the ASV level is too individualized to accurately differentiate
+groups. Topçuoğlu \emph{et al}
 (\protect\hyperlink{ref-topuxe7uolu2020}{4}) recently demonstrated
 effective application of machine learning (ML) to microbiome based
 classification problems and developed a framework for applying ML
@@ -189,10 +185,6 @@ practices in a more reproducible way (mikropml). This analysis utilizes
 the reproducible framework developed by Topçuoğlu \emph{et al} to
 quantify which ML method and taxonomic level produce the best performing
 classifier for detecting SRNs from microbiome data.
-
-\hypertarget{results-700-words}{%
-\subsection{Results (\textasciitilde700
-words)}\label{results-700-words}}
 
 Utilizing publicly available 16S rRNA sequence data from stool of
 patients with SRNs and healthy controls, we generated abundance tables
@@ -207,28 +199,32 @@ slightly with ASVs (Supplemental Figure 1). Random forest (RF) was
 consistently the top performer at most taxonomic levels. Within the RF
 model, the highest AUROCs were observed for family (median AUROC:
 0.687), genus (median AUROC: 0.686), and OTU (median AUROC: 0.698) level
-data with no significant difference between the three (Figure 1).
-Performance with ASVs (median AUROC: 0.676) was significantly lower than
-OTU (p \textless{} 0.01), but borderline equivalent to family (p = 0.06)
-and genus (p = 0.05) levels. These results were consistent for ASVs
-generated with DADA2 (\protect\hyperlink{ref-callahan2016}{5}) (median
-AUROC: 0.66). These results suggest that finer taxonomic resolution is
-not necessarily better for differentiating a persons cancer status from
-the microbiome.
+data with no significant difference between the three (Figure 1A,
+Supplemental Figure 2). Performance with ASVs (median AUROC: 0.676) was
+significantly lower than OTUs (p \textless{} 0.01), but borderline
+equivalent to family (p = 0.06) and genus (p = 0.05) levels (Figure 1A).
+These results were consistent for ASVs generated with DADA2
+(\protect\hyperlink{ref-callahan2016}{5}) (median AUROC: 0.66). These
+results suggest that finer taxonomic resolution is not necessarily
+better for identifying individuals with SRNs based on microbiome
+composition.
 
-While AUROC values between models is a useful way to compare the overall
-model performance across all thresholds, they can be misleading
-(\protect\hyperlink{ref-lobo2008}{6}). Depending on the intended
-implementation of the model, one may want to optimize the true-positive
-rate(or sensitivity) over the false-postivite rate (or specificity). To
+While comparing AUROC values between models is a useful way to assess
+the overall model performance, they summarize the performance across all
+thresholds and can be misleading since models with the same AUC can have
+different ROC curve shapes (\protect\hyperlink{ref-lobo2008}{6}).
+Depending on the intended implementation of the model, one may want to
+optimize the true-positive rate (or sensitivity) over the false-positive
+rate (or 1-specificity), or vice versa. In this case, the optimal model
+will detect as many true positives (people with SRNs) as possible. To
 further compare the model performance across taxonomic levels we
-compared the sensitivity of the models
-
-\begin{itemize}
-\tightlist
-\item
-  on average, how many positives are missed with ASV?
-\end{itemize}
+compared the sensitivity of the models at a specificity of 90\%. The
+highest sensitivity values were observed for Family, Genus, and OTU
+level data (Figure 1B), consistent with the AUROC results. Phylum,
+Class, Order, and ASV sensitivity values were all significantly lower
+than Family, Genus, and OTU sensitivity values (Figure 1B). This
+analysis further supports that finer resolution is does not improve SRN
+detection.
 
 One hypothesis for the observation that model performance increases from
 phylum to OTU level then drops slightly at ASV level is that at higher
@@ -241,50 +237,53 @@ supports this idea. A majority of taxa are present in greater than 75\%
 of samples at the phylum (67\% of taxa) and class (63\% of taxa) levels.
 The opposite is observed at the OTU and ASV level where 60\% and 53\% of
 taxa respectively are only present in less than 25\% of samples
-(Supplemental Figure 3). While the resolution provided by ASVs is useful
-in
+(Supplemental Figure 3). Of note, the ML pipeline includes a
+pre-processing step that occurs prior to training and classifying the ML
+models (methods). As part of this step, features are removed that will
+not provide useful information to build the model. For example,
+perfectly correlated features provide the same information to build the
+model and thus can be collapsed. Additionally, features with zero or
+near-zero variance will not help the model differentiate groups and thus
+can be removed. Interestingly, despite starting with 104106 features at
+the ASV level, only 478 (0.5\%) remained after pre-processing. At the
+OTU level, 20079 of the 705 features (3.5\%) remained after
+preprocessing (Table 1). While the resolution provided by ASVs is useful
+in certain contexts \{\}, these results suggest that the resolution is
+too fine for use in machine learning classification of SRNs based on
+microbiome composition.
 
-~~\textbf{TODO: what are important taxa, patterns along levels (e.g fuso
-always in top )}
-
-Of note, the ML pipeline includes a pre-processing step that occurs
-prior to training and classifying the ML models (methods). As part of
-this step, features are removed that will not provide useful information
-to build the model. For example, strongly correlated features provide
-the same information to build the model and thus can be collapsed.
-Additionally, features with zero or near-zero variance will not help the
-model differentiate groups and thus can be removed. Interestingly,
-despite starting with 104106 features at the ASV level, only 478 (0.5\%)
-remained after pre-processing. At the OTU level, 20079 of the 705
-features (3.5\%) remained after preprocessing (Table 1).
-
-~~\textbf{TODO: check why ASVs were removed in preprocessing (nzv?)}\\
-\hspace*{0.333em}\hspace*{0.333em}(depending on answer can discuss why
-features were removed - e.g.~only in one or a few samples)
-
-Mikropml\{\}
-
-\hypertarget{discussionconclusions-250-words}{%
-\subsection{Discussion/Conclusions (\textasciitilde250
-words)}\label{discussionconclusions-250-words}}
+A look into the most important taxa at each level for classifying
+samples reveals some nesting where several genera and their higher
+taxonomic classifications are in the top 10 most important taxa
+(Supplemental Figure 4). For example, the genus \emph{Gemella} is an
+important taxa at the genus and OTU levels and its higher
+classifications are also important (\emph{Firmicutes} \textgreater{}
+\emph{Bacilli} \textgreater{} \emph{Bacillales} \textgreater{}
+\emph{Bacillales Incertae Sedis XI} \textgreater{} \emph{Gemella}).
+\emph{Fusobacterium} displays a similar pattern, except that the family
+level classification (\emph{Fusobacteriaceae}) importance is ranked 16th
+out of 54 families, a little beyond the top 10. In the case of
+unclassified \emph{Lachnospiraceae}, there are several OTUs with this
+label that are in the top 10, however at the Genus level this taxon is
+ranked lower in importance (21st out of 115 genera) suggesting there may
+be some benefit to separating different taxonomic groupings within
+\emph{Lachnospiraceae}.
 
 These results demonstrate that consideration of the appropriate
-taxonomic resolution for utilizing the microbiome as a predictive tool.
-In general, we found that finer resolution (e.g.~ASVs) does not add
-additional sensitivity to model prediction and at the ASV level actually
-impedes model performance due to the sparsity of shared taxa.
-
-\begin{itemize}
-\tightlist
-\item
-  Utilizing genus or family level data could allow for merging data
-  generated from different 16S regions or sequencing platforms. (is this
-  true?)
-\end{itemize}
-
-While predictive models utilizing microbiome data alone are not that
-great, microbiome in combination with FIT results are better than either
-alone \{\}. This analysis wanted to quantify difference between
+taxonomic resolution for utilizing the microbiome as a predictive tool
+is warranted. In general, we found that finer taxonomic resolution
+(e.g.~OTU and ASV) does not add additional sensitivity to predicting
+SRNs based on microbiome composition. Additionally, at the ASV level the
+fine resolution actually impedes model performance due to the sparsity
+of shared taxa and leads to decreased model performance. The tendancy
+for ASV level annotation to split single bacterial genomes into multiple
+taxa \{Pat mSphere 2021\} could also be a contributing factor to the
+sparsity of shared taxa. Overall, either Family, Genus, or OTU level
+taxonomy appear to perform equally for predicting subjects with SRNs
+based on the composition of the gut microbiome. A potential benefit of
+utilizing genus or family level data could be that it may allow for
+merging data generated from different 16S regions or sequencing
+platforms.
 
 \hypertarget{materials-and-methods}{%
 \subsection{Materials and Methods}\label{materials-and-methods}}
@@ -322,15 +321,18 @@ performance of the training and testing as area under the receiver
 operating curve (AUROC).
 
 To compare performance between taxonomic levels and models, P values
-were calculated as previously described \{begum\}. Another output from
-the mikropml package is the permuted feature importance which is
-quantified by iteratively permuting each feature in the model and
-assessing the change in model performance. Features are presumed to be
-important if the performance of the model, measured by the AUROC,
-decreases when that feature is permuted. Ranking of feature importance
-was determined by ordering the features based on the change in AUROC
-where features with a larger decrease in AUROC are ranked higher in
-importance.
+were calculated as previously described \{begum\}. To compare
+sensitivity at 90\% specificity, probabilities on the test dataset were
+collected for each seed and used to construct ROC curves (R pROC::roc).
+From the ROC curves The sensitivity at a specificity of 90\% was pulled
+for each seed. An optional output from the mikropml package is the
+permuted feature importance which is quantified by iteratively permuting
+each feature in the model and assessing the change in model performance.
+Features are presumed to be important if the performance of the model,
+measured by the AUROC, decreases when that feature is permuted. Ranking
+of feature importance was determined by ordering the features based on
+the change in AUROC where features with a larger decrease in AUROC are
+ranked higher in importance.
 
 To quantify prevalence of the features, the number of samples with
 non-zero abundance was divided by the total number of samples resulting
@@ -400,11 +402,15 @@ described in the methods.
 Boxplot of AUROC values on the test dataset for 100 seeds for each model
 type across all taxonomic levels.
 
+\newpage
+
 \includegraphics[width=\textwidth,height=0.5\textheight]{../exploratory/figures/roc_by_level.png}
 
 \textbf{Supplemental Figure 2: Averaged ROC curves} ROC curves averaged
 across the 100 iterations of the model. The shaded region represents the
 standard deviation form the mean.
+
+\newpage
 
 \includegraphics[width=\textwidth,height=0.45\textheight]{../exploratory/figures/bin_prevalence.png}\\
 \textbf{Supplemental Figure 3: Prevalence of Taxa in Samples.}
