@@ -486,6 +486,36 @@ data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues
 
 ################################################################################
 #
+# Make figures and tables
+#
+################################################################################
+
+#boxplots of AUC across all model types and tax levels
+analysis/figures/AUC_all_model_all_level.png : \
+			code/R/figures/AUC_all_model_all_level.R \
+			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
+	Rscript code/R/figures/AUC_all_model_all_level.R
+
+analysis/figures/rf_AUC_all_level.png : \
+			code/R/figures/rf_AUC_all_level.R \
+			analysis/pvalues_by_model.csv \
+			$(foreach L,$(LEVEL),data/process/combined-$L-rf.csv)
+	Rscript code/R/figures/rf_AUC_all_level.R
+
+analysis/figures/prevalence.png : \
+			code/R/figures/prevalence.R \
+			analysis/prevalence_by_level.csv
+	Rscript code/R/figures/prevalence.R
+
+analysis/figures/top_10_important_tax.png : \
+			code/R/figures/top_10_important_tax.R \
+			$(foreach L,$(LEVEL),data/process/importance-$(L)-rf.csv) \
+			$(foreach L,$(LEVEL),data/$(L)/crc.taxonomy)
+	Rscript code/R/figures/top_10_important_tax.R
+
+
+################################################################################
+#
 # Make manuscript and exploratory document
 #
 ################################################################################
@@ -493,5 +523,21 @@ data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues
 docs/exploratory.html :
 	R -e 'rmarkdown::render("exploratory/exploratory.Rmd",output_dir="docs")'
 
-paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd
+paper/figure_1.png :
+
+paper/figure_s1.png : analysis/figures/AUC_all_model_all_level.png
+	cp $< $@
+
+paper/figure_s2.png :
+
+paper/figure_s3.png :
+
+paper/figure_s4.png :
+
+paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd \
+				paper/figure_1.png \
+				paper/figure_s1.png \
+				paper/figure_s2.png \
+				paper/figure_s3.png \
+				paper/figure_s4.png
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
