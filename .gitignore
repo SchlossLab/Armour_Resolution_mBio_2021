@@ -3,6 +3,8 @@
 .RData
 *.Rproj
 
+Rplots.pdf
+
 .DS_Store
 
 data/*/*
