@@ -11,13 +11,13 @@ read_rf_imp <- function(tax_level){
                          perf_metric_diff = col_double(),
                          seed = col_double(),
                          .default = col_character())) %>%
-  mutate(level=tax_level)
+    mutate(level=tax_level)
 }
 
 read_tax <- function(tax_level){
   read_tsv(paste0("data/",tax_level,"/crc.taxonomy"),
-                  col_types = c(Size = col_double(),
-                                .default = col_character())) %>%
+           col_types = c(Size = col_double(),
+                         .default = col_character())) %>%
     mutate(level=tax_level)
 }
 
@@ -34,20 +34,39 @@ rank_tax <- function(data,tax){
 }
 
 plot_top_imp <- function(top_data,tax_level){
-  top_data %>%
-    filter(level == tax_level) %>%
-    arrange(rank) %>%
-    ggplot(aes(x=AUC_diff,y=reorder(name,desc(rank)))) +
-    stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color=colors2[tax_level]) +
-    # stat_summary(fun = mean,geom = "pointrange",  color=colors2[tax_level],
-    #              fun.max = function(x) mean(x) + sd(x),
-    #              fun.min = function(x) mean(x) - sd(x)) +
-    theme_bw() +
-    theme(axis.title.y = element_blank(),
-          axis.text.y = element_markdown(),
-          plot.caption = element_markdown(lineheight = 1.2)) +
-    ggtitle(tax_level) +
-    xlab("Decrease in AUC")
+  if(tax_level == "Phylum"){
+    top_data %>%
+      filter(level == tax_level) %>%
+      arrange(rank) %>%
+      ggplot(aes(x=AUC_diff,y=reorder(name,desc(rank)))) +
+      stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color=colors2[tax_level]) +
+      # stat_summary(fun = mean,geom = "pointrange",  color=colors2[tax_level],
+      #              fun.max = function(x) mean(x) + sd(x),
+      #              fun.min = function(x) mean(x) - sd(x)) +
+      scale_x_continuous(breaks=seq(-0.02,0.04,0.02)) +
+      theme_bw() +
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_markdown(),
+            plot.caption = element_markdown(lineheight = 1.2)) +
+      ggtitle(tax_level) +
+      xlab("Decrease in AUC")
+  }else{
+    top_data %>%
+      filter(level == tax_level) %>%
+      arrange(rank) %>%
+      ggplot(aes(x=AUC_diff,y=reorder(name,desc(rank)))) +
+      stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color=colors2[tax_level]) +
+      # stat_summary(fun = mean,geom = "pointrange",  color=colors2[tax_level],
+      #              fun.max = function(x) mean(x) + sd(x),
+      #              fun.min = function(x) mean(x) - sd(x)) +
+      scale_x_continuous(breaks=seq(0,0.04,0.01)) +
+      theme_bw() +
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_markdown(),
+            plot.caption = element_markdown(lineheight = 1.2)) +
+      ggtitle(tax_level) +
+      xlab("Decrease in AUC")
+  }
 }
 
 ### VARIABLES ########
@@ -84,11 +103,17 @@ top_10_data <- inner_join(rf_imp_tax,top_10_tax,by=c("level","OTU","Taxonomy")) 
                             level=="ASV" ~ sapply(strsplit(Taxonomy,"();"), `[`, 6),
                             TRUE ~ Taxonomy)) %>%
   mutate(Taxonomy=sapply(strsplit(Taxonomy,"\\("), `[`, 1)) %>%
-  mutate(Taxonomy=gsub("_"," ",Taxonomy)) %>%
-  mutate(Taxonomy=gsub("unclassified","unclass.",Taxonomy)) %>%
-  mutate(name = glue("<i>{Taxonomy}</i> ({OTU})"))
+  mutate(name = str_replace(Taxonomy,"(.*)","*\\1*")) %>%
+  mutate(name = str_replace(name,"\\*(.*)_unclassified\\*","Unclassified *\\1*")) %>%
+  mutate(name = sub("_","\\?",name)) %>%
+  mutate(name = str_replace(name,"\\*(.*)\\?(.*)\\*","\\*\\1\\* \\2")) %>%
+  mutate(name = gsub("\\?"," ",name)) %>%
+  mutate(name = gsub("_"," ",name)) %>%
+  mutate(OTUname = str_replace(OTU,"Otu0*([0-9]*)","Otu \\1")) %>%
+  mutate(name = gsub(" $","",name)) %>%
+  mutate(name = glue("{name}({OTUname})"))
 
 plotlist <- map(levels_names,plot_top_imp,top_data=top_10_data)
 
 plot_grid(plotlist = plotlist,ncol = 2,align = "v")
-ggsave("analysis/figures/top_10_important_tax.png",height = 10)
+ggsave("analysis/figures/top_10_important_tax.png",width = 9, height = 11)
