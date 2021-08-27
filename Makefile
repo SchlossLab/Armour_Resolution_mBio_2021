@@ -319,6 +319,12 @@ $(PROB_MERGE) : \
 	$(eval L=$(word 2,$(subst -, ,$(notdir $(basename $@)))))
 	Rscript code/R/merge_probs.R $(L)
 
+# make sensitivity/specificity tables
+analysis/sens_spec_by_level.csv : \
+			$(foreach L, $(LEVEL), $(foreach S, $(SEED), data/$(L)/temp/data/rf_model.$(S).Rdata)) \
+			code/R/get_sens_spec.R
+	Rscript code/R/get_sens_spec.R
+
 ################################################################################
 #
 # Part 8: Merge Importance
@@ -513,6 +519,10 @@ analysis/figures/top_10_important_tax.png : \
 			$(foreach L,$(LEVEL),data/$(L)/crc.taxonomy)
 	Rscript code/R/figures/top_10_important_tax.R
 
+analysis/figures/sensitivity_at_90_specificity.png : \
+			code/R/figures/sensitivity_at_90_specificity.R \
+
+
 
 ################################################################################
 #
@@ -530,9 +540,14 @@ paper/figure_s1.png : analysis/figures/AUC_all_model_all_level.png
 
 paper/figure_s2.png :
 
-paper/figure_s3.png :
+paper/figure_s3.png : analysis/figures/prevalence.png
+	cp $< $@
 
-paper/figure_s4.png :
+paper/figure_s4.png : analysis/figures/top_10_important_tax.png
+	cp $< $@
+
+paper/table_1.csv : analysis/input_values.csv
+	cp $< $@
 
 paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd \
 				paper/figure_1.png \
