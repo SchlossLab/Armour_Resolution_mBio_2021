@@ -1,4 +1,4 @@
-specificity,sensitivity,model,seed
+specificity,sensitivity,level,seed
 0,1,phylum,1
 0.01,1,phylum,1
 0.02,1,phylum,1

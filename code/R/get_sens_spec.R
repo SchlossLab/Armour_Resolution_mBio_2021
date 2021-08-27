@@ -42,7 +42,7 @@ pool_sens_spec <- function(file_name,specificities){
     select(sensitivity, specificity, fpr)
 
   map_dfr(specificities,get_sensitivity,lookup=lookup) %>%
-    mutate(model = str_replace(file_name,
+    mutate(level = str_replace(file_name,
                                "data/(.*)/temp/data/rf_model.\\d*.Rdata", "\\1"),
            seed = str_replace(file_name,
                               "data/(.*)/temp/data/rf_model.(\\d*).Rdata", "\\2"))
