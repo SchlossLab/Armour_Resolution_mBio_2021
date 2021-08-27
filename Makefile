@@ -330,6 +330,11 @@ analysis/sens_spec90_pvals.csv : \
 			code/R/calculate_pvalues_senspec.R
 	Rscript code/R/calculate_pvalues_senspec.R
 
+analysis/mean_AUC_by_model.csv : \
+			code/R/calculate_mean_AUC.R \
+			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
+	Rscript code/R/calculate_mean_AUC.R
+
 
 ################################################################################
 #
