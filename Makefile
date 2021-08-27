@@ -325,6 +325,12 @@ analysis/sens_spec_by_level.csv : \
 			code/R/get_sens_spec.R
 	Rscript code/R/get_sens_spec.R
 
+analysis/sens_spec90_pvals.csv : \
+			analysis/sens_spec_by_level.csv \
+			code/R/calculate_pvalues_senspec.R
+	Rscript code/R/calculate_pvalues_senspec.R
+
+
 ################################################################################
 #
 # Part 8: Merge Importance
@@ -526,8 +532,8 @@ analysis/figures/averaged_ROC_curve.png : \
 
 analysis/figures/sensitivity_at_90_specificity.png : \
 			code/R/figures/sensitivity_at_90_specificity.R \
-
-
+			analysis/sens_spec90_pvals.csv
+	Rscript code/R/figures/sensitivity_at_90_specificity.R
 
 ################################################################################
 #
@@ -538,12 +544,17 @@ analysis/figures/sensitivity_at_90_specificity.png : \
 docs/exploratory.html :
 	R -e 'rmarkdown::render("exploratory/exploratory.Rmd",output_dir="docs")'
 
-paper/figure_1.png :
+paper/figure_1.png : \
+			analysis/figures/rf_AUC_all_level.png \
+			analysis/figures/sensitivity_at_90_specificity.png \
+			code/R/figures/figure_1.R
+	Rscript code/R/figures/figure_1.R
 
 paper/figure_s1.png : analysis/figures/AUC_all_model_all_level.png
 	cp $< $@
 
-paper/figure_s2.png :
+paper/figure_s2.png : analysis/figures/averaged_ROC_curve.png
+	cp $< $@
 
 paper/figure_s3.png : analysis/figures/prevalence.png
 	cp $< $@
