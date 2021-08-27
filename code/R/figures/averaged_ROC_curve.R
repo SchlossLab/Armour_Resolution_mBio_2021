@@ -1,5 +1,4 @@
 library(tidyverse)
-library(DescTools)
 
 ### VARIABLES #####################
 levels <- c("phylum","class","order","family","genus","otu","asv")
@@ -56,13 +55,9 @@ avg_sens %>%
 #ggsave("analysis/figures/average_roc_all.png",width=6)
 
 #plot faceted
-mean_auc <- sens_spec %>%
-  group_by(specificity,level) %>%
-  summarise(mean_sensitivity = mean(sensitivity),
-            sd_sensitivity = sd(sensitivity)) %>%
-  group_by(level) %>%
-  summarize(mean_AUC = DescTools::AUC(specificity,mean_sensitivity),
-            .groups="drop") %>%
+mean_auc <- read_csv("analysis/mean_AUC_by_model.csv")  %>% 
+  select(level,rf) %>%
+  rename(mean_AUC = rf) %>%
   mutate(level=factor(level,levels=levels,labels=levels_names))
 
 avg_sens %>%
