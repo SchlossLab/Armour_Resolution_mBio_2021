@@ -519,6 +519,11 @@ analysis/figures/top_10_important_tax.png : \
 			$(foreach L,$(LEVEL),data/$(L)/crc.taxonomy)
 	Rscript code/R/figures/top_10_important_tax.R
 
+analysis/figures/averaged_ROC_curve.png : \
+			code/R/figures/averaged_ROC_curve.R \
+			analysis/sens_spec_by_level.csv
+	Rscript code/R/figures/averaged_ROC_curve.R
+
 analysis/figures/sensitivity_at_90_specificity.png : \
 			code/R/figures/sensitivity_at_90_specificity.R \
 
