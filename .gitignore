@@ -26,7 +26,6 @@ data/references/README.md
 
 mothur*logfile
 *temp*
-*.docx
 *.RData
 
 *slurm*
