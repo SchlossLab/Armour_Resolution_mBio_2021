@@ -124,20 +124,18 @@ Cancer}\label{taxonomic-resolution-matters-for-microbiome-based-classification-o
 
 \vspace{10mm}
 
-Courtney R. Armour, Begüm D.Topçuoğlu, Andrea Garretto, Patrick D.
-Schloss \({^\dagger}\)
+Courtney R. Armour\({^1}\), Begüm D.Topçuoğlu, Andrea Garretto\({^1}\),
+Patrick D. Schloss \({^1}\)\({^*}\)
 
-\vspace{20mm}
+\vspace{5mm}
 
-\({\dagger}\) To whom correspondence should be addressed:
+\({^1}\) Department of Microbiology and Immunology, University of
+Michigan, Ann Arbor
 
+\vspace{5mm}
+
+\({^*}\) Correspondence: Patrick D. Schloss
 \href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
-
-Department of Microbiology
-
-University of Michigan
-
-Ann Arbor, MI 48109
 
 \vspace{20mm}
 
@@ -198,19 +196,20 @@ level usually peaking around genus/OTU level before dropping off
 slightly with ASVs (Supplemental Figure 1). Regardless of the taxonomic
 level, random forest (RF) models consistently had the largest area under
 the receiver operating characteristic curve (AUROC). Within the RF
-model, the highest AUROCs were observed for family (median AUROC:
-0.687), genus (median AUROC: 0.686), and OTU (median AUROC: 0.698) level
-data with no significant difference between the three (Figure 1A,
-Supplemental Figure 2). Performance with ASVs (median AUROC: 0.676) was
-significantly lower than OTUs (p \textless{} 0.01), but comparable to
-family (p = 0.06) and genus (p = 0.05) levels (Figure 1A). These results
-suggest that finer taxonomic resolution is not necessarily better for
+model, the highest AUROCs were observed for family (mean AUROC: 0.689),
+genus (mean AUROC: 0.690), and OTU (mean AUROC: 0.693) level data with
+no significant difference between the three (Figure 1A, Supplemental
+Figure 2). Performance with ASVs (mean AUROC: 0.676) was significantly
+lower than OTUs (p \textless{} 0.01), but comparable to family (p =
+0.06) and genus (p = 0.05) levels (Figure 1A). These results suggest
+that increased resolution improves model performance until the OTU level
+where further taxonomic resolution is not necessarily better for
 identifying individuals with SRNs based on microbiome composition.
 
 While comparing AUROC values between models is a useful way to assess
 the overall model performance, they summarize the performance across all
-thresholds and can be misleading since models with the same AUC can have
-different ROC curve shapes (\protect\hyperlink{ref-lobo2008}{5}).
+thresholds and can be misleading since models with the same AUROC can
+have different ROC curve shapes (\protect\hyperlink{ref-lobo2008}{5}).
 Depending on the intended implementation of the model, one may want to
 optimize the true-positive rate (or sensitivity) over the false-positive
 rate (or 1-specificity), or vice versa. In this case, the optimal model
@@ -218,7 +217,7 @@ will detect as many true positives (people with SRNs) as possible. To
 further compare the model performance across taxonomic levels we
 compared the sensitivity of the models at a specificity of 90\%. The
 highest sensitivity values were observed for family, genus, and OTU
-level data (Figure 1B), consistent with the AUROC results. phylum,
+level data (Figure 1B), consistent with the AUROC results. Phylum,
 class, order, and ASV sensitivity values were all significantly lower
 than family, genus, and OTU sensitivity values (Figure 1B). This
 analysis further supports the observation that finer resolution is does
@@ -231,12 +230,12 @@ overlap to reliably differentiate between cases and controls. At the
 level of genus or OTU there is enough data and variation but at the ASV
 level, the data is too specific to individuals and does not overlap
 enough. Examination of the prevalence of taxa in samples at each level
-supports this idea. A majority of taxa were present in greater than 75\%
+supports this idea. A majority of taxa were present in greater than 70\%
 of samples at the phylum (67\% of taxa) and class (63\% of taxa) levels.
-The opposite was observed at the OTU and ASV level where 60\% and 53\%
-of taxa respectively were only present in less than 25\% of samples
+The opposite was observed at the OTU and ASV level where 50\% and 41\%
+of taxa respectively were only present in 20\% or less of the samples
 (Supplemental Figure 3). Of note, the ML pipeline includes a
-pre-processing step that occured prior to training and classifying the
+pre-processing step that occurred prior to training and classifying the
 ML models. As part of this step, taxa were removed that would not
 provide useful information to build the model. For example, perfectly
 correlated taxa provide the same information to build the model and thus
@@ -302,7 +301,7 @@ different pipeline. Data was processed following the DADA2 pipeline, but
 setting pool=TRUE to infer ASVs from the whole dataset rather than per
 sample. The resulting ASV table was subsampled for consistency with the
 mothur data. These results were consistent for ASVs generated with DADA2
-(\protect\hyperlink{ref-callahan2016}{6}) (median AUROC: 0.66).
+(\protect\hyperlink{ref-callahan2016}{6}) (mean AUROC: 0.659).
 
 \textbf{\emph{Machine Learning.}} Machine learning models were run with
 the R package mikropml (v0.0.2) \{\} to predict the diagnosis category
@@ -348,18 +347,20 @@ All code is available at: \textbf{TODO: link to code}
 
 \includegraphics{figure_1.png}
 
-\textbf{Figure 1: Random Forest Model Performance.} \textbf{A)} Boxplots
-with points of area under the receiver operating characteristic curve
+\textbf{Figure 1: Random Forest Model Performance.} \textbf{A)} Strip
+plot of the area under the receiver operating characteristic curve
 (AUROC) values on the test dataset for 100 seeds predicting SRNs using a
-Random Forest model. Dashed line denotes AUROC of 0.5 which is
-equivalent to random classification. Significance between taxonomic
-levels was quantified by comparing the difference in mean AUROC and is
-denoted by letters A through E on the right side of the plot; taxonomic
-levels with the same letter are in the same significance group and are
-not significantly different from one another. \textbf{B)} Strip plot of
-the sensitivity at a specificity of 90\% across the 100 model
-iterations. Black points denote the median and the lines denote the IQR.
-The letters W through Z denote the significance groups.
+random forest model. Black points denote the mean and lines denote the
+standard deviation. Dashed line denotes AUROC of 0.5 which is equivalent
+to random classification. Significance between taxonomic levels was
+quantified by comparing the difference in mean AUROC and is denoted by
+letters A through E on the right side of the plot; taxonomic levels with
+the same letter are in the same significance group and are not
+significantly different from one another. \textbf{B)} Strip plot of the
+sensitivity at a specificity of 90\% across the 100 model iterations for
+each taxonomic level. Black points denote the mean and the lines denote
+the standard deviation. The letters W through Z on the right side of the
+plot denote the significance groups.
 
 \newpage
 
@@ -395,30 +396,38 @@ described in the methods.
 \includegraphics{figure_s1.png}
 
 \textbf{Supplemental Figure 1: Model Performance across Taxonomy.}
-Boxplot of AUROC values on the test dataset for 100 seeds for each model
-type across all taxonomic levels.
+Boxplots of AUROC values on the test dataset split for 100 seeds for
+each model type across all taxonomic levels.
 
 \newpage
 
 \includegraphics[width=\textwidth,height=0.5\textheight]{figure_s2.png}
 
-\textbf{Supplemental Figure 2: Averaged ROC curves} ROC curves averaged
-across the 100 iterations of the model. The shaded region represents the
-standard deviation form the mean.
+\textbf{Supplemental Figure 2: Averaged ROC curves} ROC curves with
+averaged true positive rate across the 100 iterations of the model. The
+shaded region represents the standard deviation form the mean.Dashed
+line represents an AUROC of 0.5, which is equivalent to random
+classification. The mean AUROC for each taxonomic level is printed on
+the bottom right of the plot.
 
 \newpage
 
 \includegraphics[width=\textwidth,height=0.45\textheight]{figure_s3.png}\\
 \textbf{Supplemental Figure 3: Prevalence of Taxa in Samples.}
-Distribution of taxa prevalence in samples at each taxonomic level.
+Distribution of the prevalence of taxa across samples at each taxonomic
+level. Percent of samples is split into 10 groups where the first is
+taxa present in 0 to 10\% of samples, then \textgreater10\% to 20\% of
+samples, and so on. The total number of taxa for each taxonomic level
+after preprocessing is in parenthesis next to the title of the plot (the
+name of the taxonomic level).
 
 \newpage
 
 \includegraphics[width=\textwidth,height=0.85\textheight]{figure_s4.png}\\
 \textbf{Supplemental Figure 4: Top 10 important taxa at each taxonomic
 level.} Summary of the 10 most important taxa for the random forest
-models at each taxonomic level based on the average decrease in AUC when
-the feature is permuted.
+models at each taxonomic level based on the average decrease in AUROC
+when the feature is permuted.
 
 \newpage
 

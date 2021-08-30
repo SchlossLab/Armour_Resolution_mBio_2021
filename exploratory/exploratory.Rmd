@@ -18,11 +18,8 @@ library(nationalparkcolors)
 library(data.table)
 library(cowplot)
 library(pROC)
+library(schtools)
 
-#given a number, adds correct commas
-set_commas <- function(num){
-  
-}
 ```
 
 ```{r data_setup}
@@ -42,31 +39,17 @@ auc_df <- NULL
 cv_table <- tibble(level=c("phylum","class","order","family","genus","otu","asv"))
 t_table <- tibble(level=c("phylum","class","order","family","genus","otu","asv"))
 
+
+read_combined <- function(tax_level,model){
+  read_csv(paste0("../data/process/combined-",tax_level,"-",model,".csv"),
+           col_types = c(method = col_character(),.default=col_double()),
+           na = c("","NA","NaN")) %>% #some of the Pos/Neg Pred Values were NaN
+    mutate(level=tax_level) 
+}
+
 for( m in models ){
-  phylum <- read_csv(paste0("../data/process/combined-phylum-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>% 
-    mutate(level="phylum")
-  class <- read_csv(paste0("../data/process/combined-class-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>% 
-    mutate(level="class")
-  order <- read_csv(paste0("../data/process/combined-order-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>% 
-    mutate(level="order")
-  family <- read_csv(paste0("../data/process/combined-family-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>% 
-    mutate(level="family")
-  genus <- read_csv(paste0("../data/process/combined-genus-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>%
-    mutate(level="genus")
-  otu <- read_csv(paste0("../data/process/combined-otu-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>%
-    mutate(level="otu")
-  asv <- read_csv(paste0("../data/process/combined-asv-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>%
-    mutate(level="asv")
-  
-  model_df <- bind_rows(phylum,class,order,family,genus,otu,asv)
-    
+  model_df <- map_dfr(levels, read_combined, model = m)
+
   full_df <- bind_rows(full_df,model_df)
   
   m_auc.df <- select(model_df,cv_metric_AUC,AUC,method,level) %>% 
@@ -300,7 +283,8 @@ dada2_df <- NULL
 dada2_auc_df <- NULL
 for( m in models ){
   asv <- read_csv(paste0("../data/dada2/process/combined-dada2-",m,".csv"),
-                     col_types = c(method = col_character(),.default=col_double())) %>%
+                  col_types = c(method = col_character(),.default=col_double()),
+                  na = c("","NA","NaN")) %>%
     mutate(type="DADA2")
   dada2_df <- bind_rows(dada2_df,asv)
     
@@ -1322,6 +1306,9 @@ plot_top_imp <- function(top_data,tax_level){
     ggplot(aes(x=AUC_diff,y=reorder(name,desc(rank)))) +
       #geom_jitter(color=colors2[tax_level],fill=alpha(colors2[tax_level],0.6)) +
       stat_summary(fun.data=median_hilow, fun.args=0.5, geom="pointrange", color=colors2[tax_level]) +
+      # stat_summary(fun = mean,geom = "pointrange",  color=colors2[tax_level],
+      #              fun.max = function(x) mean(x) + sd(x),
+      #              fun.min = function(x) mean(x) - sd(x)) +
       theme_bw() +
       theme(axis.title.y = element_blank(),
         axis.text.y = element_markdown(),
@@ -1911,7 +1898,7 @@ plot_abund(asv_abund,"asv",ranked_tax)
 #             sd_specificty=sd(specificity))
 #   ggplot(aes(x=1-specificity,y=sensitivity,color=level)) +
 #     geom_path()
-  
+
 get_level_senspec <- function(tax_level,spec_val){
   l_probs <- read_csv(paste0("../data/process/probability-",tax_level,"-rf.csv"),
                     col_types = cols( actual = col_character(),
