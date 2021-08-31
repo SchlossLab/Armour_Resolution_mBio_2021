@@ -570,7 +570,7 @@ paper/figure_s4.png : analysis/figures/top_10_important_tax.png
 paper/table_1.csv : analysis/input_values.csv
 	cp $< $@
 
-paper/manuscript.pdf paper/manuscript.docx : paper/manuscript.Rmd \
+paper/manuscript.pdf : paper/manuscript.Rmd \
 				paper/figure_1.png \
 				paper/figure_s1.png \
 				paper/figure_s2.png \

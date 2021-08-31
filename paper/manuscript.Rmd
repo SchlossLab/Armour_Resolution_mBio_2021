@@ -3,10 +3,8 @@ bibliography: references.bib
 link-citations: true
 csl: msystems.csl
 output:
-  pdf_document:
-    keep_tex: true
-  word_document: 
-    reference_docx: word_formatting.docx
+  rmarkdown::pdf_document:
+    keep_tex: yes
 geometry: margin=1.0in
 font-size: 11pt
 header-includes:
@@ -64,7 +62,7 @@ table <- read_csv("../analysis/mean_AUC_by_model.csv",
                   col_types = cols(level=col_character(),
                                    .default=col_double()))
 
-rf_mean_auc <- table %>% 
+rf_mean_auc <- table %>%
   pull(rf)
 
 names(rf_mean_auc) <- table %>% pull(level)
@@ -73,7 +71,7 @@ names(rf_mean_auc) <- table %>% pull(level)
 ```{r input_table}
 input <- read_csv("../analysis/input_values.csv",
                   col_types = cols(level=col_character(),
-                                   .default = col_double())) %>% 
+                                   .default = col_double())) %>%
   mutate(pct_kept = round(n_features_preproc/n_features,digits=3)*100)
 ```
 
@@ -81,11 +79,11 @@ input <- read_csv("../analysis/input_values.csv",
 dada2_results <- read_csv("../data/dada2/process/combined-dada2-rf.csv",
                           col_types = cols(method = col_character(),
                                            .default = col_double()))
-dada2_mean_auc <- dada2_results %>% 
-  pull(AUC) %>% 
+dada2_mean_auc <- dada2_results %>%
+  pull(AUC) %>%
   mean()
 
-dada2_rf_pvals <- read_csv("../data/dada2/analysis/dada2_pvalues_by_model.csv") %>% 
+dada2_rf_pvals <- read_csv("../data/dada2/analysis/dada2_pvalues_by_model.csv") %>%
   filter(model == "rf")
 
 ```
@@ -93,16 +91,16 @@ dada2_rf_pvals <- read_csv("../data/dada2/analysis/dada2_pvalues_by_model.csv") 
 ```{r pvals}
 rf_pvals <- read_csv("../analysis/pvalues_by_model.csv",
                      col_types = cols(.default = col_character(),
-                                      p_value = col_double())) %>% 
-  filter(model == "rf") %>% 
-  select(-model) %>% 
-  pivot_wider(names_from = "level2",values_from = "p_value") %>% 
+                                      p_value = col_double())) %>%
+  filter(model == "rf") %>%
+  select(-model) %>%
+  pivot_wider(names_from = "level2",values_from = "p_value") %>%
   column_to_rownames("level1")
 
 rf_notsig <- read_csv("../analysis/pvalues_by_model.csv",
                      col_types = cols(.default = col_character(),
-                                      p_value = col_double())) %>% 
-  filter(model == "rf") %>% 
+                                      p_value = col_double())) %>%
+  filter(model == "rf") %>%
   filter(p_value >= 0.05)
 ```
 
@@ -113,14 +111,14 @@ While comparing AUROC values between models is a useful way to assess the overal
 ```{r prevalence}
 
 bin_prevalence <- function(prev,tax_level){
-  sub_data <- prev %>% 
+  sub_data <- prev %>%
     filter(level==tax_level,kept==1)
   hist <- hist(sub_data$total_prevalence,breaks = seq(0,1,0.1),plot=FALSE)
 
   nOTU <- sub_data %>%
-    select(name) %>% 
+    select(name) %>%
     n_distinct()
-  
+
   tibble(level=tax_level,
          prev=hist$breaks[-1],
          count=hist$counts,
@@ -131,22 +129,22 @@ prev <- read_csv("../analysis/prevalence_by_level.csv")
 
 levels <- c("phylum","class","order","family","genus","otu","asv")
 
-pct_bins <- map_dfr(levels,bin_prevalence,prev=prev) 
+pct_bins <- map_dfr(levels,bin_prevalence,prev=prev)
 
 #percent of taxa present in > 70% samples
-pct_above <- pct_bins %>% 
-  mutate(prev = round(prev,digits = 1)) %>% 
-  filter(prev > 0.7) %>% 
-  group_by(level)  %>% 
-  summarise(prev_above = round((sum(pct)) * 100)) %>% 
+pct_above <- pct_bins %>%
+  mutate(prev = round(prev,digits = 1)) %>%
+  filter(prev > 0.7) %>%
+  group_by(level)  %>%
+  summarise(prev_above = round((sum(pct)) * 100)) %>%
   pivot_wider(names_from = level,values_from = prev_above)
 
 #percent of taxa present in < 20% samples
-pct_below <- pct_bins %>% 
-  mutate(prev = round(prev,digits = 1)) %>% 
-  filter(prev <= 0.2) %>% 
-  group_by(level)  %>% 
-  summarise(prev_above = round((sum(pct)) * 100)) %>% 
+pct_below <- pct_bins %>%
+  mutate(prev = round(prev,digits = 1)) %>%
+  filter(prev <= 0.2) %>%
+  group_by(level)  %>%
+  summarise(prev_above = round((sum(pct)) * 100)) %>%
   pivot_wider(names_from = level,values_from = prev_above)
 ```
 
@@ -221,7 +219,7 @@ read_csv("table_1.csv") %>%
 \newpage  
 
 ![](figure_s3.png){height="45%"}\
-**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is taxa present in 0 to 10% of samples, then >10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot (the name of the taxonomic level). 
+**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is taxa present in 0 to 10% of samples, then >10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot (the name of the taxonomic level).
 
 \newpage
 
