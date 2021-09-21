@@ -49,7 +49,7 @@ plot_top_imp <- function(top_data,tax_level){
             axis.text.y = element_markdown(),
             plot.caption = element_markdown(lineheight = 1.2)) +
       ggtitle(tax_level) +
-      xlab("Decrease in AUC")
+      xlab("Decrease in AUROC")
   }else{
     top_data %>%
       filter(level == tax_level) %>%
@@ -65,7 +65,7 @@ plot_top_imp <- function(top_data,tax_level){
             axis.text.y = element_markdown(),
             plot.caption = element_markdown(lineheight = 1.2)) +
       ggtitle(tax_level) +
-      xlab("Decrease in AUC")
+      xlab("Decrease in AUROC")
   }
 }
 

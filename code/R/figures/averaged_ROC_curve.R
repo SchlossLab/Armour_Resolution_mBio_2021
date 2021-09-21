@@ -55,7 +55,7 @@ avg_sens %>%
 #ggsave("analysis/figures/average_roc_all.png",width=6)
 
 #plot faceted
-mean_auc <- read_csv("analysis/mean_AUC_by_model.csv")  %>% 
+mean_auc <- read_csv("analysis/mean_AUC_by_model.csv")  %>%
   select(level,rf) %>%
   rename(mean_AUC = rf) %>%
   mutate(level=factor(level,levels=levels,labels=levels_names))
@@ -82,8 +82,8 @@ avg_sens %>%
           panel.spacing.x = unit(4, "mm")) +
     guides(color = guide_legend(nrow = 1,title=""),
            fill = guide_legend(nrow = 1,title="")) +
-    geom_text(aes(x = .7, y = .2,label = paste0("mean AUC\n",format(round(mean_AUC,digits=3),nsmall=3))),
-              size=3.5) +
+    geom_text(aes(x = .7, y = .2,label = paste0("mean AUROC\n",format(round(mean_AUC,digits=3),nsmall=3))),
+              size=3) +
     scale_fill_manual(values=colors2) +
     scale_color_manual(values=colors2)
 ggsave("analysis/figures/average_roc_by_level.png",width=7,height=5)

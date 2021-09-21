@@ -577,3 +577,6 @@ paper/manuscript.pdf : paper/manuscript.Rmd \
 				paper/figure_s3.png \
 				paper/figure_s4.png
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
+
+paper/manuscript.docx : paper/manuscript.pdf
+	pandoc -s paper/manuscript.tex paper/manuscript.tex -o paper/manuscript.docx
