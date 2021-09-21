@@ -170,8 +170,6 @@ To compare performance between taxonomic levels and models, P values were calcul
 
 To quantify prevalence of the features, the number of samples with non-zero abundance was divided by the total number of samples resulting in values ranging from 0 to 1 where 0 indicates the feature is not found in any samples, 0.5 indicates the feature is found in half of the samples, and 1 indicates the feature is found in all of the samples.
 
-All code is available at: **TODO: link to code**
-
 ### Acknowledgements
 
 This work was supported through a grant from the NIH (R01CA215574).
