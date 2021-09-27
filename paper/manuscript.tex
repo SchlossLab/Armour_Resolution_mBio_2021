@@ -122,6 +122,18 @@
 Classification of Colorectal
 Cancer}\label{taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}}
 
+alternative titles:\\
+High resolution taxonomy impedes microbiome-based classification of
+colorectal cancer\\
+High resolution ASVs impede microbiome-based classification of
+colorectal cancer\\
+Mid-level taxonomic resolution is optimal for microbiome based
+classification of colorectal cancer\\
+Too much of a good thing: high resolution ASVs do not improve
+microbiome-based classification of colorectal cancer\\
+More is not always better: high resolution ASVs do not improve
+microbiome-based classification of colorectal cancer
+
 \vspace{10mm}
 
 Courtney R. Armour\({^1}\), Begüm D. Topçuoğlu\(^{1,2}\), Andrea
@@ -244,17 +256,16 @@ the overall model performance, they summarize the performance across all
 thresholds and can be misleading since models with the same AUROC can
 have different ROC curve shapes (\protect\hyperlink{ref-lobo2008}{9}).
 Depending on the intended implementation of the model, one may want to
-optimize the true-positive rate (sensitivity) over the false-positive
-rate (1-specificity) or vice versa. In this case, the optimal model will
-detect as many true positives (people with SRNs) as possible. To further
-compare the model performance across taxonomic levels we compared the
-sensitivity of the models at a specificity of 90\%. The highest
-sensitivity values were observed for family, genus, and OTU level data
-(Figure 1B), consistent with the AUROC results. Phylum, class, order,
-and ASV sensitivity values were all significantly lower than family,
-genus, and OTU sensitivity values (Figure 1B). This analysis further
-supports the observation that finer resolution does not improve SRN
-detection.
+optimize the sensitivity over the specificity or vice versa. In this
+case, the optimal model will detect as many true positives (people with
+SRNs) as possible. To further compare the model performance across
+taxonomic levels we compared the sensitivity of the models at a
+specificity of 90\%. The highest sensitivity values were observed for
+family, genus, and OTU level data (Figure 1B), consistent with the AUROC
+results. Phylum, class, order, and ASV sensitivity values were all
+significantly lower than family, genus, and OTU sensitivity values
+(Figure 1B). This analysis further supports the observation that finer
+resolution does not improve SRN detection.
 
 One hypothesis for the observation that model performance increases from
 phylum to OTU level then drops slightly at ASV level is that at higher
@@ -308,12 +319,14 @@ model performance due to the sparsity of shared taxa and led to
 decreased model performance. The tendency for ASV level annotation to
 split single bacterial genomes into multiple taxa
 (\protect\hyperlink{ref-schloss}{12}) could also be a contributing
-factor to the sparsity of shared taxa. Overall, either family, genus, or
-OTU level taxonomy appear to perform equally for predicting subjects
-with SRNs based on the composition of the gut microbiome. A potential
-benefit of utilizing genus or family level data could be that it may
-allow for merging data generated from different 16S rRNA gene regions or
-sequencing platforms.
+factor to the sparsity of shared taxa. Additionally, these results
+indicate that there are not specific individual bacterial strains that
+are useful to resolve SRNs, rather sets of closely related bacterial
+taxa. Overall, either family, genus, or OTU level taxonomy appear to
+perform equally for predicting subjects with SRNs based on the
+composition of the gut microbiome. A potential benefit of utilizing
+genus or family level data could be that it may allow for merging data
+generated from different 16S rRNA gene regions or sequencing platforms.
 
 \hypertarget{materials-and-methods}{%
 \subsubsection{Materials and Methods}\label{materials-and-methods}}
@@ -377,6 +390,9 @@ non-zero abundance was divided by the total number of samples resulting
 in values ranging from 0 to 1 where 0 indicates the feature is not found
 in any samples, 0.5 indicates the feature is found in half of the
 samples, and 1 indicates the feature is found in all of the samples.
+
+All code is available at:
+\url{https://github.com/SchlossLab/Armour_Resolution_XXXX_2021}
 
 \hypertarget{acknowledgements}{%
 \subsubsection{Acknowledgements}\label{acknowledgements}}
