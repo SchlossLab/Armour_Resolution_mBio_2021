@@ -38,3 +38,7 @@ test.sh
 
 exploratory/figures/
 exploratory/misc/
+
+paper/manuscript.aux
+paper/manuscript.html
+paper/manuscript.out
