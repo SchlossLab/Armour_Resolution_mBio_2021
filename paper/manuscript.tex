@@ -117,26 +117,14 @@
 
 \begin{document}
 
-\hypertarget{taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}{%
-\section{Taxonomic Resolution Matters for Microbiome-Based
-Classification of Colorectal
-Cancer}\label{taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}}
-
-alternative titles:\\
-High resolution taxonomy impedes microbiome-based classification of
-colorectal cancer\\
-High resolution ASVs impede microbiome-based classification of
-colorectal cancer\\
-Mid-level taxonomic resolution is optimal for microbiome based
-classification of colorectal cancer\\
-Too much of a good thing: high resolution ASVs do not improve
-microbiome-based classification of colorectal cancer\\
-More is not always better: high resolution ASVs do not improve
-microbiome-based classification of colorectal cancer
+\hypertarget{a-goldilocks-principle-for-the-gut-microbiome-taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}{%
+\section{A Goldilocks Principle for the Gut Microbiome: Taxonomic
+Resolution Matters for Microbiome-Based Classification of Colorectal
+Cancer}\label{a-goldilocks-principle-for-the-gut-microbiome-taxonomic-resolution-matters-for-microbiome-based-classification-of-colorectal-cancer}}
 
 \vspace{10mm}
 
-Courtney R. Armour\({^1}\), Begüm D. Topçuoğlu\(^{1,2}\), Andrea
+Courtney R. Armour\({^1}\), Begüm D. Topçuoğlu\(^{1,\#}\), Andrea
 Garretto\({^1}\), Patrick D. Schloss \({^1}\)\({^*}\)
 
 \vspace{5mm}
@@ -144,8 +132,8 @@ Garretto\({^1}\), Patrick D. Schloss \({^1}\)\({^*}\)
 \({^1}\) Department of Microbiology and Immunology, University of
 Michigan, Ann Arbor MI
 
-\({^2}\) Exploratory Science Center, Merck \& Co., Inc., Cambridge,
-Massachusetts, USA~
+\({^\#}\) Current Affiliation: Exploratory Science Center, Merck \& Co.,
+Inc., Cambridge, Massachusetts, USA~
 
 \vspace{5mm}
 
@@ -168,16 +156,24 @@ do not comply with the recommended screening guidelines. The gut
 microbiome has emerged as a promising target for non-invasive detection
 of colorectal cancer. Most microbiome-based classification efforts
 utilize taxonomic abundance data from operational taxonomic units (OTUs)
-or amplicon sequence variants (ASVs). However, it is unknown which
-taxonomic resolution is optimal for microbiome-based classification of
-colorectal cancer. To address this question, we used a reproducible
-machine learning framework to quantify classification performance of
-models based on data annotated to phylum, class, order, family, genus,
-OTU, and ASV levels. We found that model performance increased with
-increasing taxonomic resolution, up to the family level where
-performance was equal among family, genus, and OTU data before
-decreasing at the ASV level. These results are a step towards optimizing
-a microbiome based diagnostic tool.
+or amplicon sequence variants (ASVs) with the goal of increasing
+taxonomic resolution. However, it is unknown which taxonomic resolution
+is optimal for microbiome-based classification of colorectal cancer. To
+address this question, we used a reproducible machine learning framework
+to quantify classification performance of models based on data annotated
+to phylum, class, order, family, genus, OTU, and ASV levels. We found
+that model performance increased with increasing taxonomic resolution,
+up to the family level where performance was equal (p \textgreater{}
+0.05) among family (mean AUC: 0.689), genus (mean AUC: 0.690), and OTU
+(mean AUC: 0.693) levels before decreasing at the ASV level (p
+\textless{} 0.05, mean AUC: 0.676). These results demonstrate a
+trade-off between taxonomic resolution and prediction performance, where
+coarse taxonomic resolution (e.g.~phylum) is not distinct enough but
+fine resolution (e.g.~ASV) is to individualized to accurately classify
+samples. Similar to the story of Goldilocks and the three bears,
+mid-range resolution (i.e.~family, genus, and OTU) is just right for
+optimal prediction of colorectal cancer from microbiome data.\\
+(238 words)
 
 \hypertarget{importance}{%
 \subsubsection{Importance}\label{importance}}
@@ -185,90 +181,89 @@ a microbiome based diagnostic tool.
 Despite being highly preventable, colorectal cancer remains a leading
 cause of cancer related death in the United States. Low-cost,
 non-invasive detection methods could greatly improve our ability to
-identify and treat early stages of disease. While the microbiome has
-shown promise as a diagnostic tool, there are numerous details to refine
-before a diagnostic could be widely deployed. Among these are the need
-for standardization of sample collection, storage, processing, and
-analysis. We address one aspect of data analysis by examining which
-taxonomic level provides the optimal resolution for microbiome-based
-classification of colorectal cancer. This is an important step to inform
-the development of microbiome-based diagnostic tools.
+identify and treat early stages of disease. The microbiome has shown
+promise as a resource for detection of colorectal cancer. Research on
+the gut microbiome tends to focus on improving our ability to profile
+species and strain level taxonomic resolution. However, we found that
+finer resolution impedes the ability to predict colorectal cancer based
+on the gut microbiome. These results highlight the need for
+consideration of the appropriate taxonomic resolution for microbiome
+analyses and that finer resolution is not always more informative.\\
+(110 words)
 
 \newpage
 
 Colorectal cancer is one of the most common cancers in men and women and
-a leading cause of cancer related deaths in the United States
-(\protect\hyperlink{ref-siegel2020}{1}). Early detection and treatment
-are essential to increase survival rates, but for reasons such as
-invasiveness and high screening costs (i.e.~colonoscopy), many people do
-not comply with recommended screening guidelines
-(\protect\hyperlink{ref-garcuxeda2011}{2}). This prompts a need for low
-cost, non-invasive detection methods. A growing body of research points
-to the gut microbiome as a promising target for non-invasive detection
-of screen relevant neoplasia (SRNs) consisting of advanced adenomas and
-carcinomas (\protect\hyperlink{ref-zackular2014}{3},
-\protect\hyperlink{ref-zeller2014}{4}). The diagnostic potential of the
-gut microbiome in detecting SRNs has been explored through machine
-learning (ML) methods using abundances of operational taxonomic unit
-(OTU) classifications based on amplicon sequencing of the 16S rRNA gene
-(\protect\hyperlink{ref-zackular2014}{3}). Recent work has pushed for
-the use of amplicon sequence variants (ASVs) to replace OTUs for
-marker-gene analysis because of the improved resolution with ASVs
-(\protect\hyperlink{ref-callahan2017}{5}). However, it is unclear if
-OTUs are the optimal taxonomic resolution for classifying SRNs from
-microbiome data or whether the additional resolution provided by ASVs is
-useful for ML classification. Topçuoğlu \emph{et al}
-(\protect\hyperlink{ref-topuxe7uolu2020}{6}) recently demonstrated how
-to effectively apply machine learning (ML) methods to microbiome based
-classification problems and developed a framework for applying ML
-practices in a more reproducible way (mikropml). This analysis utilizes
-the reproducible framework developed by Topçuoğlu \emph{et al} to
-determine which ML method and taxonomic level produce the best
-performing classifier for detecting SRNs from microbiome data.
+a leading cause of cancer related deaths in the United States (1). Early
+detection and treatment are essential to increase survival rates, but
+for reasons such as invasiveness and high screening costs
+(i.e.~colonoscopy), many people do not comply with recommended screening
+guidelines (2). This prompts a need for low cost, non-invasive detection
+methods. A growing body of research points to the gut microbiome as a
+promising target for non-invasive detection of screen relevant neoplasia
+(SRNs) consisting of advanced adenomas and carcinomas (3, 4). The
+diagnostic potential of the gut microbiome in detecting SRNs has been
+explored through machine learning (ML) methods using abundances of
+operational taxonomic unit (OTU) classifications based on amplicon
+sequencing of the 16S rRNA gene (3). Recent work has pushed for the use
+of amplicon sequence variants (ASVs) to replace OTUs for marker-gene
+analysis because of the improved resolution with ASVs (5). However, it
+is unclear if OTUs are the optimal taxonomic resolution for classifying
+SRNs from microbiome data or whether the additional resolution provided
+by ASVs is useful for ML classification. Topçuoğlu \emph{et al} (6)
+recently demonstrated how to effectively apply machine learning (ML)
+methods to microbiome based classification problems and developed a
+framework for applying ML practices in a more reproducible way. This
+analysis utilizes the reproducible framework developed by Topçuoğlu
+\emph{et al} to determine which ML method and taxonomic level produce
+the best performing classifier for detecting SRNs from microbiome data.
 
 Utilizing publicly available 16S rRNA sequence data from stool of
 patients with SRNs and healthy controls, we generated taxonomic
-abundance tables with mothur (\protect\hyperlink{ref-schloss2009}{7})
-annotated to phylum, class, order, family, genus, OTU and ASV levels.
-Using the taxonomic abundance data and the mikropml R package
-(\protect\hyperlink{ref-topuxe7uolu2021}{8}), we quantified how reliably
-samples could be classified as SRN or normal using five machine learning
-methods including random forest, L2-regularized logistic regression,
-decision tree, gradient boosted trees (XGBoost), and support vector
-machine with radial basis kernel (SVM radial). Across the five machine
-learning methods tested, model performance increased with increasing
-taxonomic level usually peaking around genus/OTU level before dropping
-off slightly with ASVs (Supplemental Figure 1). Regardless of the
-taxonomic level, random forest (RF) models consistently had the largest
-area under the receiver operating characteristic curve (AUROC). Within
-the RF model, the highest AUROCs were observed for family (mean AUROC:
-0.689), genus (mean AUROC: 0.690), and OTU (mean AUROC: 0.693) level
-data with no significant difference between the three (Figure 1A,
-Supplemental Figure 2). Performance with ASVs (mean AUROC: 0.676) was
-significantly lower than OTUs (p \textless{} 0.01), but comparable to
-family (p = 0.06) and genus (p = 0.05) levels (Figure 1A). These results
-suggest that increased resolution improves model performance up to the
-OTU level where further taxonomic resolution is not necessarily better
-for identifying individuals with SRNs based on microbiome composition.
+abundance tables with mothur (7) annotated to phylum, class, order,
+family, genus, OTU and ASV levels. Using the taxonomic abundance data
+and the mikropml R package (8), we quantified how reliably samples could
+be classified as SRN or normal using five machine learning methods
+including random forest, L2-regularized logistic regression, decision
+tree, gradient boosted trees (XGBoost), and support vector machine with
+radial basis kernel (SVM radial). Across the five machine learning
+methods tested, model performance increased with increasing taxonomic
+level usually peaking around genus/OTU level before dropping off
+slightly with ASVs (Supplemental Figure 1). Regardless of the taxonomic
+level, random forest (RF) models consistently had the largest area under
+the receiver operating characteristic curve (AUROC). Within the RF
+model, the highest AUROCs were observed for family (mean AUROC: 0.689),
+genus (mean AUROC: 0.690), and OTU (mean AUROC: 0.693) level data with
+no significant difference between the three (p \textgreater{} 0.05,
+Figure 1A, Supplemental Figure 2). Performance with ASVs (mean AUROC:
+0.676) was significantly lower than OTUs (p \textless{} 0.01), but
+comparable to family (p = 0.06) and genus (p = 0.05) levels (Figure 1A).
+These results suggest that increased resolution improves model
+performance up to the OTU level where further taxonomic resolution is
+not necessarily better for identifying individuals with SRNs based on
+microbiome composition.
 
 While comparing AUROC values between models is a useful way to assess
 the overall model performance, they summarize the performance across all
 thresholds and can be misleading since models with the same AUROC can
-have different ROC curve shapes (\protect\hyperlink{ref-lobo2008}{9}).
-Depending on the intended implementation of the model, one may want to
-optimize the sensitivity over the specificity or vice versa. In this
-case, the optimal model will detect as many true positives (people with
-SRNs) as possible. To further compare the model performance across
-taxonomic levels we compared the sensitivity of the models at a
-specificity of 90\%. The highest sensitivity values were observed for
-family, genus, and OTU level data (Figure 1B), consistent with the AUROC
-results. Phylum, class, order, and ASV sensitivity values were all
-significantly lower than family, genus, and OTU sensitivity values
-(Figure 1B). This analysis further supports the observation that finer
-resolution does not improve SRN detection.
+have different ROC curve shapes (9). Depending on the intended
+implementation of the model, one may want to optimize the sensitivity
+over the specificity or vice versa. In this case, the optimal model will
+detect as many true positives (people with SRNs) as possible. To further
+compare the model performance across taxonomic levels we compared the
+sensitivity of the models at a specificity of 90\%. The highest
+sensitivity values were observed for family (mean sensitivity: 0.38),
+genus (mean sensitivity: 0.39), and OTU (mean sensitivity: 0.37) level
+data (p \textgreater{} 0.05, Figure 1B), consistent with the AUROC
+results. Phylum (mean sensitivity: 0.21), class (mean sensitivity:
+0.22), order (mean sensitivity: 0.28), and ASV (mean sensitivity: 0.32)
+sensitivity values were all significantly lower than family, genus, and
+OTU sensitivity values (p \textless{} 0.05,Figure 1B). This analysis
+further supports the observation that finer resolution does not improve
+SRN detection.
 
 One hypothesis for the observation that model performance increases from
-phylum to OTU level then drops slightly at ASV level is that at higher
+phylum to OTU level then drops at the ASV level is that at higher
 taxonomic levels (e.g.~phylum) there are too few taxa and too much
 overlap to reliably differentiate between cases and controls. At the
 level of genus or OTU there is enough data and variation but at the ASV
@@ -286,11 +281,9 @@ features with zero or near-zero variance across samples were removed.
 Interestingly, despite starting with 104,106 ASVs, only 478 (0.5\%)
 remained after pre-processing. At the OTU level, 705 of the 20,079 OTUs
 (3.5\%) remained after preprocessing (Table 1). While the resolution
-provided by ASVs is useful in certain
-contexts(\protect\hyperlink{ref-eren2013}{10},
-\protect\hyperlink{ref-eren2015}{11}), these results suggest that the
-resolution is too fine for use in machine learning classification of
-SRNs based on microbiome composition.
+provided by ASVs is useful in certain contexts(10, 11), these results
+suggest that the resolution is too fine for use in machine learning
+classification of SRNs based on microbiome composition.
 
 A look into the most important taxa at each level for classifying
 samples revealed some nesting where several genera and their higher
@@ -309,21 +302,20 @@ lower in importance (21st out of 115 genera) suggesting there may be
 some benefit to separating different taxonomic groupings within
 \emph{Lachnospiraceae}.
 
-These results demonstrate that consideration of the appropriate
-taxonomic resolution for utilizing the microbiome as a predictive tool
-is warranted. In general, we found that finer taxonomic resolution
-(e.g.~OTU and ASV) did not add additional sensitivity to predicting SRNs
-based on microbiome composition. Family, genus, and OTU level data all
-performed equally. At the ASV level the fine resolution actually impedes
-model performance due to the sparsity of shared taxa and led to
+These results demonstrate a Goldilocks effect such that consideration of
+the appropriate taxonomic resolution for utilizing the microbiome as a
+predictive tool is warranted. In general, we found that finer taxonomic
+resolution (e.g.~ASV) did not add additional sensitivity to predicting
+SRNs based on microbiome composition. Family, genus, and OTU level data
+all performed equally. At the ASV level the fine resolution actually
+impeded model performance due to the sparsity of shared taxa and led to
 decreased model performance. The tendency for ASV level annotation to
-split single bacterial genomes into multiple taxa
-(\protect\hyperlink{ref-schloss}{12}) could also be a contributing
-factor to the sparsity of shared taxa. Additionally, these results
-indicate that there are not specific individual bacterial strains that
-are useful to resolve SRNs, rather sets of closely related bacterial
-taxa. Overall, either family, genus, or OTU level taxonomy appear to
-perform equally for predicting subjects with SRNs based on the
+split single bacterial genomes into multiple taxa (12) could also be a
+contributing factor to the sparsity of shared taxa. Additionally, these
+results indicate that there are not specific individual bacterial
+strains that are useful to resolve SRNs, rather sets of closely related
+bacterial taxa. Overall, either family, genus, or OTU level taxonomy
+appear to perform equally for predicting subjects with SRNs based on the
 composition of the gut microbiome. A potential benefit of utilizing
 genus or family level data could be that it may allow for merging data
 generated from different 16S rRNA gene regions or sequencing platforms.
@@ -332,45 +324,40 @@ generated from different 16S rRNA gene regions or sequencing platforms.
 \subsubsection{Materials and Methods}\label{materials-and-methods}}
 
 \textbf{\emph{Dataset.}} Raw 16S rRNA gene amplicon sequence data
-isolated from human gut samples (\protect\hyperlink{ref-baxter2016}{13})
-was downloaded from NCBI Sequence Read Archive (SRP062005). This dataset
-contains stool samples from 490 subjects. Based on the available
-metadata, samples categorized as normal, high risk normal, or adenoma
-were labeled ``normal'' for this analysis and samples categorized as
-advanced adenoma or carcinoma were labeled as ``screen relevant
-neoplasia'' (SRN). This resulted in a total of 261 ``normal'' samples
-and 229 ``SRN'' samples.
+isolated from human gut samples (13) was downloaded from NCBI Sequence
+Read Archive (SRP062005). This dataset contains stool samples from 490
+subjects. Based on the available metadata, samples categorized as
+normal, high risk normal, or adenoma were labeled ``normal'' for this
+analysis and samples categorized as advanced adenoma or carcinoma were
+labeled as ``screen relevant neoplasia'' (SRN). This resulted in a total
+of 261 ``normal'' samples and 229 ``SRN'' samples.
 
 \textbf{\emph{Data processing.}} Sequence data was processed with mothur
-(1.44.3) (\protect\hyperlink{ref-schloss2009}{7}) using the SILVA
-reference database (v132) (\protect\hyperlink{ref-quast2013}{14}) to
-produce count tables for phylum, class, order, family, genus, OTU, and
-ASV following the Schloss Lab MiSeq SOP described on the mothur website
+(1.44.3) (7) using the SILVA reference database (v132) (14) to produce
+count tables for phylum, class, order, family, genus, OTU, and ASV
+following the Schloss Lab MiSeq SOP described on the mothur website
 (\url{https://mothur.org/wiki/miseq_sop/}). ASV level data was also
-produced using DADA2 (\protect\hyperlink{ref-callahan2016}{15}) to
-ensure consistent results with a different pipeline. Data was processed
-following the DADA2 pipeline, but setting pool=TRUE to infer ASVs from
-the whole dataset rather than per sample. The resulting ASV table was
-subsampled for consistency with the mothur data. The results were
-consistent for ASVs generated with DADA2 (mean AUROC: 0.659).
+produced using DADA2 (15) to ensure consistent results with a different
+pipeline. Data was processed following the DADA2 pipeline, but setting
+pool=TRUE to infer ASVs from the whole dataset rather than per sample.
+The resulting ASV table was subsampled for consistency with the mothur
+data. The DADA2 generated ASVs performed worse than the mothur generated
+ASVs (DADA2 ASV mean AUROC: 0.659, p \textless{} 0.05).
 
 \textbf{\emph{Machine Learning.}} Machine learning models were run with
-the R package mikropml (v0.0.2)
-(\protect\hyperlink{ref-topuxe7uolu2021}{8}) to predict the diagnosis
-category (normal vs SRN) of each sample. Data was preprocessed to
-normalize values (scale/center), remove values with zero or near-zero
-variance, and collapse collinear features using default parameters.
-Initially the models were run with default hyperparameters, but were
-expanded if the peak performance was at the edge of the hyperparameter
-range. Each taxonomic model taxonomic level combination (e.g.~random
-forest on genus) was run with 100 different seeds. Each seed split the
-data into a training (80\%) and testing (20\%) set, and output
-performance of the training and testing as area under the receiver
-operating curve (AUROC).
+the R package mikropml (v0.0.2) (8) to predict the diagnosis category
+(normal vs SRN) of each sample. Data was preprocessed to normalize
+values (scale/center), remove values with zero or near-zero variance,
+and collapse collinear features using default parameters. Initially the
+models were run with default hyperparameters, but were expanded if the
+peak performance was at the edge of the hyperparameter range. Each
+taxonomic model taxonomic level combination (e.g.~random forest on
+genus) was run with 100 different seeds. Each seed split the data into a
+training (80\%) and testing (20\%) set, and output performance of the
+training and testing as area under the receiver operating curve (AUROC).
 
 To compare performance between taxonomic levels and models, P values
-were calculated as previously described
-(\protect\hyperlink{ref-topuxe7uolu2020}{6}). To compare sensitivity at
+were calculated as previously described (6). To compare sensitivity at
 90\% specificity, probabilities on the test dataset were collected for
 each seed and used to calculate sensitivity for specificity values
 ranging from 0 to 1 in 0.01 increments. The sensitivity at a specificity
@@ -403,6 +390,11 @@ This work was supported through a grant from the NIH (R01CA215574).
 
 \hypertarget{references}{%
 \subsubsection{References}\label{references}}
+
+\setlength{\parindent}{-0.25in}
+\setlength{\leftskip}{0.25in}
+
+\noindent
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{0}{0}
@@ -541,6 +533,9 @@ doi:\href{https://doi.org/10.1038/nmeth.3869}{10.1038/nmeth.3869}.}
 
 \end{CSLReferences}
 
+\setlength{\parindent}{0in}
+\setlength{\leftskip}{0in}
+
 \newpage
 
 \hypertarget{figures}{%
@@ -630,7 +625,7 @@ the name of the taxonomic level).
 
 \newpage
 
-\includegraphics[width=\textwidth,height=0.85\textheight]{figure_s4.png}\\
+\includegraphics[width=\textwidth,height=0.85\textheight]{figure_s4.png}
 \textbf{Supplemental Figure 4: Top 10 important taxa at each taxonomic
 level.} Summary of the 10 most important taxa for the random forest
 models at each taxonomic level based on the average decrease in AUROC
