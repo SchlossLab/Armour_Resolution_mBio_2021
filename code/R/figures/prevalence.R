@@ -59,12 +59,15 @@ pct_bins %>%
   scale_x_continuous(expand=c(0,0),breaks = seq(0,100,10)) +
   xlab("Percent of Samples") +
   ylab("Percent of Taxa") +
-  theme_bw() +
+  theme_classic() +
   theme(legend.position = "none",
         axis.text = element_text(size=11),
         axis.title = element_text(size=14),
         panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank()) +
+        panel.grid.minor.x = element_blank(),
+        panel.border = element_rect(colour = "black", fill=NA,size=0.75),
+        panel.spacing.x = unit(4, "mm"),
+        strip.text = element_text(size=12)) +
   geom_text(aes(label = paste0((round(pct,digits=2)*100),"%")),nudge_y=0.08) +
   scale_fill_manual(values=pal)
 ggsave("analysis/figures/prevalence.png",width=10)

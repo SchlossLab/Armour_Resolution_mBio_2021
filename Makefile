@@ -575,7 +575,8 @@ paper/manuscript.pdf : paper/manuscript.Rmd \
 				paper/figure_s1.png \
 				paper/figure_s2.png \
 				paper/figure_s3.png \
-				paper/figure_s4.png
+				paper/figure_s4.png \
+				paper/table_1.csv
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
 
 #paper/manuscript.docx : paper/manuscript.pdf
