@@ -109,7 +109,7 @@ top_10_data <- inner_join(rf_imp_tax,top_10_tax,by=c("level","OTU","Taxonomy")) 
   mutate(name = str_replace(name,"\\*(.*)\\?(.*)\\*","\\*\\1\\* \\2")) %>%
   mutate(name = gsub("\\?"," ",name)) %>%
   mutate(name = gsub("_"," ",name)) %>%
-  mutate(OTUname = str_replace(OTU,"Otu0*([0-9]*)","Otu \\1")) %>%
+  mutate(OTUname = str_replace(OTU,"Otu0*([0-9]*)","OTU \\1")) %>%
   mutate(name = gsub(" $","",name)) %>%
   mutate(name = glue("{name}({OTUname})"))
 
