@@ -14,6 +14,7 @@ header-includes:
   - \usepackage[left]{lineno}
   - \linenumbers
   - \usepackage{multirow}
+  - \usepackage[none]{hyphenat}
 ---
 
 ```{r setup_environment, include=FALSE}
@@ -29,6 +30,10 @@ format_decimal <- function(x,digits){
 ```
 
 # A Goldilocks Principle for the Gut Microbiome: Taxonomic Resolution Matters for Microbiome-Based Classification of Colorectal Cancer
+
+\vspace{10mm}
+
+**Running title:** A Goldilocks Principle for the Gut Microbiome
 
 \vspace{10mm}
 
@@ -64,11 +69,9 @@ rf_mean_auc <- table %>%
 
 ### Abstract
 Colorectal cancer is a common and deadly disease in the United States accounting for over 50,000 deaths in 2020. This progressive disease is highly preventable with early detection and treatment, but many people do not comply with the recommended screening guidelines. The gut microbiome has emerged as a promising target for non-invasive detection of colorectal cancer. Most microbiome-based classification efforts utilize taxonomic abundance data from operational taxonomic units (OTUs) or amplicon sequence variants (ASVs) with the goal of increasing taxonomic resolution. However, it is unknown which taxonomic resolution is optimal for microbiome-based classification of colorectal cancer. To address this question, we used a reproducible machine learning framework to quantify classification performance of models based on data annotated to phylum, class, order, family, genus, OTU, and ASV levels. We found that model performance increased with increasing taxonomic resolution, up to the family level where performance was equal (p > 0.05) among family (mean AUC: `r format_decimal(rf_mean_auc$family,digits=3)`), genus (mean AUC: `r format_decimal(rf_mean_auc$genus,digits=3)`), and OTU (mean AUC: `r format_decimal(rf_mean_auc$otu,digits=3)`) levels before decreasing at the ASV level (p < 0.05, mean AUC: `r format_decimal(rf_mean_auc$asv,digits=3)`). These results demonstrate a trade-off between taxonomic resolution and prediction performance, where coarse taxonomic resolution (e.g. phylum) is not distinct enough but fine resolution (e.g. ASV) is to individualized to accurately classify samples. Similar to the story of Goldilocks and the three bears, mid-range resolution (i.e. family, genus, and OTU) is just right for optimal prediction of colorectal cancer from microbiome data.  
-(238 words)
 
 ### Importance
 Despite being highly preventable, colorectal cancer remains a leading cause of cancer related death in the United States. Low-cost, non-invasive detection methods could greatly improve our ability to identify and treat early stages of disease. The microbiome has shown promise as a resource for detection of colorectal cancer. Research on the gut microbiome tends to focus on improving our ability to profile species and strain level taxonomic resolution. However, we found that finer resolution impedes the ability to predict colorectal cancer based on the gut microbiome. These results highlight the need for consideration of the appropriate taxonomic resolution for microbiome analyses and that finer resolution is not always more informative.  
-(110 words)
 
 \newpage
 
