@@ -175,7 +175,7 @@ up to the family level where performance was equal (p \textgreater{}
 trade-off between taxonomic resolution and prediction performance, where
 coarse taxonomic resolution (e.g.~phylum) is not distinct enough but
 fine resolution (e.g.~ASV) is to individualized to accurately classify
-samples. Similar to the story of Goldilocks and the three bears,
+samples. Similar to the story of Goldilocks and the three bears(1),
 mid-range resolution (i.e.~family, genus, and OTU) is just right for
 optimal prediction of colorectal cancer from microbiome data.
 
@@ -197,23 +197,23 @@ analyses and that finer resolution is not always more informative.
 \newpage
 
 Colorectal cancer is one of the most common cancers in men and women and
-a leading cause of cancer related deaths in the United States (1). Early
+a leading cause of cancer related deaths in the United States (2). Early
 detection and treatment are essential to increase survival rates, but
 for reasons such as invasiveness and high screening costs
 (i.e.~colonoscopy), many people do not comply with recommended screening
-guidelines (2). This prompts a need for low cost, non-invasive detection
+guidelines (3). This prompts a need for low cost, non-invasive detection
 methods. A growing body of research points to the gut microbiome as a
 promising target for non-invasive detection of screen relevant neoplasia
-(SRNs) consisting of advanced adenomas and carcinomas (3, 4). The
+(SRNs) consisting of advanced adenomas and carcinomas (4, 5). The
 diagnostic potential of the gut microbiome in detecting SRNs has been
 explored through machine learning (ML) methods using abundances of
 operational taxonomic unit (OTU) classifications based on amplicon
-sequencing of the 16S rRNA gene (3). Recent work has pushed for the use
+sequencing of the 16S rRNA gene (4). Recent work has pushed for the use
 of amplicon sequence variants (ASVs) to replace OTUs for marker-gene
-analysis because of the improved resolution with ASVs (5). However, it
+analysis because of the improved resolution with ASVs (6). However, it
 is unclear if OTUs are the optimal taxonomic resolution for classifying
 SRNs from microbiome data or whether the additional resolution provided
-by ASVs is useful for ML classification. Topçuoğlu \emph{et al} (6)
+by ASVs is useful for ML classification. Topçuoğlu \emph{et al} (7)
 recently demonstrated how to effectively apply machine learning (ML)
 methods to microbiome based classification problems and developed a
 framework for applying ML practices in a more reproducible way. This
@@ -223,9 +223,9 @@ the best performing classifier for detecting SRNs from microbiome data.
 
 Utilizing publicly available 16S rRNA sequence data from stool of
 patients with SRNs and healthy controls, we generated taxonomic
-abundance tables with mothur (7) annotated to phylum, class, order,
+abundance tables with mothur (8) annotated to phylum, class, order,
 family, genus, OTU and ASV levels. Using the taxonomic abundance data
-and the mikropml R package (8), we quantified how reliably samples could
+and the mikropml R package (9), we quantified how reliably samples could
 be classified as SRN or normal using five machine learning methods
 including random forest, L2-regularized logistic regression, decision
 tree, gradient boosted trees (XGBoost), and support vector machine with
@@ -249,7 +249,7 @@ microbiome composition.
 While comparing AUROC values between models is a useful way to assess
 the overall model performance, they summarize the performance across all
 thresholds and can be misleading since models with the same AUROC can
-have different ROC curve shapes (9). Depending on the intended
+have different ROC curve shapes (10). Depending on the intended
 implementation of the model, one may want to optimize the sensitivity
 over the specificity or vice versa. In this case, the optimal model will
 detect as many true positives (people with SRNs) as possible. To further
@@ -284,7 +284,7 @@ features with zero or near-zero variance across samples were removed.
 Interestingly, despite starting with 104,106 ASVs, only 478 (0.5\%)
 remained after pre-processing. At the OTU level, 705 of the 20,079 OTUs
 (3.5\%) remained after preprocessing (Table 1). While the resolution
-provided by ASVs is useful in certain contexts(10, 11), these results
+provided by ASVs is useful in certain contexts(11, 12), these results
 suggest that the resolution is too fine for use in machine learning
 classification of SRNs based on microbiome composition.
 
@@ -313,7 +313,7 @@ SRNs based on microbiome composition. Family, genus, and OTU level data
 all performed equally At the ASV level the fine resolution actually
 impeded model performance due to the sparsity of shared taxa and led to
 decreased model performance. The tendency for ASV level annotation to
-split single bacterial genomes into multiple taxa (12) could also be a
+split single bacterial genomes into multiple taxa (13) could also be a
 contributing factor to the sparsity of shared taxa. Additionally, these
 results indicate that there are not specific individual bacterial
 strains that are useful to resolve SRNs, rather sets of closely related
@@ -327,7 +327,7 @@ generated from different 16S rRNA gene regions or sequencing platforms.
 \subsubsection{Materials and Methods}\label{materials-and-methods}}
 
 \textbf{\emph{Dataset.}} Raw 16S rRNA gene amplicon sequence data
-isolated from human gut samples (13) was downloaded from NCBI Sequence
+isolated from human gut samples (14) was downloaded from NCBI Sequence
 Read Archive (SRP062005). This dataset contains stool samples from 490
 subjects. Based on the available metadata, samples categorized as
 normal, high risk normal, or adenoma were labeled ``normal'' for this
@@ -336,11 +336,11 @@ labeled as ``screen relevant neoplasia'' (SRN). This resulted in a total
 of 261 ``normal'' samples and 229 ``SRN'' samples.
 
 \textbf{\emph{Data processing.}} Sequence data was processed with mothur
-(1.44.3) (7) using the SILVA reference database (v132) (14) to produce
+(1.44.3) (8) using the SILVA reference database (v132) (15) to produce
 count tables for phylum, class, order, family, genus, OTU, and ASV
 following the Schloss Lab MiSeq SOP described on the mothur website
 (\url{https://mothur.org/wiki/miseq_sop/}). ASV level data was also
-produced using DADA2 (15) to ensure consistent results with a different
+produced using DADA2 (16) to ensure consistent results with a different
 pipeline. Data was processed following the DADA2 pipeline, but setting
 pool=TRUE to infer ASVs from the whole dataset rather than per sample.
 The resulting ASV table was subsampled for consistency with the mothur
@@ -348,7 +348,7 @@ data. The DADA2 generated ASVs performed worse than the mothur generated
 ASVs (DADA2 ASV mean AUROC: 0.659, p \textless{} 0.05).
 
 \textbf{\emph{Machine Learning.}} Machine learning models were run with
-the R package mikropml (v0.0.2) (8) to predict the diagnosis category
+the R package mikropml (v0.0.2) (9) to predict the diagnosis category
 (normal vs SRN) of each sample. Data was preprocessed to normalize
 values (scale/center), remove values with zero or near-zero variance,
 and collapse collinear features using default parameters. Initially the
@@ -360,7 +360,7 @@ training (80\%) and testing (20\%) set, and output performance of the
 training and testing as area under the receiver operating curve (AUROC).
 
 To compare performance between taxonomic levels and models, P values
-were calculated as previously described (6). To compare sensitivity at
+were calculated as previously described (7). To compare sensitivity at
 90\% specificity, probabilities on the test dataset were collected for
 each seed and used to calculate sensitivity for specificity values
 ranging from 0 to 1 in 0.01 increments. The sensitivity at a specificity
@@ -401,8 +401,13 @@ This work was supported through a grant from the NIH (R01CA215574).
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{0}{0}
-\leavevmode\hypertarget{ref-siegel2020}{}%
+\leavevmode\hypertarget{ref-cauley1981}{}%
 \CSLLeftMargin{1. }
+\CSLRightInline{\textbf{Cauley LB}. 1981. Goldilocks and the three
+bears. New York : Putnam, 1981.}
+
+\leavevmode\hypertarget{ref-siegel2020}{}%
+\CSLLeftMargin{2. }
 \CSLRightInline{\textbf{Siegel RL}, \textbf{Miller KD}, \textbf{Sauer
 AG}, \textbf{Fedewa SA}, \textbf{Butterly LF}, \textbf{Anderson JC},
 \textbf{Cercek A}, \textbf{Smith RA}, \textbf{Jemal A}. 2020. Colorectal
@@ -410,14 +415,14 @@ cancer statistics, 2020. CA: A Cancer Journal for Clinicians
 \textbf{70}:145--164. doi:\url{https://doi.org/10.3322/caac.21601}.}
 
 \leavevmode\hypertarget{ref-garcuxeda2011}{}%
-\CSLLeftMargin{2. }
+\CSLLeftMargin{3. }
 \CSLRightInline{\textbf{García G}, \textbf{Z A}. 2011. Factors
 Influencing Colorectal Cancer Screening Participation. Gastroenterology
 Research and Practice \textbf{2012}:e483417.
 doi:\href{https://doi.org/10.1155/2012/483417}{10.1155/2012/483417}.}
 
 \leavevmode\hypertarget{ref-zackular2014}{}%
-\CSLLeftMargin{3. }
+\CSLLeftMargin{4. }
 \CSLRightInline{\textbf{Zackular JP}, \textbf{Rogers MAM},
 \textbf{Ruffin MT}, \textbf{Schloss PD}. 2014. The Human Gut Microbiome
 as a Screening Tool for Colorectal Cancer. Cancer Prevention Research
@@ -425,7 +430,7 @@ as a Screening Tool for Colorectal Cancer. Cancer Prevention Research
 doi:\href{https://doi.org/10.1158/1940-6207.CAPR-14-0129}{10.1158/1940-6207.CAPR-14-0129}.}
 
 \leavevmode\hypertarget{ref-zeller2014}{}%
-\CSLLeftMargin{4. }
+\CSLLeftMargin{5. }
 \CSLRightInline{\textbf{Zeller G}, \textbf{Tap J}, \textbf{Voigt AY},
 \textbf{Sunagawa S}, \textbf{Kultima JR}, \textbf{Costea PI},
 \textbf{Amiot A}, \textbf{Böhm J}, \textbf{Brunetti F},
@@ -440,7 +445,7 @@ Biology \textbf{10}:766.
 doi:\href{https://doi.org/10.15252/msb.20145645}{10.15252/msb.20145645}.}
 
 \leavevmode\hypertarget{ref-callahan2017}{}%
-\CSLLeftMargin{5. }
+\CSLLeftMargin{6. }
 \CSLRightInline{\textbf{Callahan BJ}, \textbf{McMurdie PJ},
 \textbf{Holmes SP}. 2017. Exact sequence variants should replace
 operational taxonomic units in marker-gene data analysis. The ISME
@@ -448,7 +453,7 @@ Journal \textbf{11}:2639--2643.
 doi:\href{https://doi.org/10.1038/ismej.2017.119}{10.1038/ismej.2017.119}.}
 
 \leavevmode\hypertarget{ref-topuxe7uolu2020}{}%
-\CSLLeftMargin{6. }
+\CSLLeftMargin{7. }
 \CSLRightInline{\textbf{Topçuoğlu BD}, \textbf{Lesniak NA},
 \textbf{Ruffin MT}, \textbf{Wiens J}, \textbf{Schloss PD}. 2020. A
 Framework for Effective Application of Machine Learning to
@@ -456,7 +461,7 @@ Microbiome-Based Classification Problems. mBio \textbf{11}.
 doi:\href{https://doi.org/10.1128/mBio.00434-20}{10.1128/mBio.00434-20}.}
 
 \leavevmode\hypertarget{ref-schloss2009}{}%
-\CSLLeftMargin{7. }
+\CSLLeftMargin{8. }
 \CSLRightInline{\textbf{Schloss PD}, \textbf{Westcott SL},
 \textbf{Ryabin T}, \textbf{Hall JR}, \textbf{Hartmann M},
 \textbf{Hollister EB}, \textbf{Lesniewski RA}, \textbf{Oakley BB},
@@ -469,7 +474,7 @@ communities. Applied and Environmental Microbiology
 doi:\href{https://doi.org/10.1128/AEM.01541-09}{10.1128/AEM.01541-09}.}
 
 \leavevmode\hypertarget{ref-topuxe7uolu2021}{}%
-\CSLLeftMargin{8. }
+\CSLLeftMargin{9. }
 \CSLRightInline{\textbf{Topçuoğlu BD}, \textbf{Lapp Z}, \textbf{Sovacool
 KL}, \textbf{Snitkin E}, \textbf{Wiens J}, \textbf{Schloss PD}. 2021.
 mikropml: User-Friendly R Package for Supervised Machine Learning
@@ -477,7 +482,7 @@ Pipelines. Journal of Open Source Software \textbf{6}:3073.
 doi:\href{https://doi.org/10.21105/joss.03073}{10.21105/joss.03073}.}
 
 \leavevmode\hypertarget{ref-lobo2008}{}%
-\CSLLeftMargin{9. }
+\CSLLeftMargin{10. }
 \CSLRightInline{\textbf{Lobo JM}, \textbf{Jiménez-Valverde A},
 \textbf{Real R}. 2008. AUC: a misleading measure of the performance of
 predictive distribution models. Global Ecology and Biogeography
@@ -485,7 +490,7 @@ predictive distribution models. Global Ecology and Biogeography
 doi:\href{https://doi.org/10.1111/j.1466-8238.2007.00358.x}{10.1111/j.1466-8238.2007.00358.x}.}
 
 \leavevmode\hypertarget{ref-eren2013}{}%
-\CSLLeftMargin{10. }
+\CSLLeftMargin{11. }
 \CSLRightInline{\textbf{Eren AM}, \textbf{Maignien L}, \textbf{Sul WJ},
 \textbf{Murphy LG}, \textbf{Grim SL}, \textbf{Morrison HG},
 \textbf{Sogin ML}. 2013. Oligotyping: differentiating between closely
@@ -494,7 +499,7 @@ Evolution \textbf{4}:1111--1119.
 doi:\href{https://doi.org/10.1111/2041-210X.12114}{10.1111/2041-210X.12114}.}
 
 \leavevmode\hypertarget{ref-eren2015}{}%
-\CSLLeftMargin{11. }
+\CSLLeftMargin{12. }
 \CSLRightInline{\textbf{Eren AM}, \textbf{Morrison HG}, \textbf{Lescault
 PJ}, \textbf{Reveillaud J}, \textbf{Vineis JH}, \textbf{Sogin ML}. 2015.
 Minimum entropy decomposition: Unsupervised oligotyping for sensitive
@@ -503,14 +508,14 @@ partitioning of high-throughput marker gene sequences. The ISME Journal
 doi:\href{https://doi.org/10.1038/ismej.2014.195}{10.1038/ismej.2014.195}.}
 
 \leavevmode\hypertarget{ref-schloss}{}%
-\CSLLeftMargin{12. }
+\CSLLeftMargin{13. }
 \CSLRightInline{\textbf{Schloss PD}. Amplicon sequence variants
 artificially split bacterial genomes into separate clusters. mSphere
 \textbf{6}:e00191--21.
 doi:\href{https://doi.org/10.1128/mSphere.00191-21}{10.1128/mSphere.00191-21}.}
 
 \leavevmode\hypertarget{ref-baxter2016}{}%
-\CSLLeftMargin{13. }
+\CSLLeftMargin{14. }
 \CSLRightInline{\textbf{Baxter NT}, \textbf{Ruffin MT}, \textbf{Rogers
 MAM}, \textbf{Schloss PD}. 2016. Microbiota-based model improves the
 sensitivity of fecal immunochemical test for detecting colonic lesions.
@@ -518,7 +523,7 @@ Genome Medicine \textbf{8}:37.
 doi:\href{https://doi.org/10.1186/s13073-016-0290-3}{10.1186/s13073-016-0290-3}.}
 
 \leavevmode\hypertarget{ref-quast2013}{}%
-\CSLLeftMargin{14. }
+\CSLLeftMargin{15. }
 \CSLRightInline{\textbf{Quast C}, \textbf{Pruesse E}, \textbf{Yilmaz P},
 \textbf{Gerken J}, \textbf{Schweer T}, \textbf{Yarza P}, \textbf{Peplies
 J}, \textbf{Glöckner FO}. 2013. The SILVA ribosomal RNA gene database
@@ -527,7 +532,7 @@ Research \textbf{41}:D590--D596.
 doi:\href{https://doi.org/10.1093/nar/gks1219}{10.1093/nar/gks1219}.}
 
 \leavevmode\hypertarget{ref-callahan2016}{}%
-\CSLLeftMargin{15. }
+\CSLLeftMargin{16. }
 \CSLRightInline{\textbf{Callahan BJ}, \textbf{McMurdie PJ},
 \textbf{Rosen MJ}, \textbf{Han AW}, \textbf{Johnson AJA}, \textbf{Holmes
 SP}. 2016. DADA2: High-resolution sample inference from Illumina
