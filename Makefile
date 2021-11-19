@@ -508,7 +508,7 @@ data/dada2/analysis/dada2_pvalues_by_level.csv data/dada2/analysis/dada2_pvalues
 ################################################################################
 
 #boxplots of AUC across all model types and tax levels
-analysis/figures/AUC_all_model_all_level.png : \
+analysis/figures/AUC_all_model_all_level.tiff : \
 			code/R/figures/AUC_all_model_all_level.R \
 			$(foreach L,$(LEVEL),$(foreach M,$(METHOD),data/process/combined-$L-$M.csv))
 	Rscript code/R/figures/AUC_all_model_all_level.R
@@ -519,18 +519,18 @@ analysis/figures/rf_AUC_all_level.png : \
 			$(foreach L,$(LEVEL),data/process/combined-$L-rf.csv)
 	Rscript code/R/figures/rf_AUC_all_level.R
 
-analysis/figures/prevalence.png : \
+analysis/figures/prevalence.tiff : \
 			code/R/figures/prevalence.R \
 			analysis/prevalence_by_level.csv
 	Rscript code/R/figures/prevalence.R
 
-analysis/figures/top_10_important_tax.png : \
+analysis/figures/top_10_important_tax.tiff : \
 			code/R/figures/top_10_important_tax.R \
 			$(foreach L,$(LEVEL),data/process/importance-$(L)-rf.csv) \
 			$(foreach L,$(LEVEL),data/$(L)/crc.taxonomy)
 	Rscript code/R/figures/top_10_important_tax.R
 
-analysis/figures/average_roc_by_level.png : \
+analysis/figures/average_roc_by_level.tiff : \
 			code/R/figures/averaged_ROC_curve.R \
 			analysis/sens_spec_by_level.csv
 	Rscript code/R/figures/averaged_ROC_curve.R
@@ -549,13 +549,13 @@ analysis/figures/sensitivity_at_90_specificity.png : \
 docs/exploratory.html :
 	R -e 'rmarkdown::render("exploratory/exploratory.Rmd",output_dir="docs")'
 
-paper/figure_1.png : \
+paper/figure_1.tiff : \
 			analysis/figures/rf_AUC_all_level.png \
 			analysis/figures/sensitivity_at_90_specificity.png \
 			code/R/figures/figure_1.R
 	Rscript code/R/figures/figure_1.R
 
-paper/figure_s1.png : analysis/figures/AUC_all_model_all_level.png
+paper/figure_s1.tiff : analysis/figures/AUC_all_model_all_level.tiff
 	cp $< $@
 
 paper/figure_s2.png : analysis/figures/average_roc_by_level.png

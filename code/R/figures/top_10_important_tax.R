@@ -116,4 +116,7 @@ top_10_data <- inner_join(rf_imp_tax,top_10_tax,by=c("level","OTU","Taxonomy")) 
 plotlist <- map(levels_names,plot_top_imp,top_data=top_10_data)
 
 plot_grid(plotlist = plotlist,ncol = 2,align = "v")
-ggsave("analysis/figures/top_10_important_tax.png",width = 9, height = 11)
+ggsave("analysis/figures/top_10_important_tax.tiff",
+       scale=1.25,
+       height = 9,width = 6.87,units="in",
+       compression = "lzw")

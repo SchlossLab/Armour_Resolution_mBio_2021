@@ -86,4 +86,6 @@ avg_sens %>%
               size=3) +
     scale_fill_manual(values=colors2) +
     scale_color_manual(values=colors2)
-ggsave("analysis/figures/average_roc_by_level.png",width=7,height=5)
+ggsave("analysis/figures/average_roc_by_level.tiff",
+       width=6.87,height=5,
+       compression = "lzw")

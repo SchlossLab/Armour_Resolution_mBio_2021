@@ -51,4 +51,6 @@ df_all %>%
         axis.text.x = element_text(angle = 0),
         axis.text = element_text(size=14)) +
   scale_fill_manual(values=pal2,name="Model")
-ggsave("analysis/figures/AUC_all_model_all_level.png",width = 7,height=4,units="in")
+ggsave("analysis/figures/AUC_all_model_all_level.tiff",
+       width = 6.87,height=3.5,units="in",
+       compression = "lzw")

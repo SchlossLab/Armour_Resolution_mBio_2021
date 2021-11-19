@@ -42,4 +42,5 @@ sens_spec90 %>%
     scale_y_continuous(breaks=seq(0,1,0.1),labels = scales::percent_format(accuracy = 1)) +
     scale_color_manual(values=rev(colors2)) +
     annotate("text",x=levels_names,y=rep((max(sens_spec90$sensitivity)+0.05),length(levels_names)),label=c("W","W","X","Y","Y","Y","Z"))
-ggsave("analysis/figures/sensitivity_at_90_specificity.png",width = 4.5,height=5,units="in")
+ggsave("analysis/figures/sensitivity_at_90_specificity.png",
+       width = 4.5,height=5)
