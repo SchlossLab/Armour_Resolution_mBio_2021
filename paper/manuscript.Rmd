@@ -255,7 +255,7 @@ read_csv("table_1.csv") %>%
 \newpage
 
 ![](figure_s3.png){height="45%"}  
-**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is for taxa present in 0 to 10% of samples, then \>10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot (or the name of the taxonomic level).
+**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is for taxa present in 0 to 10% of samples, then \>10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot.
 
 \newpage
 
