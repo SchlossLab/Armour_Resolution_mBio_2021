@@ -208,14 +208,6 @@ This work was supported through a grant from the NIH (R01CA215574).
 
 \newpage
 
-### Figures
-
-![](figure_1.png)
-
-**Figure 1: Random Forest Model Performance.** **A)** Strip plot of the area under the receiver operating characteristic curve (AUROC) values on the test dataset for 100 seeds predicting SRNs using a random forest model. Black points denote the mean and lines denote the standard deviation. Dashed line denotes AUROC of 0.5 which is equivalent to random classification. Significance between taxonomic levels was quantified by comparing the difference in mean AUROC and is denoted by letters A through E on the right side of the plot; taxonomic levels with the same letter are in the same significance group and are not significantly different from one another. **B)** Strip plot of the sensitivity at a specificity of 90% across the 100 model iterations for each taxonomic level. Black points denote the mean and the lines denote the standard deviation. The letters W through Z on the right side of the plot denote the significance groups.
-
-\newpage
-
 ### Tables
 
 ```{r feature_counts}
@@ -240,24 +232,18 @@ read_csv("table_1.csv") %>%
 
 \newpage
 
-### Supplemental Figures
+### Figure Legends
 
-![](figure_s1.png)
-
-**Supplemental Figure 1: Model Performance across Taxonomy.** Boxplots of AUROC values from predicting whether samples came from subjects with screen relevant neoplasias (i.e. advanced adenoma or cancer) or healthy controls across five machine learning methods including random forest, L2-regularized logistic regression (logistic regression), decision tree, gradient boosted trees (XGBoost), and support vector machine with radial basis kernel (SVM radial). Due to the random split of data into training and testing sets, each model was run across 100 seeds to account for variation in training/test datasplits.
+**Figure 1: Random Forest Model Performance.** **A)** Strip plot of the area under the receiver operating characteristic curve (AUROC) values on the test dataset for 100 seeds predicting SRNs using a random forest model. Black points denote the mean and lines denote the standard deviation. Dashed line denotes AUROC of 0.5 which is equivalent to random classification. Significance between taxonomic levels was quantified by comparing the difference in mean AUROC and is denoted by letters A through E on the right side of the plot; taxonomic levels with the same letter are in the same significance group and are not significantly different from one another. **B)** Strip plot of the sensitivity at a specificity of 90% across the 100 model iterations for each taxonomic level. Black points denote the mean and the lines denote the standard deviation. The letters W through Z on the right side of the plot denote the significance groups.  
 
 \newpage
 
-![](figure_s2.png){height="50%"}
+### Supplemental Figure Legends  
 
-**Supplemental Figure 2: Averaged ROC curves.** ROC curves with averaged true positive rate (or sensitivity) across the 100 iterations of the random forest model. The shaded region represents the standard deviation form the mean. Dashed line represents an AUROC of 0.5, which is equivalent to random classification. The mean AUROC for each taxonomic level is printed on the bottom right of the plot.
+**Supplemental Figure 1: Model Performance across Taxonomy.** Boxplots of AUROC values from predicting whether samples came from subjects with screen relevant neoplasias (i.e. advanced adenoma or cancer) or healthy controls across five machine learning methods including random forest, L2-regularized logistic regression (logistic regression), decision tree, gradient boosted trees (XGBoost), and support vector machine with radial basis kernel (SVM radial). Due to the random split of data into training and testing sets, each model was run across 100 seeds to account for variation in training/test datasplits.  
 
-\newpage
+**Supplemental Figure 2: Averaged ROC curves.** ROC curves with averaged true positive rate (or sensitivity) across the 100 iterations of the random forest model. The shaded region represents the standard deviation form the mean. Dashed line represents an AUROC of 0.5, which is equivalent to random classification. The mean AUROC for each taxonomic level is printed on the bottom right of the plot.  
 
-![](figure_s3.png){height="45%"}  
-**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is for taxa present in 0 to 10% of samples, then \>10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot.
+**Supplemental Figure 3: Prevalence of Taxa in Samples.** Distribution of the prevalence of taxa across samples at each taxonomic level. Percent of samples is split into 10 groups where the first is for taxa present in 0 to 10% of samples, then \>10% to 20% of samples, and so on. The total number of taxa for each taxonomic level after preprocessing is in parenthesis next to the title of the plot.  
 
-\newpage
-
-![](figure_s4.png){height="85%"}
-**Supplemental Figure 4: Top 10 important taxa at each taxonomic level.** Summary of the 10 most important taxa for the random forest models at each taxonomic level based on the average decrease in AUROC when the feature is permuted. Dot represents the mean decrease in AUROC and the lines extending from the dot represent the standard deviation from the mean. Taxonomic annotations are only reliably assigned to the genus level, therefore the OTU and ASV plots have genus labels.
+**Supplemental Figure 4: Top 10 important taxa at each taxonomic level.** Summary of the 10 most important taxa for the random forest models at each taxonomic level based on the average decrease in AUROC when the feature is permuted. Dot represents the mean decrease in AUROC and the lines extending from the dot represent the standard deviation from the mean. 

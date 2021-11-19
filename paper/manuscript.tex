@@ -541,28 +541,6 @@ doi:\href{https://doi.org/10.1038/nmeth.3869}{10.1038/nmeth.3869}.}
 
 \newpage
 
-\hypertarget{figures}{%
-\subsubsection{Figures}\label{figures}}
-
-\includegraphics{figure_1.png}
-
-\textbf{Figure 1: Random Forest Model Performance.} \textbf{A)} Strip
-plot of the area under the receiver operating characteristic curve
-(AUROC) values on the test dataset for 100 seeds predicting SRNs using a
-random forest model. Black points denote the mean and lines denote the
-standard deviation. Dashed line denotes AUROC of 0.5 which is equivalent
-to random classification. Significance between taxonomic levels was
-quantified by comparing the difference in mean AUROC and is denoted by
-letters A through E on the right side of the plot; taxonomic levels with
-the same letter are in the same significance group and are not
-significantly different from one another. \textbf{B)} Strip plot of the
-sensitivity at a specificity of 90\% across the 100 model iterations for
-each taxonomic level. Black points denote the mean and the lines denote
-the standard deviation. The letters W through Z on the right side of the
-plot denote the significance groups.
-
-\newpage
-
 \hypertarget{tables}{%
 \subsubsection{Tables}\label{tables}}
 
@@ -589,10 +567,29 @@ described in the methods.
 
 \newpage
 
-\hypertarget{supplemental-figures}{%
-\subsubsection{Supplemental Figures}\label{supplemental-figures}}
+\hypertarget{figure-legends}{%
+\subsubsection{Figure Legends}\label{figure-legends}}
 
-\includegraphics{figure_s1.png}
+\textbf{Figure 1: Random Forest Model Performance.} \textbf{A)} Strip
+plot of the area under the receiver operating characteristic curve
+(AUROC) values on the test dataset for 100 seeds predicting SRNs using a
+random forest model. Black points denote the mean and lines denote the
+standard deviation. Dashed line denotes AUROC of 0.5 which is equivalent
+to random classification. Significance between taxonomic levels was
+quantified by comparing the difference in mean AUROC and is denoted by
+letters A through E on the right side of the plot; taxonomic levels with
+the same letter are in the same significance group and are not
+significantly different from one another. \textbf{B)} Strip plot of the
+sensitivity at a specificity of 90\% across the 100 model iterations for
+each taxonomic level. Black points denote the mean and the lines denote
+the standard deviation. The letters W through Z on the right side of the
+plot denote the significance groups.
+
+\newpage
+
+\hypertarget{supplemental-figure-legends}{%
+\subsubsection{Supplemental Figure
+Legends}\label{supplemental-figure-legends}}
 
 \textbf{Supplemental Figure 1: Model Performance across Taxonomy.}
 Boxplots of AUROC values from predicting whether samples came from
@@ -604,10 +601,6 @@ support vector machine with radial basis kernel (SVM radial). Due to the
 random split of data into training and testing sets, each model was run
 across 100 seeds to account for variation in training/test datasplits.
 
-\newpage
-
-\includegraphics[width=\textwidth,height=0.5\textheight]{figure_s2.png}
-
 \textbf{Supplemental Figure 2: Averaged ROC curves.} ROC curves with
 averaged true positive rate (or sensitivity) across the 100 iterations
 of the random forest model. The shaded region represents the standard
@@ -615,9 +608,6 @@ deviation form the mean. Dashed line represents an AUROC of 0.5, which
 is equivalent to random classification. The mean AUROC for each
 taxonomic level is printed on the bottom right of the plot.
 
-\newpage
-
-\includegraphics[width=\textwidth,height=0.45\textheight]{figure_s3.png}\\
 \textbf{Supplemental Figure 3: Prevalence of Taxa in Samples.}
 Distribution of the prevalence of taxa across samples at each taxonomic
 level. Percent of samples is split into 10 groups where the first is for
@@ -625,15 +615,11 @@ taxa present in 0 to 10\% of samples, then \textgreater10\% to 20\% of
 samples, and so on. The total number of taxa for each taxonomic level
 after preprocessing is in parenthesis next to the title of the plot.
 
-\newpage
-
-\includegraphics[width=\textwidth,height=0.85\textheight]{figure_s4.png}
 \textbf{Supplemental Figure 4: Top 10 important taxa at each taxonomic
 level.} Summary of the 10 most important taxa for the random forest
 models at each taxonomic level based on the average decrease in AUROC
 when the feature is permuted. Dot represents the mean decrease in AUROC
 and the lines extending from the dot represent the standard deviation
-from the mean. Taxonomic annotations are only reliably assigned to the
-genus level, therefore the OTU and ASV plots have genus labels.
+from the mean.
 
 \end{document}
