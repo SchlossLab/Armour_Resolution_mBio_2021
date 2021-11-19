@@ -260,4 +260,4 @@ read_csv("table_1.csv") %>%
 \newpage
 
 ![](figure_s4.png){height="85%"}
-**Supplemental Figure 4: Top 10 important taxa at each taxonomic level.** Summary of the 10 most important taxa for the random forest models at each taxonomic level based on the average decrease in AUROC when the feature is permuted. Dot represents the mean decrease in AUROC and the lines extending from the dot represent the standard deviation from the mean.
+**Supplemental Figure 4: Top 10 important taxa at each taxonomic level.** Summary of the 10 most important taxa for the random forest models at each taxonomic level based on the average decrease in AUROC when the feature is permuted. Dot represents the mean decrease in AUROC and the lines extending from the dot represent the standard deviation from the mean. Taxonomic annotations are only reliably assigned to the genus level, therefore the OTU and ASV plots have genus labels.
