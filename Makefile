@@ -550,32 +550,33 @@ docs/exploratory.html :
 	R -e 'rmarkdown::render("exploratory/exploratory.Rmd",output_dir="docs")'
 
 paper/figure_1.tiff : \
-			analysis/figures/rf_AUC_all_level.png \
-			analysis/figures/sensitivity_at_90_specificity.png \
-			code/R/figures/figure_1.R
+			code/R/figures/figure_1.R \
+			analysis/pvalues_by_model.csv \
+			$(foreach L,$(LEVEL),data/process/combined-$L-rf.csv) \
+			analysis/sens_spec90_pvals.csv
 	Rscript code/R/figures/figure_1.R
 
 paper/figure_s1.tiff : analysis/figures/AUC_all_model_all_level.tiff
 	cp $< $@
 
-paper/figure_s2.png : analysis/figures/average_roc_by_level.png
+paper/figure_s2.tiff : analysis/figures/average_roc_by_level.tiff
 	cp $< $@
 
-paper/figure_s3.png : analysis/figures/prevalence.png
+paper/figure_s3.tiff : analysis/figures/prevalence.tiff
 	cp $< $@
 
-paper/figure_s4.png : analysis/figures/top_10_important_tax.png
+paper/figure_s4.tiff : analysis/figures/top_10_important_tax.tiff
 	cp $< $@
 
 paper/table_1.csv : analysis/input_values.csv
 	cp $< $@
 
 paper/manuscript.pdf : paper/manuscript.Rmd \
-				paper/figure_1.png \
-				paper/figure_s1.png \
-				paper/figure_s2.png \
-				paper/figure_s3.png \
-				paper/figure_s4.png \
+				paper/figure_1.tiff \
+				paper/figure_s1.tiff \
+				paper/figure_s2.tiff \
+				paper/figure_s3.tiff \
+				paper/figure_s4.tiff \
 				paper/table_1.csv
 	R -e 'library(rmarkdown);render("paper/manuscript.Rmd",output_format="all")'
 
