@@ -43,7 +43,7 @@ Courtney R. Armour${^1}$, Begüm D. Topçuoğlu$^{1,\#}$, Andrea Garretto${^1}$,
 
 ${^1}$ Department of Microbiology and Immunology, University of Michigan, Ann Arbor MI
 
-${^\#}$ Current Affiliation: Exploratory Science Center, Merck & Co., Inc., Cambridge, Massachusetts, USA 
+${^\#}$ Current Affiliation: Bristol Myers Squibb, Summit, New Jersey, USA 
 
 \vspace{5mm}
 
