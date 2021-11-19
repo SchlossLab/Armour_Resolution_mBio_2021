@@ -64,4 +64,5 @@ rf_auc_df %>%
     annotate("text",x=levels_names,y=rep(0.85,length(levels_names)),label=c("A","B","C","D,E","D,E","D","E")) +
     geom_hline(yintercept = 0.5,color="grey",lty="dashed")
 
-ggsave("analysis/figures/rf_AUC_all_level.png",width = 4.5,height=5,units="in")
+ggsave("analysis/figures/rf_AUC_all_level.png",
+       width = 4.5,height=5)

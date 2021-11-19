@@ -70,4 +70,6 @@ pct_bins %>%
         strip.text = element_text(size=12)) +
   geom_text(aes(label = paste0((round(pct,digits=2)*100),"%")),nudge_y=0.08) +
   scale_fill_manual(values=pal)
-ggsave("analysis/figures/prevalence.png",width=10)
+ggsave("analysis/figures/prevalence.tiff",
+       width=6.87,height=6,units="in",
+       compression = "lzw")
